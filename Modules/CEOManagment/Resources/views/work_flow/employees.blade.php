@@ -409,12 +409,12 @@
                                 </div>
                                 <br>
                             </div>
-                            {{-- <div>
+                            <div>
                                 <button type="button"class="btn btn-sm btn-warning my-button addStep"
                                     id="edit_modal_add_step">
                                     @lang('essentials::lang.add_managment')
                                 </button>
-                            </div> --}}
+                            </div>
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
@@ -989,7 +989,7 @@
                                         // Add the remove button for dynamically added tasks
                                         var removeButton = $(
                                                 '<button class="btn btn-danger remove-task-btn" type="button">Remove</button>'
-                                                )
+                                            )
                                             .css('display', 'inline-block')
                                             .on('click', function() {
                                                 $(this).closest('.task_template')
@@ -1006,17 +1006,17 @@
 
                                 // Ensure the "Add Task" button is still visible and functional
                                 var addTaskButton = $(stepSelector).find('.add-task-btn')
-                                .first();
+                                    .first();
                                 if (addTaskButton.length === 0) {
                                     addTaskButton = $(
                                         '<button class="btn btn-default add-task-btn" type="button">Add Task</button>'
-                                        );
+                                    );
                                     $(stepSelector).find('.task-select-container').append(
                                         addTaskButton);
                                 }
 
                                 addTaskButton
-                            .show(); // Make sure the "Add Task" button is visible
+                                    .show(); // Make sure the "Add Task" button is visible
 
                                 addTaskButton.off('click').on('click', function() {
                                     var newTaskTemplate = $(
@@ -1035,14 +1035,14 @@
                                     $.each(response, function(key, value) {
                                         taskSelect.append('<option value="' +
                                             key + '">' + value + '</option>'
-                                            );
+                                        );
                                     });
 
                                     newTaskTemplate.append(taskSelect);
 
                                     var removeButton = $(
                                             '<button class="btn btn-danger remove-task-btn" type="button">Remove</button>'
-                                            )
+                                        )
                                         .css('display', 'inline-block')
                                         .on('click', function() {
                                             $(this).closest('.task_template')

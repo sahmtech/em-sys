@@ -12,6 +12,7 @@ class WkProcedure extends Model
 
     protected $guarded = ['id'];
     
+    
     public function department()
     {
         return $this->belongsTo(EssentialsDepartment::class, 'department_id');

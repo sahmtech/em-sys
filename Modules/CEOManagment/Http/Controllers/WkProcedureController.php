@@ -4,24 +4,19 @@ namespace Modules\CEOManagment\Http\Controllers;
 
 use App\Business;
 use App\Contact;
-
 use App\Request as UserRequest;
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
-use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsProceduresEscalation;
-use Modules\CEOManagment\Entities\RequestsType;
-use Modules\CEOManagment\Entities\ProcedureTask;
 use Modules\CEOManagment\Entities\ProcedureEscalation;
+use Modules\CEOManagment\Entities\ProcedureTask;
+use Modules\CEOManagment\Entities\RequestsType;
 use Modules\CEOManagment\Entities\Task;
-use Modules\CEOManagment\Entities\WkProcedure;
 use Modules\CEOManagment\Entities\TimeSheetWorkflow;
-
-use Modules\CEOManagment\Entities\RequestProcedureTask;
-
+use Modules\CEOManagment\Entities\WkProcedure;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Yajra\DataTables\Facades\DataTables;
 
 class WkProcedureController extends Controller
 {
@@ -43,7 +38,6 @@ class WkProcedureController extends Controller
         $can_edit_procedures = auth()->user()->can('generalmanagement.edit_procedure');
         $business = Business::pluck('name', 'id');
 
-
         $departments = EssentialsDepartment::pluck('name', 'id');
 
         $escalates_departments = EssentialsDepartment::where(function ($query) {
@@ -63,7 +57,6 @@ class WkProcedureController extends Controller
             ->select('business_id', 'request_type_id', 'id')
             ->groupBy('business_id', 'request_type_id')
             ->with('department');
-
 
         if (request()->ajax()) {
 
@@ -131,16 +124,16 @@ class WkProcedureController extends Controller
                         return '';
                     }
                 })->addColumn('action', function ($row) use ($is_admin, $can_delete_procedures, $can_edit_procedures) {
-                    $html = '';
-                    if ($is_admin || $can_edit_procedures) {
+                $html = '';
+                if ($is_admin || $can_edit_procedures) {
 
-                        $html .= '<a href="#" class="btn btn-xs btn-primary edit-procedure" data-id="' . $row->id . '" data-url="' . route('getProcedure', ['procedure_id' => $row->id]) . '">' . __('messages.edit') . '</a>&nbsp;';
-                    }
-                    if ($is_admin || $can_delete_procedures) {
-                        $html .= '<button class="btn btn-xs btn-danger delete_procedure_button" data-href="' . route('procedure.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                    }
-                    return $html;
-                })
+                    $html .= '<a href="#" class="btn btn-xs btn-primary edit-procedure" data-id="' . $row->id . '" data-url="' . route('getProcedure', ['procedure_id' => $row->id]) . '">' . __('messages.edit') . '</a>&nbsp;';
+                }
+                if ($is_admin || $can_delete_procedures) {
+                    $html .= '<button class="btn btn-xs btn-danger delete_procedure_button" data-href="' . route('procedure.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                }
+                return $html;
+            })
                 ->rawColumns(['steps', 'action'])
                 ->make(true);
         }
@@ -181,9 +174,9 @@ class WkProcedureController extends Controller
                     $item = $requestsType[$row->request_type_id] ?? '';
                     return $item;
                 })->editColumn('business_id', function ($row) use ($business) {
-                    $item = $business[$row->business_id] ?? '';
-                    return $item;
-                })
+                $item = $business[$row->business_id] ?? '';
+                return $item;
+            })
                 ->addColumn('steps', function ($procedure) {
                     try {
                         $stepsData = WkProcedure::where('request_type_id', $procedure->request_type_id)
@@ -264,8 +257,6 @@ class WkProcedureController extends Controller
         return view('ceomanagment::work_flow.workers')->with(compact('departments', 'business', 'tasks', 'escalates_departments', 'missingTypes'));
     }
 
-
-
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -307,8 +298,6 @@ class WkProcedureController extends Controller
         ]);
     }
 
-
-
     public function fetchWorkerRequestTypesByBusiness(Request $request)
     {
         $businessId = $request->get('business_id');
@@ -349,13 +338,11 @@ class WkProcedureController extends Controller
         $steps = $request->input('step');
         $business_id = $request->input('business');
 
-
         \DB::beginTransaction();
         try {
 
-
             $check_repeated = [];
-            foreach ($steps  as $index => $step) {
+            foreach ($steps as $index => $step) {
                 $check_repeated[] = $step['add_modal_department_id_steps'][0];
             }
             // if (count($check_repeated) !== count(array_unique($check_repeated))) {
@@ -364,7 +351,7 @@ class WkProcedureController extends Controller
             RequestsType::where('id', $type)->update(['start_from_customer' => $request->start_from_customer, 'customer_department' => $steps[0]['add_modal_department_id_steps'][0]]);
 
             $previousStepIds = [];
-            foreach ($steps  as $index => $step) {
+            foreach ($steps as $index => $step) {
                 $start_dep = $step['add_modal_department_id_steps'][0];
                 //   $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                 $workflowStep = WkProcedure::create([
@@ -406,20 +393,17 @@ class WkProcedureController extends Controller
                 }
             }
 
-
             \DB::commit();
 
             $output = ['success' => true, 'msg' => __('lang_v1.added_success')];
         } catch (\Exception $e) {
             \DB::rollBack();
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = ['success' => false, 'msg' =>  $e->getMessage()];
+            $output = ['success' => false, 'msg' => $e->getMessage()];
         }
 
         return redirect()->route('workersProcedures')->with(['status' => $output]);
     }
-
-
 
     public function storeEmployeeProcedure(Request $request)
     {
@@ -428,13 +412,11 @@ class WkProcedureController extends Controller
         $steps = $request->input('step');
         $business_id = $request->input('business');
 
-
         \DB::beginTransaction();
         try {
 
-
             $check_repeated = [];
-            foreach ($steps  as $index => $step) {
+            foreach ($steps as $index => $step) {
                 $check_repeated[] = $step['add_modal_department_id_steps'][0];
             }
             // if (count($check_repeated) !== count(array_unique($check_repeated))) {
@@ -443,7 +425,7 @@ class WkProcedureController extends Controller
             RequestsType::where('id', $type)->update(['goes_to_superior' => $request->superior_department]);
 
             $previousStepIds = [];
-            foreach ($steps  as $index => $step) {
+            foreach ($steps as $index => $step) {
                 $start_dep = $step['add_modal_department_id_steps'][0];
                 //   $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
                 $workflowStep = WkProcedure::create([
@@ -485,19 +467,17 @@ class WkProcedureController extends Controller
                 }
             }
 
-
             \DB::commit();
 
             $output = ['success' => true, 'msg' => __('lang_v1.added_success')];
         } catch (\Exception $e) {
             \DB::rollBack();
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = ['success' => false, 'msg' =>  $e->getMessage()];
+            $output = ['success' => false, 'msg' => $e->getMessage()];
         }
 
         return redirect()->route('employeesProcedures')->with(['status' => $output]);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -517,7 +497,6 @@ class WkProcedureController extends Controller
                     return redirect()->back()->with(['status' => $output]);
                 }
             }
-
 
             $business_id = $request->input('business');
             RequestsType::where('id', $type)->update(['start_from_customer' => $request->start_from_customer, 'customer_department' => $steps[0]['edit_modal_department_id_steps'][0]]);
@@ -638,17 +617,13 @@ class WkProcedureController extends Controller
                 $previousStepIds = [$workflowStep->id];
             }
 
-            
-
-
-
             \DB::commit();
 
             $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
         } catch (\Exception $e) {
             \DB::rollBack();
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = ['success' => false, 'msg' =>  $e->getMessage()];
+            $output = ['success' => false, 'msg' => $e->getMessage()];
         }
 
         return redirect()->back()->with(['status' => $output]);
@@ -662,7 +637,21 @@ class WkProcedureController extends Controller
             if ($procedureId) {
                 $type = WKprocedure::where('id', $procedureId)->first()->request_type_id;
                 $requests = UserRequest::where('request_type_id', $type)->where('status', 'pending')->get();
-                if ($requests->count() != 0) {
+
+                $procedureIds = [];
+                foreach ($steps as $step) {
+                    if (isset($step['procedure_id'])) {
+                        $procedureIds[] = $step['procedure_id'];
+                    }
+                }
+                // print_r($procedureIds);
+
+                $procedureIds_end = WKprocedure::whereIn('id', $procedureIds)
+                    ->where('end', 1)
+                    ->count() === WKprocedure::whereIn('id', $procedureIds)->count();
+
+                if (!$procedureIds_end) {
+
                     $output = [
                         'success' => false,
                         'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_pending_requests'),
@@ -670,7 +659,6 @@ class WkProcedureController extends Controller
                     return redirect()->back()->with(['status' => $output]);
                 }
             }
-
 
             $business_id = $request->input('business');
 
@@ -923,10 +911,6 @@ class WkProcedureController extends Controller
     //     }
     // }
 
-
-
-
-
     /**
      * Remove the specified resource from storage.
      * @param int $id
@@ -934,7 +918,6 @@ class WkProcedureController extends Controller
      */
     public function destroy($id)
     {
-
 
         try {
             $type = WkProcedure::where('id', $id)->first()->request_type_id;
@@ -948,11 +931,11 @@ class WkProcedureController extends Controller
             }
             error_log($type);
 
-            $wk_pocedures =  WkProcedure::where('request_type_id', $type)->get();
-            foreach ($wk_pocedures  as $wk_pocedure) {
+            $wk_pocedures = WkProcedure::where('request_type_id', $type)->get();
+            foreach ($wk_pocedures as $wk_pocedure) {
                 error_log($wk_pocedure->id);
-                ProcedureTask::where('procedure_id',  $wk_pocedure->id)->delete();
-                ProcedureEscalation::where('procedure_id',  $wk_pocedure->id)->delete();
+                ProcedureTask::where('procedure_id', $wk_pocedure->id)->delete();
+                ProcedureEscalation::where('procedure_id', $wk_pocedure->id)->delete();
                 $wk_pocedure->delete();
             }
 
@@ -973,7 +956,6 @@ class WkProcedureController extends Controller
         return $output;
     }
 
-
     public function timesheet_wk()
     {
         $businessWithWorkflows = TimeSheetWorkflow::distinct()->pluck('business_id')->toArray();
@@ -992,7 +974,6 @@ class WkProcedureController extends Controller
         return response()->json($departments);
     }
 
-
     public function storeTimeSheetProcedure(Request $request)
     {
         $data = $request->all();
@@ -1005,7 +986,6 @@ class WkProcedureController extends Controller
                     return !is_null($departmentId);
                 });
 
-
                 if (count($departments) > 0) {
                     foreach ($departments as $departmentId) {
                         TimeSheetWorkflow::create([
@@ -1016,7 +996,6 @@ class WkProcedureController extends Controller
 
                         ]);
                     }
-
 
                     if (isset($step['clients_allowed']) && $step['clients_allowed'] == 1) {
                         TimeSheetWorkflow::create([
@@ -1034,227 +1013,223 @@ class WkProcedureController extends Controller
     }
 }
 //public function storeEmployeeProcedure(Request $request)  // {
-    //     return $request->all();
+//     return $request->all();
 
-    //     $type = $request->input('type');
-    //     $steps = $request->input('step');
-    //     $business_id = $request->input('business');
-    //     \DB::beginTransaction();
-    //     try {
+//     $type = $request->input('type');
+//     $steps = $request->input('step');
+//     $business_id = $request->input('business');
+//     \DB::beginTransaction();
+//     try {
 
-    //         $add_modal_department_id_start = $request->add_modal_department_id_start;
+//         $add_modal_department_id_start = $request->add_modal_department_id_start;
 
-    //         $check_repeated = [];
-    //         foreach ($add_modal_department_id_start as $start_dep) {
-    //             $check_repeated[] = $start_dep;
-    //         }
-    //         foreach ($steps  as $index => $step) {
-    //             $check_repeated[] = $step['add_modal_department_id_steps'][0];
-    //         }
-    //         // if (count($check_repeated) !== count(array_unique($check_repeated))) {
-    //         //     throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
-    //         // }
-    //         if ($request->start_from_customer) {
-    //             $request_type = RequestsType::where('id', $type)->first();
+//         $check_repeated = [];
+//         foreach ($add_modal_department_id_start as $start_dep) {
+//             $check_repeated[] = $start_dep;
+//         }
+//         foreach ($steps  as $index => $step) {
+//             $check_repeated[] = $step['add_modal_department_id_steps'][0];
+//         }
+//         // if (count($check_repeated) !== count(array_unique($check_repeated))) {
+//         //     throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
+//         // }
+//         if ($request->start_from_customer) {
+//             $request_type = RequestsType::where('id', $type)->first();
 
-    //             $request_type->start_from_customer = 1;
-    //             //  $request_type->customer_department = $request->customer_department;
-    //             $request_type->customer_department = $add_modal_department_id_start[0];
-    //             $request_type->save();
-    //         }
-    //         $previousStepIds = [];
-    //         foreach ($add_modal_department_id_start as $start_dep) {
-    //             if ($start_dep) {
-    //                 //  $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
-    //                 $workflowStep = WkProcedure::create([
-    //                     'request_type_id' => $type,
-    //                     'request_owner_type' => 'worker',
-    //                     'department_id' => $start_dep,
-    //                     'business_id' => $business_id,
-    //                     'next_department_id' => null,
-    //                     'start' => 1,
-    //                     'end' => 0,
-    //                     'can_reject' => 1,
-    //                     'can_return' =>  null,
-    //                 ]);
-    //                 $previousStepIds[] = $workflowStep->id;
-    //             }
-    //         }
+//             $request_type->start_from_customer = 1;
+//             //  $request_type->customer_department = $request->customer_department;
+//             $request_type->customer_department = $add_modal_department_id_start[0];
+//             $request_type->save();
+//         }
+//         $previousStepIds = [];
+//         foreach ($add_modal_department_id_start as $start_dep) {
+//             if ($start_dep) {
+//                 //  $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+//                 $workflowStep = WkProcedure::create([
+//                     'request_type_id' => $type,
+//                     'request_owner_type' => 'worker',
+//                     'department_id' => $start_dep,
+//                     'business_id' => $business_id,
+//                     'next_department_id' => null,
+//                     'start' => 1,
+//                     'end' => 0,
+//                     'can_reject' => 1,
+//                     'can_return' =>  null,
+//                 ]);
+//                 $previousStepIds[] = $workflowStep->id;
+//             }
+//         }
 
-    //         foreach ($steps  as $index => $step) {
-    //             $start_dep = $step['add_modal_department_id_steps'][0];
-    //             //  $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
-    //             $workflowStep = WkProcedure::create([
-    //                 'request_type_id' => $type,
-    //                 'request_owner_type' => 'worker',
-    //                 'department_id' => $start_dep,
-    //                 'business_id' => $business_id,
-    //                 'next_department_id' => null,
-    //                 'start' => 0,
-    //                 'end' => $index === count($steps) - 1 ? 1 : 0,
-    //                 'can_reject' => $step['add_modal_can_reject_steps'][0] ?? 0,
-    //                 'can_return' => $step['add_modal_can_return_steps'][0] ?? 0,
-    //                 'action_type' => $step['action_type'] ?? null,
-    //             ]);
-    //             if (isset($step['tasks']) && $step['action_type'] === 'task') {
-    //                 foreach ($step['tasks'] as $taskId) {
-    //                     if (!is_null($taskId)) {
-    //                         ProcedureTask::create([
-    //                             'procedure_id' => $workflowStep->id,
-    //                             'task_id' => $taskId,
-    //                         ]);
-    //                     }
-    //                 }
-    //             }
-    //             foreach ($previousStepIds as $id) {
-    //                 WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
-    //             }
-    //             $previousStepIds = [];
-    //             $previousStepIds[] = $workflowStep->id;
-    //             if (!(empty($step['add_modal_escalates_to_steps']) || empty($step['add_modal_escalates_after_steps']))) {
-    //                 foreach ($step['add_modal_escalates_to_steps'] as $key => $escalationDept) {
-    //                     ProcedureEscalation::create([
-    //                         'procedure_id' => $workflowStep->id,
-    //                         'escalates_to' => $escalationDept,
-    //                         'escalates_after' => $step['add_modal_escalates_after_steps'][$key] ?? null,
-    //                     ]);
-    //                 }
-    //             }
-    //         }
+//         foreach ($steps  as $index => $step) {
+//             $start_dep = $step['add_modal_department_id_steps'][0];
+//             //  $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+//             $workflowStep = WkProcedure::create([
+//                 'request_type_id' => $type,
+//                 'request_owner_type' => 'worker',
+//                 'department_id' => $start_dep,
+//                 'business_id' => $business_id,
+//                 'next_department_id' => null,
+//                 'start' => 0,
+//                 'end' => $index === count($steps) - 1 ? 1 : 0,
+//                 'can_reject' => $step['add_modal_can_reject_steps'][0] ?? 0,
+//                 'can_return' => $step['add_modal_can_return_steps'][0] ?? 0,
+//                 'action_type' => $step['action_type'] ?? null,
+//             ]);
+//             if (isset($step['tasks']) && $step['action_type'] === 'task') {
+//                 foreach ($step['tasks'] as $taskId) {
+//                     if (!is_null($taskId)) {
+//                         ProcedureTask::create([
+//                             'procedure_id' => $workflowStep->id,
+//                             'task_id' => $taskId,
+//                         ]);
+//                     }
+//                 }
+//             }
+//             foreach ($previousStepIds as $id) {
+//                 WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
+//             }
+//             $previousStepIds = [];
+//             $previousStepIds[] = $workflowStep->id;
+//             if (!(empty($step['add_modal_escalates_to_steps']) || empty($step['add_modal_escalates_after_steps']))) {
+//                 foreach ($step['add_modal_escalates_to_steps'] as $key => $escalationDept) {
+//                     ProcedureEscalation::create([
+//                         'procedure_id' => $workflowStep->id,
+//                         'escalates_to' => $escalationDept,
+//                         'escalates_after' => $step['add_modal_escalates_after_steps'][$key] ?? null,
+//                     ]);
+//                 }
+//             }
+//         }
 
+//         \DB::commit();
 
-    //         \DB::commit();
+//         $output = ['success' => true, 'msg' => __('lang_v1.added_success')];
+//     } catch (\Exception $e) {
+//         \DB::rollBack();
+//         error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+//         $output = ['success' => false, 'msg' =>  $e->getMessage()];
+//     }
 
-    //         $output = ['success' => true, 'msg' => __('lang_v1.added_success')];
-    //     } catch (\Exception $e) {
-    //         \DB::rollBack();
-    //         error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    //         $output = ['success' => false, 'msg' =>  $e->getMessage()];
-    //     }
+//     return redirect()->route('workersProcedures')->with(['status' => $output]);
+// }
 
-    //     return redirect()->route('workersProcedures')->with(['status' => $output]);
-    // }
+// update
+//return $request;
+// try {
+//     $type = WkProcedure::where('id', $id)->first()->request_type_id;
+//     $requests = UserRequest::where('request_type_id', $type)->get();
+//     if ($requests->count() != 0) {
+//         $output = [
+//             'success' => false,
+//             'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_requests'),
+//         ];
+//         return redirect()->back()->with(['status' => $output]);
+//     }
+//     $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
+//     $for = WkProcedure::where('id', $id)->first()->request_owner_type;
 
-   // update
-     //return $request;
-        // try {
-        //     $type = WkProcedure::where('id', $id)->first()->request_type_id;
-        //     $requests = UserRequest::where('request_type_id', $type)->get();
-        //     if ($requests->count() != 0) {
-        //         $output = [
-        //             'success' => false,
-        //             'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_requests'),
-        //         ];
-        //         return redirect()->back()->with(['status' => $output]);
-        //     }
-        //     $procedureType = WkProcedure::where('id', $id)->first()->request_type_id;
-        //     $for = WkProcedure::where('id', $id)->first()->request_owner_type;
+//     $type = $procedureType;
 
+//     $steps = $request->input('step');
 
-        //     $type = $procedureType;
+//     $edit_modal_department_id_start = $request->edit_modal_department_id_start;
 
-        //     $steps = $request->input('step');
+//     $check_repeated = [];
+//     if ($edit_modal_department_id_start) {
+//         foreach ($edit_modal_department_id_start as $start_dep) {
+//             $check_repeated[] = $start_dep;
+//         }
+//     }
+//     if ($steps) {
+//         foreach ($steps  as $index => $step) {
+//             $check_repeated[] = $step['edit_modal_department_id_steps'][0];
+//         }
+//     }
 
-        //     $edit_modal_department_id_start = $request->edit_modal_department_id_start;
+//     if (count($check_repeated) !== count(array_unique($check_repeated))) {
+//         throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
+//     }
 
-        //     $check_repeated = [];
-        //     if ($edit_modal_department_id_start) {
-        //         foreach ($edit_modal_department_id_start as $start_dep) {
-        //             $check_repeated[] = $start_dep;
-        //         }
-        //     }
-        //     if ($steps) {
-        //         foreach ($steps  as $index => $step) {
-        //             $check_repeated[] = $step['edit_modal_department_id_steps'][0];
-        //         }
-        //     }
+//     $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
+//     if ($procedures) {
+//         foreach ($procedures as $procedure) {
 
-        //     if (count($check_repeated) !== count(array_unique($check_repeated))) {
-        //         throw new \Exception(__('ceomanagment::lang.repeated_managements_please_re_check'));
-        //     }
+//             ProcedureTask::where('procedure_id', $procedure->id)->delete();
+//             ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
+//             $procedure->delete();
+//         }
+//     }
+//     $previousStepIds = [];
+//     if ($edit_modal_department_id_start) {
+//         foreach ($edit_modal_department_id_start as $start_dep) {
+//             if ($start_dep) {
+//                 $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+//                 $workflowStep = WkProcedure::create([
+//                     'request_type_id' => $type,
+//                     'request_owner_type' => $for,
+//                     'department_id' => $start_dep,
+//                     'business_id' => $business_id,
+//                     'next_department_id' => null,
+//                     'start' => 1,
+//                     'end' => 0,
+//                     'can_reject' => null,
+//                     'can_return' =>  null,
+//                 ]);
+//                 $previousStepIds[] = $workflowStep->id;
+//             }
+//         }
+//     }
 
-        //     $procedures = WkProcedure::where('request_type_id', $procedureType)->get();
-        //     if ($procedures) {
-        //         foreach ($procedures as $procedure) {
+//     if ($steps) {
+//         $index = 0;
+//         foreach ($steps  as $step) {
 
-        //             ProcedureTask::where('procedure_id', $procedure->id)->delete();
-        //             ProcedureEscalation::where('procedure_id', $procedure->id)->delete();
-        //             $procedure->delete();
-        //         }
-        //     }
-        //     $previousStepIds = [];
-        //     if ($edit_modal_department_id_start) {
-        //         foreach ($edit_modal_department_id_start as $start_dep) {
-        //             if ($start_dep) {
-        //                 $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
-        //                 $workflowStep = WkProcedure::create([
-        //                     'request_type_id' => $type,
-        //                     'request_owner_type' => $for,
-        //                     'department_id' => $start_dep,
-        //                     'business_id' => $business_id,
-        //                     'next_department_id' => null,
-        //                     'start' => 1,
-        //                     'end' => 0,
-        //                     'can_reject' => null,
-        //                     'can_return' =>  null,
-        //                 ]);
-        //                 $previousStepIds[] = $workflowStep->id;
-        //             }
-        //         }
-        //     }
+//             error_log($index);
+//             $start_dep = $step['edit_modal_department_id_steps'][0];
+//             $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
+//             $workflowStep = WkProcedure::create([
+//                 'request_type_id' => $type,
+//                 'request_owner_type' => $for,
+//                 'department_id' => $start_dep,
+//                 'business_id' => $business_id,
+//                 'next_department_id' => null,
+//                 'start' => 0,
+//                 'end' => $index === count($steps) - 1 ? 1 : 0,
+//                 'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
+//                 'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
+//                 'action_type' => $step['edit_action_type'] ?? null,
+//             ]);
+//             if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
+//                 foreach ($step['edit_tasks'] as $taskId) {
+//                     if (!is_null($taskId)) {
+//                         ProcedureTask::create([
+//                             'procedure_id' => $workflowStep->id,
+//                             'task_id' => $taskId,
+//                         ]);
+//                     }
+//                 }
+//             }
 
-        //     if ($steps) {
-        //         $index = 0;
-        //         foreach ($steps  as $step) {
+//             foreach ($previousStepIds as $id) {
+//                 WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
+//             }
+//             $previousStepIds = [];
+//             $previousStepIds[] = $workflowStep->id;
+//             if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
+//                 foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
+//                     ProcedureEscalation::create([
+//                         'procedure_id' => $workflowStep->id,
+//                         'escalates_to' => $escalationDept,
+//                         'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
+//                     ]);
+//                 }
+//             }
+//             $index++;
+//         }
+//     }
 
-        //             error_log($index);
-        //             $start_dep = $step['edit_modal_department_id_steps'][0];
-        //             $business_id = EssentialsDepartment::where('id', $start_dep)->first()->business_id;
-        //             $workflowStep = WkProcedure::create([
-        //                 'request_type_id' => $type,
-        //                 'request_owner_type' => $for,
-        //                 'department_id' => $start_dep,
-        //                 'business_id' => $business_id,
-        //                 'next_department_id' => null,
-        //                 'start' => 0,
-        //                 'end' => $index === count($steps) - 1 ? 1 : 0,
-        //                 'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
-        //                 'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
-        //                 'action_type' => $step['edit_action_type'] ?? null,
-        //             ]);
-        //             if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
-        //                 foreach ($step['edit_tasks'] as $taskId) {
-        //                     if (!is_null($taskId)) {
-        //                         ProcedureTask::create([
-        //                             'procedure_id' => $workflowStep->id,
-        //                             'task_id' => $taskId,
-        //                         ]);
-        //                     }
-        //                 }
-        //             }
-
-        //             foreach ($previousStepIds as $id) {
-        //                 WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
-        //             }
-        //             $previousStepIds = [];
-        //             $previousStepIds[] = $workflowStep->id;
-        //             if (!(empty($step['edit_modal_escalates_to_steps']) || empty($step['edit_modal_escalates_after_steps']))) {
-        //                 foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
-        //                     ProcedureEscalation::create([
-        //                         'procedure_id' => $workflowStep->id,
-        //                         'escalates_to' => $escalationDept,
-        //                         'escalates_after' => $step['edit_modal_escalates_after_steps'][$key] ?? null,
-        //                     ]);
-        //                 }
-        //             }
-        //             $index++;
-        //         }
-        //     }
-
-
-
-        //     $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
-        // } catch (\Exception $e) {
-        //     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-        //     $output = ['success' => false, 'msg' =>  $e->getMessage()];
-        // }
+//     $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
+// } catch (\Exception $e) {
+//     error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+//     $output = ['success' => false, 'msg' =>  $e->getMessage()];
+// }

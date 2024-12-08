@@ -1,12 +1,7 @@
-
-
-
 @extends('layouts.custom_layouts.custom_app')
 {{-- @inject('request', 'Illuminate\Http\Request')
 
-@if (
-    $request->segment(1) == 'pos' &&
-        ($request->segment(2) == 'create' || $request->segment(3) == 'edit' || $request->segment(2) == 'payment'))
+@if ($request->segment(1) == 'pos' && ($request->segment(2) == 'create' || $request->segment(3) == 'edit' || $request->segment(2) == 'payment'))
     @php
         $pos_layout = true;
     @endphp

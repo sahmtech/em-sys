@@ -558,7 +558,6 @@ class RequestUtil extends Util
             })
             ->toArray();
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        // $departments_needs = EssentialsDepartment::whereBetween('id', [26, 42])->pluck('name', 'id');
 
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->whereIn('employee_type', $ownerTypes)->pluck('reason', 'id');
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
@@ -573,7 +572,6 @@ class RequestUtil extends Util
             'users',
             'requestTypes',
             'departments',
-            'departments_needs',
             'statuses',
             'main_reasons',
             'classes',
