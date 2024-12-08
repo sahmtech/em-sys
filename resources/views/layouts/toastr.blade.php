@@ -10,7 +10,7 @@
 
 
 @if (session('success'))
-    <script >
+    <script>
         toastr.success(@json(session('success')));
     </script>
 @endif

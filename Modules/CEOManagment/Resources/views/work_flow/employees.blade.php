@@ -104,7 +104,8 @@
                                     ) !!}
                                     <div class="checkbox">
                                         <label style="font-weight: bold; color: red;">
-                                            {!! Form::checkbox('superior_department', 1, false, ['class' => 'custom-checkbox']) !!} {{ __('essentials::lang.go_to_superior_department') }}
+                                            {!! Form::checkbox('superior_department', 1, false, ['class' => 'custom-checkbox']) !!}
+                                            {{ __('essentials::lang.go_to_superior_department') }}
                                         </label>
                                     </div>
                                 </div>
@@ -274,7 +275,8 @@
                                         <label style="font-weight: bold; color: red;">
                                             {!! Form::checkbox('superior_department', 1, false, [
                                                 'class' => 'custom-checkbox',
-                                            ]) !!} {{ __('essentials::lang.go_to_superior_department') }}
+                                            ]) !!}
+                                            {{ __('essentials::lang.go_to_superior_department') }}
                                         </label>
                                     </div>
                                 </div>
@@ -989,7 +991,7 @@
                                         // Add the remove button for dynamically added tasks
                                         var removeButton = $(
                                                 '<button class="btn btn-danger remove-task-btn" type="button">Remove</button>'
-                                                )
+                                            )
                                             .css('display', 'inline-block')
                                             .on('click', function() {
                                                 $(this).closest('.task_template')
@@ -1006,17 +1008,17 @@
 
                                 // Ensure the "Add Task" button is still visible and functional
                                 var addTaskButton = $(stepSelector).find('.add-task-btn')
-                                .first();
+                                    .first();
                                 if (addTaskButton.length === 0) {
                                     addTaskButton = $(
                                         '<button class="btn btn-default add-task-btn" type="button">Add Task</button>'
-                                        );
+                                    );
                                     $(stepSelector).find('.task-select-container').append(
                                         addTaskButton);
                                 }
 
                                 addTaskButton
-                            .show(); // Make sure the "Add Task" button is visible
+                                    .show(); // Make sure the "Add Task" button is visible
 
                                 addTaskButton.off('click').on('click', function() {
                                     var newTaskTemplate = $(
@@ -1035,14 +1037,14 @@
                                     $.each(response, function(key, value) {
                                         taskSelect.append('<option value="' +
                                             key + '">' + value + '</option>'
-                                            );
+                                        );
                                     });
 
                                     newTaskTemplate.append(taskSelect);
 
                                     var removeButton = $(
                                             '<button class="btn btn-danger remove-task-btn" type="button">Remove</button>'
-                                            )
+                                        )
                                         .css('display', 'inline-block')
                                         .on('click', function() {
                                             $(this).closest('.task_template')
