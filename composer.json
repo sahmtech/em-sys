@@ -16,14 +16,12 @@
     "require": {
         "php": "^8.0",
         "alkoumi/laravel-arabic-numbers": "^1.1",
-        "alkoumi/laravel-hijri-date": "^1.0",
         "aloha/twilio": "^4.0",
         "arcanedev/log-viewer": "9.x",
         "automattic/woocommerce": "^3.0",
         "barryvdh/laravel-dompdf": "^2.0",
         "composer/semver": "^3.0",
         "consoletvs/charts": "^6.5",
-        "doctrine/dbal": "*",
         "giggsey/libphonenumber-for-php": "^8.12",
         "guzzlehttp/guzzle": "^7.2",
         "knox/pesapal": "1.0.0",
@@ -40,9 +38,6 @@
         "nwidart/laravel-menus": "6.0.x-dev",
         "nwidart/laravel-modules": "^9.0",
         "openai-php/laravel": "^0.4.1",
-        "phpoffice/phpexcel": "^1.8",
-        "phpoffice/phpspreadsheet": "^1.29",
-        "phpoffice/phpword": "^1.1",
         "pusher/pusher-php-server": "^5.0",
         "razorpay/razorpay": "2.*",
         "spatie/flysystem-dropbox": "^2.0",
@@ -63,6 +58,7 @@
         "phpunit/phpunit": "^9.5.10",
         "spatie/laravel-ignition": "^1.4"
     },
+    
     "autoload": {
         "files": [
             "app/Http/helpers.php"
