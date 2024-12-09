@@ -573,7 +573,6 @@ class RequestUtil extends Util
             'users',
             'requestTypes',
             'departments',
-            'departments_needs',
             'statuses',
             'main_reasons',
             'classes',
