@@ -31,13 +31,13 @@
   ),
   'barryvdh/laravel-debugbar' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Barryvdh\\Debugbar\\ServiceProvider',
-    ),
     'aliases' => 
     array (
       'Debugbar' => 'Barryvdh\\Debugbar\\Facades\\Debugbar',
+    ),
+    'providers' => 
+    array (
+      0 => 'Barryvdh\\Debugbar\\ServiceProvider',
     ),
   ),
   'barryvdh/laravel-dompdf' => 
@@ -179,17 +179,6 @@
       0 => 'OpenAI\\Laravel\\ServiceProvider',
     ),
   ),
-  'php-flasher/flasher-laravel' => 
-  array (
-    'aliases' => 
-    array (
-      'Flasher' => 'Flasher\\Laravel\\Facade\\Flasher',
-    ),
-    'providers' => 
-    array (
-      0 => 'Flasher\\Laravel\\FlasherServiceProvider',
-    ),
-  ),
   'spatie/laravel-activitylog' => 
   array (
     'providers' => 
@@ -264,17 +253,6 @@
     'aliases' => 
     array (
       'DataTables' => 'Yajra\\DataTables\\Facades\\DataTables',
-    ),
-  ),
-  'yoeunes/toastr' => 
-  array (
-    'aliases' => 
-    array (
-      'Toastr' => 'Yoeunes\\Toastr\\Facades\\Toastr',
-    ),
-    'providers' => 
-    array (
-      0 => 'Yoeunes\\Toastr\\ToastrServiceProvider',
     ),
   ),
 );
