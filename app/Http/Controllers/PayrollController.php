@@ -901,6 +901,7 @@ class PayrollController extends Controller
     }
     public function payrolls_list_index_all()
     {
+
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
 
         $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);

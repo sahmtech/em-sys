@@ -4,21 +4,20 @@ namespace App\Providers;
 
 use App\System;
 use App\Utils\ModuleUtil;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Filesystem\FilesystemAdapter;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Filesystem;
-use Spatie\Dropbox\Client as DropboxClient;
-use Spatie\FlysystemDropbox\DropboxAdapter;
-
 use Laravel\Passport\Console\ClientCommand;
 use Laravel\Passport\Console\InstallCommand;
 use Laravel\Passport\Console\KeysCommand;
+use League\Flysystem\Filesystem;
+use Spatie\Dropbox\Client as DropboxClient;
+use Spatie\FlysystemDropbox\DropboxAdapter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -69,7 +68,6 @@ class AppServiceProvider extends ServiceProvider
                 $config
             );
         });
-
 
         $asset_v = config('constants.asset_version', 1);
         View::share('asset_v', $asset_v);
@@ -176,8 +174,8 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('show_tooltip', function ($message) {
             return "<?php
                 if(session('business.enable_tooltip')){
-                    echo '<i class=\"fa fa-info-circle text-info hover-q no-print \" aria-hidden=\"true\" 
-                    data-container=\"body\" data-toggle=\"popover\" data-placement=\"auto bottom\" 
+                    echo '<i class=\"fa fa-info-circle text-info hover-q no-print \" aria-hidden=\"true\"
+                    data-container=\"body\" data-toggle=\"popover\" data-placement=\"auto bottom\"
                     data-content=\"' . $message . '\" data-html=\"true\" data-trigger=\"hover\"></i>';
                 }
                 ?>";
@@ -223,11 +221,11 @@ class AppServiceProvider extends ServiceProvider
 
         //Blade directive to format currency.
         Blade::directive('format_currency', function ($number) {
-            return '<?php 
+            return '<?php
             $formated_number = "";
             if (session("business.currency_symbol_placement") == "before") {
                 $formated_number .= session("currency")["symbol"] . " ";
-            } 
+            }
             $formated_number .= number_format((float) ' . $number . ', session("business.currency_precision", 2) , session("currency")["decimal_separator"], session("currency")["thousand_separator"]);
 
             if (session("business.currency_symbol_placement") == "after") {
@@ -246,7 +244,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // laravel  Debugbar on local
+        if ($this->app->environment('local')) {
+            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
+        }
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -24,58 +25,52 @@ class ViolationsPenaltiesController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
         $can_add_Violations = auth()->user()->can('essentials.add_Violations');
         $can_edit_Violations = auth()->user()->can('essentials.edit_Violations');
         $can_delete_Violations = auth()->user()->can('essentials.delete_Violations');
-
-
 
         $ViolationPenalties = ViolationPenalties::all();
 
         if (request()->ajax()) {
 
-
             return DataTables::of($ViolationPenalties)
-
 
                 ->editColumn('type', function ($row) {
                     return __('essentials::lang.' . $row->type);
+
                 })->editColumn('occurrence', function ($row) {
-                    return __('essentials::lang.' . $row->occurrence);
-                })->editColumn('amount_type', function ($row) {
-                    return __('essentials::lang.' . $row->amount_type);
-                })->editColumn('mainViolation', function ($row) {
-                    return $row->violation->description;
-                })->addColumn(
-                    'action',
-                    function ($row)  use ($is_admin, $can_edit_Violations, $can_delete_Violations) {
-                        $html = '';
-                        if ($is_admin || $can_edit_Violations) {
-                            $html .= '<a href="' . action([\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'edit'], ['id' => $row->id]) . '"
+                return __('essentials::lang.' . $row->occurrence);
+            })->editColumn('amount_type', function ($row) {
+                return __('essentials::lang.' . $row->amount_type);
+            })->editColumn('date', function ($row) {
+                return $row->date;
+
+            })->editColumn('mainViolation', function ($row) {
+                return $row->violation->description;
+            })->addColumn(
+                'action',
+                function ($row) use ($is_admin, $can_edit_Violations, $can_delete_Violations) {
+                    $html = '';
+                    if ($is_admin || $can_edit_Violations) {
+                        $html .= '<a href="' . action([\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'edit'], ['id' => $row->id]) . '"
                         data-href="' . action([\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'edit'], ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_violations"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>';
-                            '&nbsp;';
-                        }
-                        if ($is_admin || $can_delete_Violations) {
-                            $html .= '<button class="btn btn-xs btn-danger delete_violations_button" style="margin: 0px 5px;" data-href="' . route('delete-Violations', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                        }
-
-
-                        return $html;
+                        '&nbsp;';
                     }
-                )
+                    if ($is_admin || $can_delete_Violations) {
+                        $html .= '<button class="btn btn-xs btn-danger delete_violations_button" style="margin: 0px 5px;" data-href="' . route('delete-Violations', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                    }
 
-
+                    return $html;
+                }
+            )
 
                 ->removeColumn('id')
                 ->rawColumns(['action', 'mainViolation'])
                 ->make(true);
         }
 
-
         $Violations = Violations::all();
-
 
         return view('essentials::Violations.index', compact('Violations'));
     }
@@ -87,23 +82,19 @@ class ViolationsPenaltiesController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
         $can_add_Main_Violations = auth()->user()->can('essentials.add_Main_Violations');
         $can_edit_Main_Violations = auth()->user()->can('essentials.edit_Main_Violations');
         $can_delete_Main_Violations = auth()->user()->can('essentials.delete_Main_Violations');
-
-
 
         $Violations = Violations::all();
 
         if (request()->ajax()) {
 
-
             return DataTables::of($Violations)
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_edit_Main_Violations, $can_delete_Main_Violations) {
+                    function ($row) use ($is_admin, $can_edit_Main_Violations, $can_delete_Main_Violations) {
                         $html = '';
                         if ($is_admin || $can_edit_Main_Violations) {
                             $html .= '<a href="' . action([\Modules\Essentials\Http\Controllers\ViolationsPenaltiesController::class, 'editMain'], ['id' => $row->id]) . '"
@@ -115,19 +106,14 @@ class ViolationsPenaltiesController extends Controller
                             $html .= '<button class="btn btn-xs btn-danger delete_violations_button" style="margin: 0px 5px;" data-href="' . route('delete-main-Violations', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
-
                         return $html;
                     }
                 )
-
 
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-
-
-
 
         return view('essentials::MainViolations.index');
     }
@@ -153,6 +139,7 @@ class ViolationsPenaltiesController extends Controller
             DB::beginTransaction();
             $business_id = request()->session()->get('user.business_id');
             $company_id = request()->session()->get('user.company_id');
+            $date = Carbon::parse($request->date)->format('Y-m-d');
 
             ViolationPenalties::create([
                 'descrption' => $request->description,
@@ -160,11 +147,11 @@ class ViolationsPenaltiesController extends Controller
                 'type' => "violation",
                 'violation_id' => $request->violation_id,
                 'amount_type' => $request->amount_type,
+                'date' => $date,
                 'amount' => $request->amount ?? 0,
                 'business_id' => $business_id,
                 'company_id' => $company_id,
             ]);
-
 
             DB::commit();
             $output = [
@@ -173,6 +160,7 @@ class ViolationsPenaltiesController extends Controller
             ];
             return redirect()->back()->with('status', $output);
         } catch (Exception $e) {
+            return $e;
             DB::rollBack();
             $output = [
                 'success' => false,
@@ -181,7 +169,6 @@ class ViolationsPenaltiesController extends Controller
             return redirect()->back()->with('status', $output);
         }
     }
-
 
     public function storeMain(Request $request)
     {
@@ -196,7 +183,6 @@ class ViolationsPenaltiesController extends Controller
                 'business_id' => $business_id,
                 'company_id' => $company_id,
             ]);
-
 
             DB::commit();
             $output = [
@@ -234,10 +220,8 @@ class ViolationsPenaltiesController extends Controller
         $ViolationPenalties = ViolationPenalties::find($id);
         $Violations = Violations::all();
 
-
         return view('essentials::Violations.edit', compact('ViolationPenalties', 'Violations'));
     }
-
 
     public function editMain($id)
     {
@@ -268,7 +252,6 @@ class ViolationsPenaltiesController extends Controller
         ];
         return redirect()->back()->with('status', $output);
     }
-
 
     public function updateMain(Request $request)
     {
@@ -306,7 +289,6 @@ class ViolationsPenaltiesController extends Controller
         }
         return $output;
     }
-
 
     public function destroyMain($id)
     {
