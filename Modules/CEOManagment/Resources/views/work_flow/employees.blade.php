@@ -104,7 +104,8 @@
                                     ) !!}
                                     <div class="checkbox">
                                         <label style="font-weight: bold; color: red;">
-                                            {!! Form::checkbox('superior_department', 1, false, ['class' => 'custom-checkbox']) !!} {{ __('essentials::lang.go_to_superior_department') }}
+                                            {!! Form::checkbox('superior_department', 1, false, ['class' => 'custom-checkbox']) !!}
+                                            {{ __('essentials::lang.go_to_superior_department') }}
                                         </label>
                                     </div>
                                 </div>
@@ -274,7 +275,8 @@
                                         <label style="font-weight: bold; color: red;">
                                             {!! Form::checkbox('superior_department', 1, false, [
                                                 'class' => 'custom-checkbox',
-                                            ]) !!} {{ __('essentials::lang.go_to_superior_department') }}
+                                            ]) !!}
+                                            {{ __('essentials::lang.go_to_superior_department') }}
                                         </label>
                                     </div>
                                 </div>
