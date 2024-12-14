@@ -1395,129 +1395,6 @@ class WorkerController extends Controller
     {
         return view('internationalrelations::worker.new_arrival_import');
     }
-
-    // new Arrival
-    public function postImportWorkersNewArrival(Request $request)
-    {
-        $delegation_id = $request->input('delegation_id');
-        $agency_id = $request->input('agency_id');
-        $transaction_sell_line_id = $request->input('transaction_sell_line_id');
-        $unSupportedworker_order_id = $request->input('unSupportedworker_order_id');
-
-        try {
-            // Validate the uploaded file
-            $request->validate([
-                'workers_csv' => 'required|file|mimes:xlsx,xls,csv',
-            ]);
-
-            if (!$request->hasFile('workers_csv')) {
-                return back()->withErrors(['workers_csv' => 'File not uploaded. Please try again.']);
-            }
-
-            $file = $request->file('workers_csv');
-
-            $parsed_array = Excel::toArray([], $file);
-            $imported_data = array_splice($parsed_array[0], 1); // Skip header row
-            $passport_numbers = [];
-            $formated_data = [];
-
-            DB::beginTransaction();
-
-            foreach ($imported_data as $key => $value) {
-                $row_no = $key + 2; // Account for header row in Excel
-
-                // Skip empty rows
-                if (empty(array_filter($value))) {
-                    continue;
-                }
-
-                $worker_array = [];
-
-                if (!empty($value[0])) {
-                    $worker_array['first_name'] = $value[0];
-                } else {
-                    throw new \Exception(__('essentials::lang.first_name_required') . " at row $row_no");
-                }
-
-                $worker_array['mid_name'] = $value[1];
-
-                if (!empty($value[2])) {
-                    $worker_array['last_name'] = $value[2];
-                } else {
-                    throw new \Exception(__('essentials::lang.last_name_required') . " at row $row_no");
-                }
-
-                if (!empty($value[3])) {
-                    $worker_array['nationality'] = $value[3];
-                } else {
-                    throw new \Exception(__('essentials::lang.nationality_required') . " at row $row_no");
-                }
-
-                if (!empty($value[4])) {
-                    $worker_array['passport_number'] = $value[4];
-                } else {
-                    throw new \Exception(__('essentials::lang.passport_number_required') . " at row $row_no");
-                }
-
-                if (in_array($worker_array['passport_number'], $passport_numbers)) {
-                    throw new \Exception(__('lang_v1.the_passport_number_already_exists') . " at row $row_no");
-                }
-
-                $existing_passport = IrProposedLabor::where('passport_number', $worker_array['passport_number'])->exists();
-                if ($existing_passport) {
-                    throw new \Exception(__('lang_v1.the_passport_number_already_exists') . " at row $row_no");
-                }
-                $passport_numbers[] = $worker_array['passport_number'];
-
-                if (!empty($value[5])) {
-                    $worker_array['company_id'] = $value[5];
-                } else {
-                    throw new \Exception(__('essentials::lang.sponsor_required') . " at row $row_no");
-                }
-
-                if (!empty($value[7])) {
-                    if (is_numeric($value[7])) {
-                        // Convert Excel numeric date
-                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[7])->format('Y-m-d');
-                    } else {
-                        // Convert string date
-                        $date = DateTime::createFromFormat('d/m/Y', $value[7]);
-                        if ($date) {
-                            $worker_array['arrival_date'] = $date->format('Y-m-d');
-                        } else {
-                            throw new \Exception(__('essentials::lang.invalid_date_format') . " at row $row_no");
-                        }
-                    }
-                } else {
-                    throw new \Exception(__('essentials::lang.arrival_date_required') . " at row $row_no");
-                }
-
-                $formated_data[] = $worker_array;
-            }
-
-            foreach ($formated_data as $worker_data) {
-                IrProposedLabor::create($worker_data);
-            }
-
-            DB::commit();
-
-            return redirect()->route('proposed_laborIndex')->with('notification', [
-                'success' => 1,
-                'msg' => __('product.file_imported_successfully'),
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::error('Error importing workers: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-
-            return redirect()->route('importWorkers_newArrival')->with('notification', [
-                'success' => 0,
-                'msg' => $e->getMessage(),
-            ]);
-        }
-    }
     public function postImportWorkers(Request $request)
     {
         $delegation_id = $request->input('delegation_id');
@@ -1716,6 +1593,129 @@ class WorkerController extends Controller
         }
 
         return redirect()->route('proposed_laborIndex')->with('notification', 'success insert');
+    }
+
+    // new Arrival
+    public function postImportWorkersNewArrival(Request $request)
+    {
+        $delegation_id = $request->input('delegation_id');
+        $agency_id = $request->input('agency_id');
+        $transaction_sell_line_id = $request->input('transaction_sell_line_id');
+        $unSupportedworker_order_id = $request->input('unSupportedworker_order_id');
+
+        try {
+            // Validate the uploaded file
+            $request->validate([
+                'workers_csv' => 'required|file|mimes:xlsx,xls,csv',
+            ]);
+
+            if (!$request->hasFile('workers_csv')) {
+                return back()->withErrors(['workers_csv' => 'File not uploaded. Please try again.']);
+            }
+
+            $file = $request->file('workers_csv');
+
+            $parsed_array = Excel::toArray([], $file);
+            $imported_data = array_splice($parsed_array[0], 1); // Skip header row
+            $passport_numbers = [];
+            $formated_data = [];
+
+            DB::beginTransaction();
+
+            foreach ($imported_data as $key => $value) {
+                $row_no = $key + 2; // Account for header row in Excel
+
+                // Skip empty rows
+                if (empty(array_filter($value))) {
+                    continue;
+                }
+
+                $worker_array = [];
+
+                if (!empty($value[0])) {
+                    $worker_array['first_name'] = $value[0];
+                } else {
+                    throw new \Exception(__('essentials::lang.first_name_required') . " at row $row_no");
+                }
+
+                $worker_array['mid_name'] = $value[1];
+
+                if (!empty($value[2])) {
+                    $worker_array['last_name'] = $value[2];
+                } else {
+                    throw new \Exception(__('essentials::lang.last_name_required') . " at row $row_no");
+                }
+
+                if (!empty($value[3])) {
+                    $worker_array['nationality'] = $value[3];
+                } else {
+                    throw new \Exception(__('essentials::lang.nationality_required') . " at row $row_no");
+                }
+
+                if (!empty($value[4])) {
+                    $worker_array['passport_number'] = $value[4];
+                } else {
+                    throw new \Exception(__('essentials::lang.passport_number_required') . " at row $row_no");
+                }
+
+                if (in_array($worker_array['passport_number'], $passport_numbers)) {
+                    throw new \Exception(__('lang_v1.the_passport_number_already_exists') . " at row $row_no");
+                }
+
+                $existing_passport = IrProposedLabor::where('passport_number', $worker_array['passport_number'])->exists();
+                if ($existing_passport) {
+                    throw new \Exception(__('lang_v1.the_passport_number_already_exists') . " at row $row_no");
+                }
+                $passport_numbers[] = $worker_array['passport_number'];
+
+                if (!empty($value[5])) {
+                    $worker_array['company_id'] = $value[5];
+                } else {
+                    throw new \Exception(__('essentials::lang.sponsor_required') . " at row $row_no");
+                }
+
+                if (!empty($value[7])) {
+                    if (is_numeric($value[7])) {
+                        // Convert Excel numeric date
+                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[7])->format('Y-m-d');
+                    } else {
+                        // Convert string date
+                        $date = DateTime::createFromFormat('d/m/Y', $value[7]);
+                        if ($date) {
+                            $worker_array['arrival_date'] = $date->format('Y-m-d');
+                        } else {
+                            throw new \Exception(__('essentials::lang.invalid_date_format') . " at row $row_no");
+                        }
+                    }
+                } else {
+                    throw new \Exception(__('essentials::lang.arrival_date_required') . " at row $row_no");
+                }
+
+                $formated_data[] = $worker_array;
+            }
+
+            foreach ($formated_data as $worker_data) {
+                IrProposedLabor::create($worker_data);
+            }
+
+            DB::commit();
+
+            return redirect()->route('proposed_laborIndex')->with('notification', [
+                'success' => 1,
+                'msg' => __('product.file_imported_successfully'),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error importing workers: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()->route('importWorkers_newArrival')->with('notification', [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function new_arrival_for_workers(Request $request)

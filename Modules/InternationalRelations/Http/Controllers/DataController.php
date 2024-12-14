@@ -2,15 +2,10 @@
 
 namespace Modules\InternationalRelations\Http\Controllers;
 
-use App\BusinessLocation;
-use App\Category;
 use App\User;
 use App\Utils\ModuleUtil;
-use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use Menu;
-
 
 class DataController extends Controller
 {
@@ -48,7 +43,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'internationalrelations.add_operation_order_visa',
                         'label' => __('internationalrelations::lang.add_operation_order_visa'),
@@ -66,7 +60,6 @@ class DataController extends Controller
                     ],
 
                     //
-
 
                     [
                         'value' => 'internationalrelations.view_employment_companies',
@@ -105,15 +98,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'internationalrelations.view_employment_company_delegation_requests',
                         'label' => __('internationalrelations::lang.view_employment_company_delegation_requests'),
                         'default' => false,
                     ],
-
-
-
 
                     [
                         'value' => 'internationalrelations.view_all_delegation_requests',
@@ -132,6 +121,12 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    //TODO::import_new_arrival_workers
+                    [
+                        'value' => 'internationalrelations.import_new_arrival_workers',
+                        'label' => __('internationalrelations::lang.import_new_arrival_workers'),
+                        'default' => false,
+                    ],
 
                     [
                         'value' => 'internationalrelations.view_proposed_workers',
@@ -216,7 +211,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
                     [
                         'value' => 'internationalrelations.view_Airlines',
                         'label' => __('internationalrelations::lang.view_Airlines'),
@@ -237,7 +231,6 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.delete_Airline_company'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'internationalrelations.view_ir_requests',
@@ -287,11 +280,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
-
-
-                ]
+                ],
 
             ],
         ];
@@ -341,7 +330,6 @@ class DataController extends Controller
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'dashboard'],
                             )->order(1);
                         }
-
 
                         if (auth()->user()->can('internationalrelations.view_Airlines')) {
                             $subMenu->url(

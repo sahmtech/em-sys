@@ -9,7 +9,7 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 use Illuminate\Support\Facades\Route;
 
@@ -45,14 +45,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/importWorkers/{delegation_id}/{agency_id}/{transaction_sell_line_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'importWorkers'])->name('importWorkers');
         Route::get('/importWorkers_unSupported/{delegation_id}/{agency_id}/{unSupportedworker_order_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'importWorkers_unSupported'])->name('importWorkers_unSupported');
 
-        Route::post('/postImportWorkers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'postImportWorkers'])->name('postImportWorkers');
+        //TODO::importWorkers_newArrival
+        Route::get('/importWorkers_newArrival', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'importWorkers_newArrival'])->name('importWorkers_newArrival');
+        Route::post('/postImportWorkersNewArrival', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'postImportWorkersNewArrival'])->name('postImportWorkersNewArrival');
 
+        Route::post('/postImportWorkers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'postImportWorkers'])->name('postImportWorkers');
+        
         Route::get('accepted_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'accepted_workers'])->name('accepted_workers');
         Route::get('unaccepted_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'unaccepted_workers'])->name('unaccepted_workers');
         Route::get('workers_under_trialPeriod', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'workers_under_trialPeriod'])->name('workers_under_trialPeriod');
         Route::post('/add_worker_visa', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeVisaForWorkers'])->name('add_worker_visa');
         Route::post('/store/storeUnsupportedOrderOperation', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeOrderOperation'])->name('ir.storeUnsupportedOrderOperation');
-
 
         Route::post('/changeStatus', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'changeStatus'])->name('changeStatus');
         Route::post('/send_offer_price', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'send_offer_price'])->name('send_offer_price');
@@ -70,7 +73,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/save-data', [Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'saveRequest'])->name('save-data');
         Route::post('/saveUbnSupportedRequest', [Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'saveUbnSupportedRequest'])->name('saveUbnSupportedRequest');
 
-
         Route::get('visa_cards', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'index'])->name('visa_cards');
         Route::get('unSupported_visa_cards', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'unSupported_visa_cards'])->name('unSupported_visa_cards');
 
@@ -83,7 +85,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/change_arrival_date', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'changeArrivalDate'])->name('change_arrival_date');
         Route::get('/get-visa-report', [\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'getVisaReport'])->name('get-visa-report');
 
-
         Route::post('/medical_examination', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'medical_examination'])->name('medical_examination');
         Route::post('/fingerprinting', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'fingerprinting'])->name('fingerprinting');
         Route::post('/passport_stamped', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'passport_stamped'])->name('passport_stamped');
@@ -91,13 +92,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/cancel_proposal_worker', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'cancelVisaWorker'])->name('cancel_proposal_worker');
         Route::get('/ir_showWorker/{id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'])->name('ir_showWorker');
 
-
         Route::get('/allIrRequests', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index'])->name('allIrRequests');
         Route::post('/ir_change-status', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeStatus'])->name('ir_changeStatus');
         Route::get('/escalate_requests', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'escalateRequests'])->name('ir.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeEscalateRequestsStatus'])->name('ir.changeEscalateRequestsStatus');
         Route::get('/viewIrRequest/{requestId}', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'viewRequest'])->name('viewIrRequest');
-
 
         Route::post('/storeIrRequest', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'store'])->name('storeIrRequest');
         Route::get('/search/byproof_number', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'search'])->name('ir.search_byproof_number');
@@ -105,10 +104,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get_order_nationlities', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'getNationalities'])->name('get_order_nationlities');
         Route::get('/getUnSupportedNationalities', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'getUnSupportedNationalities'])->name('getUnSupportedNationalities');
 
-
         Route::get('/get-Irsalary-requests', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index'])->name('get_Irsalary_requests');
         Route::post('/update-salary', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'updateSalary'])->name('updateSalary');
-
 
         Route::get('/travel_categories', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'index'])->name('travel_categories');
         Route::post('/book_visa_from_request', [\Modules\InternationalRelations\Http\Controllers\TravelCategorieController::class, 'book_visa'])->name('book_visa_from_request');
@@ -125,7 +122,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/ir_residencyPrint', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'residencyPrint'])->name('ir_residencyPrint');
         Route::get('/ir_residencyDelivery', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'residencyDelivery'])->name('ir_residencyDelivery');
         Route::get('/ir_advanceSalaryRequest', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'advanceSalaryRequest'])->name('ir_advanceSalaryRequest');
-
 
         Route::get('/Unsupported_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'indexUnsupported'])->name('ir.Unsupported_workers');
         Route::post('/storeUnsupported_workers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeUnsupported'])->name('ir.storeUnsupported_workers');

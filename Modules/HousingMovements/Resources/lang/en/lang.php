@@ -169,8 +169,6 @@ return [
     'no_project' => 'No project',
     'car_info' => 'Car information',
     'show' => 'show',
-
-
-
+    'import_new_arrival_workers' => 'Add new arrival of workers',
 
 ];

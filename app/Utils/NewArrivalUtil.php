@@ -2,35 +2,34 @@
 
 namespace App\Utils;
 
-use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\DB;
-use Modules\InternationalRelations\Entities\IrWorkersDocument;
-use Modules\Essentials\Entities\EssentialsWorkCard;
-use Illuminate\Support\Facades\Auth;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsBankAccounts;
-use Modules\Essentials\Entities\EssentialsContractType;
+use App\Company;
 use App\Contact;
 use App\User;
-use App\Company;
-use Carbon\Carbon;
 use App\Utils\ModuleUtil;
-use Modules\InternationalRelations\Entities\IrProposedLabor;
-use Modules\HousingMovements\Entities\NewWorkersAdSalaryRequest;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsWorkCard;
 use Modules\HousingMovements\Entities\HtrRoom;
+use Modules\HousingMovements\Entities\NewWorkersAdSalaryRequest;
+use Modules\InternationalRelations\Entities\IrProposedLabor;
+use Modules\InternationalRelations\Entities\IrWorkersDocument;
 use Modules\Sales\Entities\SalesProject;
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
-use Modules\Essentials\Entities\EssentialsCountry;
+use Yajra\DataTables\Facades\DataTables;
 
 class NewArrivalUtil extends Util
 {
 
     protected $moduleUtil;
-
 
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -59,7 +58,7 @@ class NewArrivalUtil extends Util
             'transactionSellLine.transaction.contact',
             'visa',
             'agency',
-            'worker_documents'
+            'worker_documents',
         ])
             ->select([
                 'ir_proposed_labors.profile_image',
@@ -73,7 +72,7 @@ class NewArrivalUtil extends Util
                 DB::raw("CONCAT(COALESCE(first_name, ''),
                  ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ])
-            ->whereNotNull('visa_id')
+        // ->whereNotNull('visa_id')
             ->where('interviewStatus', 'acceptable')
             ->where('arrival_status', 0);
 
@@ -102,12 +101,9 @@ class NewArrivalUtil extends Util
             });
         }
 
-
         if (request()->ajax()) {
 
-
             return Datatables::of($workers)
-
 
                 ->addColumn('checkbox', function ($row) {
                     return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
@@ -135,7 +131,6 @@ class NewArrivalUtil extends Util
                     return $row->transactionSellLine?->service?->nationality?->nationality ?? '';
                 })
 
-
                 ->filter(function ($query) use ($request) {
 
                     if (!empty($request->input('full_name'))) {
@@ -157,7 +152,7 @@ class NewArrivalUtil extends Util
         ];
         return view($view)->with(compact('salesProjects', 'buildings', 'roomStatusOptions'));
     }
-    public function  housed_workers_index(Request $request, $view)
+    public function housed_workers_index(Request $request, $view)
     {
         $business_id = request()->session()->get('user.business_id');
 
@@ -173,7 +168,7 @@ class NewArrivalUtil extends Util
             'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
             'transactionSellLine.transaction.salesContract.project',
             'visa',
-            'agency'
+            'agency',
         ])
             ->select([
                 'ir_proposed_labors.id',
@@ -185,13 +180,10 @@ class NewArrivalUtil extends Util
                 DB::raw("CONCAT(COALESCE(first_name, ''),
                  ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ])
-            ->whereNotNull('visa_id')
+        // ->whereNotNull('visa_id')
             ->where('interviewStatus', 'acceptable')
             ->where('arrival_status', 1)
             ->where('housed_status', 0);
-
-
-
 
         if (!empty($request->input('project_name_filter'))) {
             $workers->whereHas('transactionSellLine.transaction.salesContract.project', function ($query) use ($request) {
@@ -209,12 +201,9 @@ class NewArrivalUtil extends Util
             });
         }
 
-
         if (request()->ajax()) {
 
-
             return Datatables::of($workers)
-
 
                 ->addColumn('checkbox', function ($row) {
                     return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
@@ -250,7 +239,6 @@ class NewArrivalUtil extends Util
                 ->make(true);
         }
 
-
         $salesProjects = SalesProject::all()->pluck('name', 'id');
         $roomStatusOptions = [
             'busy' => __('housingmovements::lang.busy_rooms'),
@@ -260,7 +248,6 @@ class NewArrivalUtil extends Util
     }
     public function medicalExamination($view)
     {
-
 
         $workers = IrProposedLabor::with(['worker_documents'])
             ->whereNotNull('visa_id')
@@ -277,8 +264,8 @@ class NewArrivalUtil extends Util
                 ->addColumn('action', function ($worker) {
 
                     $buttonHtml = $worker->medical_examination == 1 ?
-                        '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>' :
-                        '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>';
+                    '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>' :
+                    '<button class="btn btn-primary" onclick="addFile(' . $worker->id . ')">Add File</button>';
 
                     foreach ($worker->worker_documents as $document) {
                         if ($document->type == "medical_examination") {
@@ -317,8 +304,6 @@ class NewArrivalUtil extends Util
             $uploadedFile->save();
         }
 
-
-
         return response()->json(['message' => 'File uploaded successfully']);
     }
 
@@ -332,7 +317,6 @@ class NewArrivalUtil extends Util
             ->pluck('name', 'id');
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')->toArray();
@@ -393,10 +377,9 @@ class NewArrivalUtil extends Util
         $employees = $all_users->mapWithKeys(function ($item) {
             return [$item->id => [
                 'name' => $item->full_name,
-                'border_no' => $item->border_no
+                'border_no' => $item->border_no,
             ]];
         });
-
 
         $durationOptions = [
             '3' => __('essentials::lang.3_months'),
@@ -420,9 +403,6 @@ class NewArrivalUtil extends Util
                 'Payment_number as Payment_number'
             );
 
-
-
-
         $all_users = User::select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         $sales_projects = SalesProject::pluck('name', 'id');
@@ -430,34 +410,32 @@ class NewArrivalUtil extends Util
         if (request()->ajax()) {
             return Datatables::of($card)
 
-
-
                 ->editColumn('company_name', function ($row) {
                     return $row->user->company?->name ?? '';
                 })
 
                 ->editColumn('fixnumber', function ($row) {
                     return $row->user->company?->documents
-                        ?->where('licence_type', 'COMMERCIALREGISTER')
+                    ?->where('licence_type', 'COMMERCIALREGISTER')
                         ->first()->unified_number ?? '';
                 })
 
                 ->editColumn('user', function ($row) {
                     return $row->user->first_name .
-                        ' ' .
-                        $row->user->mid_name .
-                        ' ' .
-                        $row->user->last_name ??
+                    ' ' .
+                    $row->user->mid_name .
+                    ' ' .
+                    $row->user->last_name ??
                         '';
                 })
-                // ->addColumn('assigned_to', function ($row) use ($sales_projects) {
-                //     if ($row->user->assigned_to) {
+            // ->addColumn('assigned_to', function ($row) use ($sales_projects) {
+            //     if ($row->user->assigned_to) {
 
-                //         return $sales_projects[$row->user->assigned_to];
-                //     } else {
-                //         return '';
-                //     }
-                // })
+            //         return $sales_projects[$row->user->assigned_to];
+            //     } else {
+            //         return '';
+            //     }
+            // })
 
                 ->editColumn('project', function ($row) {
                     if ($row->user->assignedTo) {
@@ -467,24 +445,22 @@ class NewArrivalUtil extends Util
                         return '';
                     }
                 })->addColumn('responsible_client', function ($row) use ($name_in_charge_choices) {
-                    if (empty($row->user->assignedTo)) {
-                        return '';
+                if (empty($row->user->assignedTo)) {
+                    return '';
+                }
+
+                $userIds = json_decode($row->user->assignedTo->assigned_to, true) ?? [];
+
+                $names = [];
+
+                foreach ($userIds as $userId) {
+                    if (!empty($name_in_charge_choices[$userId])) {
+                        $names[] = $name_in_charge_choices[$userId];
                     }
+                }
 
-                    $userIds = json_decode($row->user->assignedTo->assigned_to, true) ?? [];
-
-
-                    $names = [];
-
-                    foreach ($userIds as $userId) {
-                        if (!empty($name_in_charge_choices[$userId])) {
-                            $names[] = $name_in_charge_choices[$userId];
-                        }
-                    }
-
-                    return implode(', ', $names);
-                })
-
+                return implode(', ', $names);
+            })
 
                 ->editColumn('proof_number', function ($row) {
                     $residencePermitDocument = $row->user->OfficialDocument
@@ -500,25 +476,19 @@ class NewArrivalUtil extends Util
                     }
                 })
 
-
-
                 ->editColumn('nationality', function ($row) {
                     return $row->user->country?->nationality ?? '';
                 })
-
-
 
                 ->rawColumns([
                     'action',
                     'profession',
                     'nationality',
-                    'checkbox'
+                    'checkbox',
 
                 ])
                 ->make(true);
         }
-
-
 
         $proof_numbers = User::whereIn('users.id', $userIds)
             ->where('users.user_type', 'worker')
@@ -528,8 +498,6 @@ class NewArrivalUtil extends Util
                 'users.id'
             )
             ->get();
-
-
 
         return view($view)->with(
             compact(
@@ -543,7 +511,6 @@ class NewArrivalUtil extends Util
     }
     public function storeWorkCard(Request $request)
     {
-
 
         try {
             $data = $request->only([
@@ -579,7 +546,7 @@ class NewArrivalUtil extends Util
                     $lastEmpNumber = (int) substr($lastrecord->work_card_no, 3);
                     $nextNumericPart = $lastEmpNumber + 1;
                     $data['work_card_no'] =
-                        'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                    'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
                 } else {
                     $data['work_card_no'] = 'WC' . '000';
                 }
@@ -588,7 +555,7 @@ class NewArrivalUtil extends Util
                 $user = User::findOrFail($request->input('employee_id'));
                 $user->update([
                     'company_id' => $request->input('company_id'),
-                    'updated_by' => Auth::user()->id
+                    'updated_by' => Auth::user()->id,
                 ]);
 
                 $output = [
@@ -615,7 +582,6 @@ class NewArrivalUtil extends Util
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')->toArray();
@@ -657,7 +623,7 @@ class NewArrivalUtil extends Util
             'cell_phone_company' => $request->cell_phone_company,
             'contact_number' => $request->contact_number,
             'has_SIM' => 1,
-            'updated_by' => Auth::user()->id
+            'updated_by' => Auth::user()->id,
         ]);
         $output = [
             'success' => true,
@@ -672,7 +638,6 @@ class NewArrivalUtil extends Util
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')->toArray();
@@ -741,7 +706,7 @@ class NewArrivalUtil extends Util
         $user = User::findOrFail($request->user_id);
         $user->update([
             'bank_details' => json_encode($request->bank_details),
-            'updated_by' => Auth::user()->id
+            'updated_by' => Auth::user()->id,
         ]);
 
         if ($request->hasFile('iban_file')) {
@@ -800,7 +765,7 @@ class NewArrivalUtil extends Util
                 'essentials_employees_contracts.is_active',
                 'essentials_employees_contracts.file_path',
                 DB::raw("
-                CASE 
+                CASE
                     WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
                     WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
                     WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
@@ -823,7 +788,7 @@ class NewArrivalUtil extends Util
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin) {
+                    function ($row) use ($is_admin) {
                         $html = '';
 
                         // if ($is_admin || $can_show_employee_contracts) {
@@ -838,9 +803,6 @@ class NewArrivalUtil extends Util
                         // if ($is_admin || $can_delete_employee_contracts) {
                         $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         //   }
-
-
-
 
                         return $html;
                     }
@@ -858,16 +820,13 @@ class NewArrivalUtil extends Util
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as  full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
-
         return view($view)->with(compact('users', 'contract_types'));
     }
-
 
     public function residencyPrint($view)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')->toArray();
@@ -911,7 +870,7 @@ class NewArrivalUtil extends Util
 
     public function addEqama(Request $request)
     {
-        if (!$request->id_proof_number || $request->id_proof_number == NULL) {
+        if (!$request->id_proof_number || $request->id_proof_number == null) {
             $output = [
                 'success' => false,
                 'msg' => __('housingmovements::lang.please add the eqama number'),
@@ -946,7 +905,6 @@ class NewArrivalUtil extends Util
 
         $worker = User::findOrFail($request->id);
 
-
         $worker->residency_print = 1;
         if ($worker->save()) {
             return response()->json([
@@ -961,12 +919,10 @@ class NewArrivalUtil extends Util
         }
     }
 
-
     public function residencyDelivery($view)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
 
         $userIds = User::whereNot('user_type', 'admin')
             ->pluck('id')->toArray();
@@ -1008,10 +964,8 @@ class NewArrivalUtil extends Util
                 ->make(true);
         }
 
-
         return view($view);
     }
-
 
     public function deliveryResidency(Request $request)
     {
@@ -1041,7 +995,6 @@ class NewArrivalUtil extends Util
             $uploadedFile->save();
         }
 
-
         $output = [
             'success' => true,
             'msg' => __('housingmovements::lang.updated_successfully'),
@@ -1061,8 +1014,8 @@ class NewArrivalUtil extends Util
         }
         $users = User::whereIn('id', $userIds)->whereNotNull('proposal_worker_id')
             ->where('status', '!=', 'inactive')->whereNotIn('users.id', function ($query) {
-                $query->select('related_to')->from('new_workers_ad_salary_requests');
-            })->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+            $query->select('related_to')->from('new_workers_ad_salary_requests');
+        })->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         $requests = NewWorkersAdSalaryRequest::leftJoin('users', 'users.id', '=', 'new_workers_ad_salary_requests.related_to')
             ->whereIn('new_workers_ad_salary_requests.related_to', $userIds)->whereNotNull('proposal_worker_id')->where('users.status', '!=', 'inactive')
             ->select([
@@ -1073,7 +1026,6 @@ class NewArrivalUtil extends Util
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.border_no',
             ]);
 
-
         if (request()->ajax()) {
 
             return DataTables::of($requests ?? [])
@@ -1081,12 +1033,9 @@ class NewArrivalUtil extends Util
                     return Carbon::parse($row->created_at);
                 })
 
-
-
                 ->editColumn('status', function ($row) use ($is_admin) {
                     if ($row->status) {
                         $status = trans('request.' . $row->status);
-
 
                         return $status;
                     }
@@ -1094,10 +1043,8 @@ class NewArrivalUtil extends Util
 
                 ->rawColumns(['status'])
 
-
                 ->make(true);
         }
-
 
         return view($view)->with(compact('users'));
     }
@@ -1112,12 +1059,11 @@ class NewArrivalUtil extends Util
             $path = $file->store('/requests_attachments');
         }
 
-
         $latestRecord = NewWorkersAdSalaryRequest::orderBy('request_no', 'desc')->first();
 
         if ($latestRecord) {
             $latestRefNo = $latestRecord->request_no;
-            $numericPart = (int)substr($latestRefNo, 'adv_');
+            $numericPart = (int) substr($latestRefNo, 'adv_');
             $numericPart++;
             $request_no = 'adv_' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
         } else {
@@ -1131,7 +1077,7 @@ class NewArrivalUtil extends Util
             'installmentsNumber' => $request->installmentsNumber,
             'status' => 'pending',
             'employee_id' => $request->user_id,
-            'note' =>  $request->note,
+            'note' => $request->note,
             'created_by' => Auth::user()->id,
             'attachment' => $path,
         ];

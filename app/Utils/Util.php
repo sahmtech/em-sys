@@ -199,7 +199,6 @@ class Util
         if ($show_advance) {
             $payment_types = ['advance' => __('lang_v1.advance')] + $payment_types;
         }
-
         return $payment_types;
     }
 

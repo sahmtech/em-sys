@@ -96,7 +96,7 @@ class CustomAdminSidebarMenu
 
         // ) {
         //     $this->productsMenu();
-         elseif (Str::startsWith($currentPath, 'connector')) {
+        elseif (Str::startsWith($currentPath, 'connector')) {
             $this->connectorMenu();
         } elseif (Str::startsWith($currentPath, 'agent')) {
             $this->agnetMenu();
@@ -812,7 +812,7 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('legalaffairs.contracts_management')) {
                 $menu->dropdown(
                     __('legalaffairs::lang.contracts_management'),
-                    function ($sub) use ($is_admin,) {
+                    function ($sub) use ($is_admin, ) {
 
                         if ($is_admin || auth()->user()->can('legalaffairs.crud_employee_contracts')) {
                             $sub->url(
@@ -2204,7 +2204,7 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'housingmovements' &&
-                            (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests'),
+                        (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests'),
                     ],
                 );
             }
@@ -2300,6 +2300,14 @@ class CustomAdminSidebarMenu
                     __('housingmovements::lang.workers'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'workers' && request()->segment(3) == 'index'],
 
+                );
+            }
+            //TODO::import_new_arrival_workers
+            if (auth()->user()->can('housingmovements.import_new_arrival_workers')) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'importWorkers_newArrival']),
+                    __('internationalrelations::lang.import_new_arrival_workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'importWorkers_newArrival'],
                 );
             }
 
@@ -2437,7 +2445,6 @@ class CustomAdminSidebarMenu
                         'active' => request()->segment(1) == 'accounting',
                     ]
                 );
-
 
                 // $menu->dropdown(
                 //     __('accounting::lang.accounting'),
@@ -2768,12 +2775,9 @@ class CustomAdminSidebarMenu
                 );
             };
 
-
-
             $menu->dropdown(
                 __('lang_v1.sales_management'),
                 function ($sub) use ($common_settings) {
-
 
                     $sub->url(
                         action([\App\Http\Controllers\SellController::class, 'index']),
@@ -2787,8 +2791,6 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'import-sales']
                     );
 
-                  
-
                     $sub->url(
                         action([\App\Http\Controllers\SellReturnController::class, 'index']),
                         __('lang_v1.list_sell_return'),
@@ -2801,18 +2803,18 @@ class CustomAdminSidebarMenu
             if (true
                 // auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
                 // auth()->user()->can('brand.view') || auth()->user()->can('unit.view') ||
-                //  auth()->user()->can('category.view') || auth()->user()->can('brand.create') || 
+                //  auth()->user()->can('category.view') || auth()->user()->can('brand.create') ||
                 // auth()->user()->can('unit.create') || auth()->user()->can('category.create')
             ) {
                 $menu->dropdown(
                     __('sale.products'),
                     function ($sub) {
                         // if (auth()->user()->can('list_products')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\ProductController::class, 'index']),
-                                __('lang_v1.list_products'),
-                                ['icon' => 'fa fas fa-list', 'active' => request()->segment(2) == 'products' ]
-                            );
+                        $sub->url(
+                            action([\App\Http\Controllers\ProductController::class, 'index']),
+                            __('lang_v1.list_products'),
+                            ['icon' => 'fa fas fa-list', 'active' => request()->segment(2) == 'products']
+                        );
                         // }
 
                         if (auth()->user()->can('product.create')) {
@@ -2894,8 +2896,6 @@ class CustomAdminSidebarMenu
                 );
             }
 
-
-            
             if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own')) {
                 $menu->dropdown(
                     __('contact.contacts'),
@@ -3080,6 +3080,14 @@ class CustomAdminSidebarMenu
                     )],
                 );
             }
+            //TODO::import_new_arrival_workers
+            if ($is_admin || auth()->user()->can('internationalrelations.import_new_arrival_workers')) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'importWorkers_newArrival']),
+                    __('internationalrelations::lang.import_new_arrival_workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'importWorkers_newArrival'],
+                );
+            }
 
             if ($is_admin || auth()->user()->can('internationalrelations.view_all_delegation_requests')) {
                 $menu->url(
@@ -3125,9 +3133,9 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'proposed_laborIndex'
-                            || request()->segment(2) == 'accepted_workers'
-                            || request()->segment(2) == 'workers_under_trialPeriod'
-                            || request()->segment(2) == 'unaccepted_workers',
+                        || request()->segment(2) == 'accepted_workers'
+                        || request()->segment(2) == 'workers_under_trialPeriod'
+                        || request()->segment(2) == 'unaccepted_workers',
                     ],
                 );
             }
@@ -3606,7 +3614,7 @@ class CustomAdminSidebarMenu
     // }
 
 //////
-    
+
     // public function productsMenu()
     // {
 

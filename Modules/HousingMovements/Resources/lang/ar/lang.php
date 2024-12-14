@@ -326,7 +326,7 @@ return [
     'create_bank' => 'إضافة حساب بنكي',
     'the_bank code is exists already' => 'رقم الايبان موجود سابقا',
     'contract' => 'العقد الوظيفي',
-    'print_residency' =>  'طباعة الاقامة',
+    'print_residency' => 'طباعة الاقامة',
     'updated_successfully' => 'تم التحديث بنجاح',
     'delivery_file' => 'سند التسليم',
     'please uplode the delivery file' => 'الرجاء إرفاق ملف التسليم',
@@ -341,11 +341,7 @@ return [
     'view_timesheet_groups' => 'عرض مجموعات التايم شيت',
     'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
     'show_timesheet' => 'عرض معلومات التايم شيت',
-    'deal_timesheet' => 'اعتماد التايم شيت'
-
-
-
-
-
+    'deal_timesheet' => 'اعتماد التايم شيت',
+    'import_new_arrival_workers' => 'إضافة وصول جديد للعمال',
 
 ];

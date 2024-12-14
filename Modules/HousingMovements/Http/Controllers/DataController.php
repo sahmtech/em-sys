@@ -2,15 +2,10 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
-use App\BusinessLocation;
-use App\Category;
 use App\User;
 use App\Utils\ModuleUtil;
-use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use Menu;
-
 
 class DataController extends Controller
 {
@@ -19,7 +14,6 @@ class DataController extends Controller
      *
      * @return array
      */
-
 
     /**
      * Defines user permissions for the module.
@@ -58,8 +52,6 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang._buildings_delete'),
                         'default' => false,
                     ],
-
-
 
                     [
                         'value' => 'housingmovements.crud_rooms',
@@ -100,8 +92,6 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-
-
                     [
                         'value' => 'housingmovements.crud_facilities',
                         'label' => __('housingmovements::lang.crud_facilities'),
@@ -112,7 +102,6 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.all_request'),
                         'default' => false,
                     ],
-
 
                     [
                         'value' => 'housingmovements.return_the_request',
@@ -201,6 +190,12 @@ class DataController extends Controller
                     [
                         'value' => 'housingmovements.new_arrival_for_workers',
                         'label' => __('housingmovements::lang.new_arrival_for_workers'),
+                        'default' => false,
+                    ],
+                    //TODO::import_new_arrival_workers
+                    [
+                        'value' => 'housingmovements.import_new_arrival_workers',
+                        'label' => __('housingmovements::lang.import_new_arrival_workers'),
                         'default' => false,
                     ],
                     [
@@ -329,7 +324,7 @@ class DataController extends Controller
         if ($is_housingmoveement_enabled) {
             Menu::modify('admin-sidebar-menu', function ($menu) {
                 //     $menu->url(action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']),
-                //     __('housingmovements::lang.housing_move'), ['icon' => 'fa 	fas fa-dolly', 'active' => request()->segment(1) == 'notification-templates'])->order(85);
+                //     __('housingmovements::lang.housing_move'), ['icon' => 'fa     fas fa-dolly', 'active' => request()->segment(1) == 'notification-templates'])->order(85);
                 // });
                 $menu->dropdown(
                     __('housingmovements::lang.housing_move'),
@@ -368,7 +363,6 @@ class DataController extends Controller
                                 )->order(3);
                             }
                         )->order(2);
-
 
                         $subMenu->url(
                             action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),

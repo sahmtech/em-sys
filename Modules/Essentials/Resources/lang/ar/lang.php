@@ -2048,5 +2048,10 @@ return [
     'added_by' => 'تمت إضافته بواسطة',
     'view_attachment_delivery' => 'عرض مرفقات التسليم',
     'attachments' => 'المرفقات',
+    'arrival_date' => ' تاريخ الوصول',
+    'nationality_required' => 'الجنسية مطلوب في السطر رقم ',
+    'passport_number_required' => 'رقم الجواز  مطلوب في السطر رقم',
+    'sponsor_required' => ' الكفيل  مطلوب في السطر رقم',
+    'arrival_date_required' => 'تاريخ الوصول مطلوب في السطر في رقم',
 
 ];

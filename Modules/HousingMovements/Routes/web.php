@@ -9,12 +9,12 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
     Route::prefix('housingmovements')->group(function () {
-        Route::get('/filtered_requests/{filter}',  [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'getFilteredRequests'])->name('housingmovements.getFilteredRequests');
+        Route::get('/filtered_requests/{filter}', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'getFilteredRequests'])->name('housingmovements.getFilteredRequests');
 
         Route::get('/dashboard', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
         Route::get('/housingmovements_department_employees', [Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'department_employees'])->name('housingmovements_department_employees');
@@ -30,8 +30,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('time_sheet/edit/{id}', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'editTimeSheet'])->name('housingmovements.agentTimeSheet.editTimeSheet');
         Route::get('agent/time_sheet/deal/{id}', [\Modules\HousingMovements\Http\Controllers\TimeSheetController::class, 'dealTimeSheet'])->name('housingmovements.agentTimeSheet.dealTimeSheet');
 
-
-        //requests 
+        //requests
         Route::get('/hm.requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index'])->name('hm.requests');
         Route::get('/hm.requestsFillter', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'requestsFillter'])->name('hm.requestsFillter');
         Route::post('/hm.returnReq', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'returnReq'])->name('hm.returnReq');
@@ -39,7 +38,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/escalate_requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'escalateRequests'])->name('hm.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'changeEscalateRequestsStatus'])->name('hm.changeEscalateRequestsStatus');
         Route::get('/viewHmRequest/{requestId}', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewHmRequest');
-
 
         Route::get('/', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'index'])->name('housingMovements_landingPage');
 
@@ -71,7 +69,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/get-room-numbers', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'getRoomNumbers'])->name('rooms.numbers');
         Route::post('assign-workers', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'assignWorkers'])->name('assignWorkers');
 
-
         Route::get('/import_rooms', [\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'index'])
             ->name('import_rooms');
         Route::post('/send_import_rooms', [\Modules\HousingMovements\Http\Controllers\ImportRoomsController::class, 'sendImportRooms'])
@@ -79,16 +76,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //facilities
         Route::get('/facilities', [\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index'])->name('facilities');
 
-
         //movement_management
         Route::get('/movement', [\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index'])->name('movement');
-
 
         //traveleres
         Route::get('/travelers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index'])->name('travelers');
         Route::get('/housed-workers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('housed_workers');
         Route::get('/workers/index/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
-        Route::get('/workers/show/{id}',  [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('htr.show.workers');
+        Route::get('/workers/show/{id}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('htr.show.workers');
 
         Route::get('/medicalExamination', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'])->name('medicalExamination');
         Route::post('/upload-medical-document', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'uploadMedicalDocument'])->name('uploadMedicalDocument');
@@ -97,7 +92,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/workCardIssuing', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'workCardIssuing'])->name('workCardIssuing');
         Route::post('/storeWorkCard', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'storeWorkCard'])->name('storeWorkCard');
-
 
         Route::get('/SIMCard', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'SIMCard'])->name('SIMCard');
         Route::post('/addSIM', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'addSIM'])->name('addSIM');
@@ -114,11 +108,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/residencyDelivery', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])->name('residencyDelivery');
         Route::post('/delivery_residency', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'deliveryResidency'])->name('delivery_residency');
 
-
         Route::get('/advanceSalaryRequest', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'advanceSalaryRequest'])->name('advanceSalaryRequest');
         Route::post('/newWorkersAdvSalaryStore', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'newWorkersAdvSalaryStore'])->name('newWorkersAdvSalaryStore');
 
-        // Workers 
+        // Workers
         Route::get('/workers/available-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping'])->name('workers.available_shopping');
         Route::get('/workers/reserved-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'reserved_shopping'])->name('workers.reserved_shopping');
         Route::get('/workers/final-exit/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'final_exit'])->name('workers.final_exit');
@@ -130,15 +123,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/addProject', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'addProject'])->name('addProject');
 
-
-        Route::get('/get-room-numbers/{buildingId}',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');
-        Route::post('/housed',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data'])->name('housed');
+        Route::get('/get-room-numbers/{buildingId}', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');
+        Route::post('/housed', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data'])->name('housed');
         Route::post('/postarrival_data', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'postarrivaldata'])->name('postarrivaldata');
         Route::post('/get-selected-arrived-data', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getSelectedRowsData'])->name('getSelectedArrivalsData');
 
         Route::get('/get-shifts/{projectId}', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getShifts'])->name('getShifts');
         Route::get('/getBedsCount/{roomId}', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getBedsCount'])->name('getBedsCount');
-        Route::get('/room_status',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumberOnStatus'])->name('getRoomStatus');
+        Route::get('/room_status', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumberOnStatus'])->name('getRoomStatus');
         // Routes Car Types
         Route::get('/cars-type', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index'])->name('car-types');
         Route::get('/cars-type-create', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'create'])->name('car-type-create');
@@ -158,6 +150,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/cars-model-delete/{id}', [\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'destroy'])->name('carmodel.delete');
         // Routes Cars
 
+        //TODO::importWorkers_newArrival
+
+        Route::get('/importWorkers_newArrival', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'importWorkers_newArrival'])->name('importWorkers_newArrival');
+        Route::post('/postImportWorkersNewArrival', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'postImportWorkersNewArrival'])->name('postImportWorkersNewArrival');
+
         Route::get('/cars', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'index'])->name('cars');
         Route::get('/cars-create', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'create'])->name('car-create');
         Route::get('/cars-edit/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'edit'])->name('car.edit');
@@ -166,8 +163,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/cars-update/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'update'])->name('car-update');
         Route::delete('/cars-delete/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'destroy'])->name('car.delete');
         Route::get('/carModel-by-carType_id/{carType_id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'getCarModelByCarType_id'])->name('getCarModelByCarType_id');
-
-
 
         Route::get('/car-drivers', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'index'])->name('cardrivers');
         Route::get('/cardrivers-create', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'create'])->name('cardrivers-create');
