@@ -258,9 +258,9 @@ class ReportController extends Controller
                     'accounting_accounts.gl_code',
                     'accounting_accounts.id'
                 )
-            /* ->when($level_filter, function ($query, $level_filter) {
-            return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
-            }) */
+                /* ->when($level_filter, function ($query, $level_filter) {
+                return $query->havingRaw('code_length <= ?', [$level_filter - 1]);
+                }) */
                 ->groupBy(
                     'name',
                 )
@@ -340,7 +340,7 @@ class ReportController extends Controller
                         $html = ' ';
                         if (!$aggregated) {
                             $html =
-                            '<div class="btn-group">
+                                '<div class="btn-group">
                                 <button type="button" class="btn btn-info btn-xs" >' . '
                                     <a class=" btn-modal text-white" data-container="#printledger"
                                         data-href="' . action('\Modules\Accounting\Http\Controllers\CoaController@ledgerPrint', [$account->id]) . '"
@@ -578,12 +578,12 @@ class ReportController extends Controller
         }
 
         if ($request->ajax()) {
-
             $contacts = Contact::where('contacts.business_id', $business_id)
                 ->where('contacts.company_id', $company_id)
                 ->where('contacts.id', $contact_id)
-                ->join('transactions as t', 'contacts.id', '=', 't.contact_id')
-                ->join('accounting_accounts_transactions as aat', 't.id', '=', 'aat.transaction_id')
+                ->join('accounting_accounts_transactions as aat', function ($join) {
+                    $join->on('contacts.id', '=', 'aat.partner_id');
+                })
                 ->leftJoin('accounting_acc_trans_mappings as atm', 'aat.acc_trans_mapping_id', '=', 'atm.id')
                 ->leftJoin('users as u', 'aat.created_by', '=', 'u.id')
                 ->leftJoin('accounting_cost_centers as cc', 'aat.cost_center_id', '=', 'cc.id')
@@ -597,7 +597,6 @@ class ReportController extends Controller
                     'atm.note',
                     'aat.amount',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as added_by"),
-                    't.invoice_no',
                 )
                 ->whereDate('aat.operation_date', '>=', $start_date)
                 ->whereDate('aat.operation_date', '<=', $end_date)
@@ -611,11 +610,9 @@ class ReportController extends Controller
                     'cc.ar_name',
                     'atm.note',
                     'aat.amount',
-                    't.invoice_no',
                     'u.first_name',
                     'u.last_name',
                 );
-
             return DataTables::of($contacts)
                 ->editColumn('operation_date', function ($row) {
                     return $this->accountingUtil->format_date($row->operation_date, true);
