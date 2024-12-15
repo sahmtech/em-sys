@@ -1393,6 +1393,7 @@ class WorkerController extends Controller
     //
     public function importWorkers_newArrival()
     {
+
         return view('internationalrelations::worker.new_arrival_import');
     }
     public function postImportWorkers(Request $request)
@@ -1454,6 +1455,7 @@ class WorkerController extends Controller
                         break;
                     }
                     $worker_array['email'] = $value[5];
+                    $worker_array['interviewStatus'] = 'acceptable';
 
                     if (!empty($value[6])) {
                         if (is_numeric($value[6])) {

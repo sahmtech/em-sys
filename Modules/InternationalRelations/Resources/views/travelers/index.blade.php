@@ -168,28 +168,25 @@
                         "data": "worker_documents",
                         "render": function(data, type, row) {
                             let links = '';
-                            if (row.worker_documents.length === 0 && !row.visa.file) {
+
+                            // Check if worker_documents or visa is null/undefined
+                            if ((!row.worker_documents || row.worker_documents.length === 0) && (!
+                                    row.visa || !row.visa.file)) {
                                 return '@lang('housingmovements::lang.no_files')';
                             }
 
+                            // Process worker_documents if it exists and is an array
+                            if (row.worker_documents && Array.isArray(row.worker_documents)) {
+                                row.worker_documents.forEach(function(document) {
+                                    links +=
+                                        `<a href="/uploads/${document.attachment}" target="_blank">${document.type}</a><br>`;
+                                });
+                            }
 
-                            row.worker_documents.forEach(function(document) {
-
-                                // var baseTranslationKey = 'housingmovements::lang.';
-                                // var fullTranslationKey = baseTranslationKey + document.type;
-
-                                // var translationTemplate = `{!! __('${fullTranslationKey}') !!}`;
-
-
-                                // var translatedType = translationTemplate.replace('${fullTranslationKey}', document.type);
-                                // links += `<a href="/uploads/${document.attachment}" target="_blank">${translatedType}</a><br>`;
-                                links +=
-                                    `<a href="/uploads/${document.attachment}" target="_blank">${document.type}</a><br>`;
-                            });
-
+                            // Check visa and visa.file
                             if (row.visa && row.visa.file) {
                                 let visaLinkText =
-                                "{{ __('housingmovements::lang.general_visa') }}";
+                                    "{{ __('housingmovements::lang.general_visa') }}";
                                 links +=
                                     `<a href="/uploads/${row.visa.file}" target="_blank">${visaLinkText}</a>`;
                             }
@@ -197,6 +194,7 @@
                             return links;
                         }
                     }
+
                 ]
             });
 

@@ -174,12 +174,13 @@ class HousingMovementsController extends Controller
     public function importWorkers_newArrival()
     {
 
-        return view('housingmovements::.new_arrival_import');
+        return view('housingmovements::worker.new_arrival_import');
     }
 
     // new Arrival
     public function postImportWorkersNewArrival(Request $request)
     {
+
         $delegation_id = $request->input('delegation_id');
         $agency_id = $request->input('agency_id');
         $transaction_sell_line_id = $request->input('transaction_sell_line_id');
@@ -221,6 +222,7 @@ class HousingMovementsController extends Controller
                 }
 
                 $worker_array['mid_name'] = $value[1];
+                $worker_array['interviewStatus'] = 'acceptable';
 
                 if (!empty($value[2])) {
                     $worker_array['last_name'] = $value[2];
@@ -251,18 +253,21 @@ class HousingMovementsController extends Controller
                 $passport_numbers[] = $worker_array['passport_number'];
 
                 if (!empty($value[5])) {
-                    $worker_array['company_id'] = $value[5];
+                    $worker_array['sponsor'] = $value[5];
                 } else {
                     throw new \Exception(__('essentials::lang.sponsor_required') . " at row $row_no");
                 }
 
-                if (!empty($value[7])) {
-                    if (is_numeric($value[7])) {
+                $worker_array['project'] = $value[6];
+                $worker_array['gender'] = $value[7];
+
+                if (!empty($value[8])) {
+                    if (is_numeric($value[8])) {
                         // Convert Excel numeric date
-                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[7])->format('Y-m-d');
+                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[8])->format('Y-m-d');
                     } else {
                         // Convert string date
-                        $date = DateTime::createFromFormat('d/m/Y', $value[7]);
+                        $date = DateTime::createFromFormat('d/m/Y', $value[8]);
                         if ($date) {
                             $worker_array['arrival_date'] = $date->format('Y-m-d');
                         } else {
@@ -271,6 +276,21 @@ class HousingMovementsController extends Controller
                     }
                 } else {
                     throw new \Exception(__('essentials::lang.arrival_date_required') . " at row $row_no");
+                }
+
+                if (!empty($value[9])) {
+                    if (is_numeric($value[9])) {
+                        // Convert Excel numeric date
+                        $worker_array['dob'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[9])->format('Y-m-d');
+                    } else {
+                        // Convert string date
+                        $date = DateTime::createFromFormat('d/m/Y', $value[9]);
+                        if ($date) {
+                            $worker_array['dob'] = $date->format('Y-m-d');
+                        } else {
+                            throw new \Exception(__('essentials::lang.invalid_date_format') . " at row $row_no");
+                        }
+                    }
                 }
 
                 $formated_data[] = $worker_array;
@@ -282,10 +302,11 @@ class HousingMovementsController extends Controller
 
             DB::commit();
 
-            return redirect()->route('proposed_laborIndex')->with('notification', [
+            return redirect()->route('travelers')->with('notification', [
                 'success' => 1,
                 'msg' => __('product.file_imported_successfully'),
             ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Error importing workers: ' . $e->getMessage(), [
@@ -401,6 +422,6 @@ class HousingMovementsController extends Controller
         }
 
         $interview_status = $this->statuses;
-        return view('internationalrelations::worker.proposed_laborIndex')->with(compact('interview_status', 'nationalities', 'specializations', 'professions', 'agencys'));
+        return view('housingmovements::worker.proposed_laborIndex')->with(compact('interview_status', 'nationalities', 'specializations', 'professions', 'agencys'));
     }
 }

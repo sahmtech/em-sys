@@ -37,6 +37,7 @@ class NewArrivalUtil extends Util
     }
     public function new_arrival_for_workers(Request $request, $view)
     {
+
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_housing_crud_htr_trevelers = auth()->user()->can('housingmovements.new_arrival_for_workers');
@@ -72,6 +73,7 @@ class NewArrivalUtil extends Util
                 DB::raw("CONCAT(COALESCE(first_name, ''),
                  ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ])
+
         // ->whereNotNull('visa_id')
             ->where('interviewStatus', 'acceptable')
             ->where('arrival_status', 0);

@@ -40,8 +40,11 @@
 
                     {!! Form::hidden('selected_rows', null, ['id' => 'selected_rows']) !!}
                     @include('housingmovements::travelers.partials.border_arrival_modal')
-                   
-                    @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('change_arrived_status'))
+
+                    {{-- @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('change_arrived_status')) --}}
+                    @if (auth()->user()->hasRole('Admin#1') ||
+                            auth()->user()->can('housingmovements.import_new_arrival_workers') ||
+                            auth()->user()->can('internationalrelations.import_new_arrival_workers'))
                         {!! Form::submit(__('housingmovements::lang.arrived'), [
                             'class' => 'btn btn-xs btn-success',
                             'id' => 'arraived-selected',

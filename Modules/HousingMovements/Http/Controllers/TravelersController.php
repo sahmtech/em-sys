@@ -2,35 +2,23 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
+use App\Transaction;
+use App\User;
+use App\Utils\ContactUtil;
+use App\Utils\ModuleUtil;
+use App\Utils\NewArrivalUtil;
+use App\Utils\NotificationUtil;
+use App\Utils\TransactionUtil;
+use App\Utils\Util;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ContactUtil;
-use App\Utils\ModuleUtil;
-use App\Utils\NotificationUtil;
-use App\Utils\TransactionUtil;
-use App\Utils\NewArrivalUtil;
-
-use App\Utils\Util;
-use App\User;
-use App\Events\ContactCreatedOrModified;
-use Modules\Sales\Entities\SalesProject;
-use App\Transaction;
-use Modules\Essentials\Entities\EssentialsCountry;
-use Modules\Essentials\Entities\EssentialsCity;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\DB as FacadesDB;
-use Modules\Essentials\Entities\EssentialsBankAccounts;
-use Modules\Essentials\Entities\EssentialsContractType;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\HousingMovements\Entities\HtrRoom;
 use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
-use Modules\InternationalRelations\Entities\IrDelegation;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
-use Illuminate\Support\Facades\Auth;
-use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 
 class TravelersController extends Controller
 {
@@ -44,8 +32,6 @@ class TravelersController extends Controller
 
     protected $notificationUtil;
     protected $newArrivalUtil;
-
-
 
     public function __construct(
         Util $commonUtil,
@@ -77,7 +63,6 @@ class TravelersController extends Controller
     {
         $selectedRows = $request->input('selectedRows');
 
-
         $data = IrProposedLabor::whereIn('id', $selectedRows)
             ->select(
                 'id as worker_id',
@@ -87,19 +72,14 @@ class TravelersController extends Controller
 
             ->get();
 
-
-
-
         return response()->json($data);
     }
 
-
-    public function  housed_workers_index(Request $request)
+    public function housed_workers_index(Request $request)
     {
         $view = 'housingmovements::travelers.partials.housed_workers';
         return $this->newArrivalUtil->housed_workers_index($request, $view);
     }
-
 
     public function getRoomNumberOnStatus(Request $request)
     {
@@ -138,12 +118,10 @@ class TravelersController extends Controller
         return response()->json($roomNumbers);
     }
 
-
     public function housed_data(Request $request)
     {
 
         try {
-
 
             $selectedRowsData = json_decode($request->input('selectedRowsData'), true);
 
@@ -259,15 +237,11 @@ class TravelersController extends Controller
     //                             'room_id' => $room->id,
     //                         ]);
 
-
     //                     DB::table('htr_rooms')
     //                         ->where('id', $room->id)
     //                         ->decrement('beds_count');
 
-
-
     //                     $worker->update(['housed_status' => 1]);
-
 
     //                     if ($shift) {
     //                         $user = User::where('proposal_worker_id', $data['worker_id'])->first();
@@ -284,7 +258,6 @@ class TravelersController extends Controller
     //                 }
     //             }
 
-
     //             DB::commit();
     //             $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
     //         } else {
@@ -300,17 +273,12 @@ class TravelersController extends Controller
     //     return redirect()->back()->with(['status' => $output]);
     // }
 
-
-
-
-
     public function getRoomNumbers($buildingId)
     {
         $roomNumbers = DB::table('htr_rooms')->where('htr_building_id', $buildingId)->pluck('room_number', 'id');
 
         return response()->json(['roomNumber' => $roomNumbers]);
     }
-
 
     public function getBedsCount($roomId)
     {
@@ -319,15 +287,12 @@ class TravelersController extends Controller
         return response()->json(['roomNumber' => $roomNumbers]);
     }
 
-
     public function getShifts($projectId)
     {
         $shifts = DB::table('essentials_shifts')->where('project_id', $projectId)->pluck('name', 'id');
 
         return response()->json(['shifts' => $shifts]);
     }
-
-
 
     public function postarrivaldata(Request $request)
     {
@@ -360,7 +325,6 @@ class TravelersController extends Controller
                 $business_id = $request->session()->get('user.business_id');
                 $selectedData = json_decode($jsonData, true);
 
-
                 foreach ($selectedData as $data) {
 
                     $worker = IrProposedLabor::with('visa')->find($data['worker_id']);
@@ -371,7 +335,6 @@ class TravelersController extends Controller
                         if ($border_number != null) {
                             $output = ['success' => 0, 'msg' => __('housingmovements.border_no_exist')];
                         } else {
-
 
                             $user = User::create([
                                 'first_name' => $worker->first_name,
@@ -396,7 +359,6 @@ class TravelersController extends Controller
                                 'proposal_worker_id' => $data['worker_id'],
                                 'created_by' => Auth::user()->id,
 
-
                             ]);
 
                             $admission = new EssentialsAdmissionToWork();
@@ -412,11 +374,11 @@ class TravelersController extends Controller
                             $worker->save();
 
                             $allWorkersArrived =
-                                IrProposedLabor::where('visa_id', $worker->visa_id)
+                            IrProposedLabor::where('visa_id', $worker->visa_id)
                                 ->where('arrival_status', 1)
                                 ->count()
-                                ==
-                                IrProposedLabor::where('visa_id', $worker->visa_id)
+                            ==
+                            IrProposedLabor::where('visa_id', $worker->visa_id)
                                 ->count();
 
                             if ($allWorkersArrived) {
@@ -444,9 +406,6 @@ class TravelersController extends Controller
                         }
                     }
                 }
-
-
-
 
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
             } else {

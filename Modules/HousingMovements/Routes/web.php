@@ -151,6 +151,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         // Routes Cars
 
         //TODO::importWorkers_newArrival
+        Route::get('proposed_laborIndex', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'proposed_laborIndex'])->name('proposed_laborIndex');
 
         Route::get('/importWorkers_newArrival', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'importWorkers_newArrival'])->name('importWorkers_newArrival');
         Route::post('/postImportWorkersNewArrival', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'postImportWorkersNewArrival'])->name('postImportWorkersNewArrival');

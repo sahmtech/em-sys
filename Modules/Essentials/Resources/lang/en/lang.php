@@ -790,5 +790,10 @@ return [
     'total_amount_of_absence' => 'Total amount of absence',
     'total_amount_of_delay' => 'Total amount of delay',
     'total_amount_over_time_hours' => 'Total overtime hours',
+    'arrival_date' => 'arrival date',
+    'nationality_required' => 'Nationality is required in line number',
+    'passport_number_required' => 'Passport number is required in line number',
+    'sponsor_required' => 'The sponsor is required on line number',
+    'arrival_date_required' => 'arrival date required on line in number',
 
 ];

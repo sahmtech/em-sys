@@ -31,7 +31,7 @@
                 @component('components.widget', ['class' => 'box-primary'])
                     {!! Form::open([
                         'url' => action([
-                            \Modules\InternationalRelations\Http\Controllers\WorkerController::class,
+                            \Modules\HousingMovements\Http\Controllers\HousingMovementsController::class,
                             'postImportWorkersNewArrival',
                         ]),
                         'method' => 'post',
@@ -100,7 +100,7 @@
                                 </tr>
                                 <tr>
                                     <td>4</td>
-                                    <td>@lang('essentials::lang.nationality') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+                                    <td>@lang('essentials::lang.nationality') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                                     <td>&nbsp;</td>
                                 </tr>
                                 <tr>
@@ -108,11 +108,7 @@
                                     <td>@lang('essentials::lang.passport_number') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                                     <td>&nbsp;</td>
                                 </tr>
-                                <tr>
-                                    <td>5</td>
-                                    <td>@lang('essentials::lang.passport_number') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
-                                    <td>&nbsp;</td>
-                                </tr>
+
                                 <tr>
                                     <td>6</td>
                                     <td>@lang('essentials::lang.sponsor') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
@@ -135,11 +131,21 @@
                                 </tr>
                                 <tr>
                                     <td>7</td>
-                                    <td>@lang('essentials::lang.project') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+                                    <td>@lang('essentials::lang.project') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>@lang('essentials::lang.gender') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                                     <td>&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>8</td>
+                                    <td>@lang('essentials::lang.dob') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                                    <td>@lang('lang_v1.dob_ins') ({{ \Carbon::now()->format('Y-m-d') }})</td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
                                     <td>@lang('essentials::lang.arrival_date') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                                     <td>@lang('lang_v1.dob_ins') ({{ \Carbon::now()->format('Y-m-d') }})</td>
                                 </tr>

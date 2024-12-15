@@ -1440,6 +1440,7 @@ class WorkerController extends Controller
                 }
 
                 $worker_array['mid_name'] = $value[1];
+                $worker_array['interviewStatus'] = 'acceptable';
 
                 if (!empty($value[2])) {
                     $worker_array['last_name'] = $value[2];
@@ -1552,6 +1553,7 @@ class WorkerController extends Controller
                     }
 
                     $worker_array['mid_name'] = $value[1];
+                    $worker_array['interviewStatus'] = 'acceptable';
 
                     if (!empty($value[2])) {
                         $worker_array['last_name'] = $value[2];
@@ -1720,6 +1722,7 @@ class WorkerController extends Controller
 
     public function new_arrival_for_workers(Request $request)
     {
+
         $view = 'internationalrelations::travelers.index';
         return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
     }
