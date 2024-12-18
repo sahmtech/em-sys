@@ -264,10 +264,25 @@ class HousingMovementsController extends Controller
                 if (!empty($value[8])) {
                     if (is_numeric($value[8])) {
                         // Convert Excel numeric date
-                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[8])->format('Y-m-d');
+                        $worker_array['dob'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[8])->format('Y-m-d');
                     } else {
                         // Convert string date
                         $date = DateTime::createFromFormat('d/m/Y', $value[8]);
+                        if ($date) {
+                            $worker_array['dob'] = $date->format('Y-m-d');
+                        } else {
+                            throw new \Exception(__('essentials::lang.invalid_date_format') . " at row $row_no");
+                        }
+                    }
+                }
+
+                if (!empty($value[9])) {
+                    if (is_numeric($value[9])) {
+                        // Convert Excel numeric date
+                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[9])->format('Y-m-d');
+                    } else {
+                        // Convert string date
+                        $date = DateTime::createFromFormat('d/m/Y', $value[9]);
                         if ($date) {
                             $worker_array['arrival_date'] = $date->format('Y-m-d');
                         } else {
@@ -276,21 +291,6 @@ class HousingMovementsController extends Controller
                     }
                 } else {
                     throw new \Exception(__('essentials::lang.arrival_date_required') . " at row $row_no");
-                }
-
-                if (!empty($value[9])) {
-                    if (is_numeric($value[9])) {
-                        // Convert Excel numeric date
-                        $worker_array['dob'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[9])->format('Y-m-d');
-                    } else {
-                        // Convert string date
-                        $date = DateTime::createFromFormat('d/m/Y', $value[9]);
-                        if ($date) {
-                            $worker_array['dob'] = $date->format('Y-m-d');
-                        } else {
-                            throw new \Exception(__('essentials::lang.invalid_date_format') . " at row $row_no");
-                        }
-                    }
                 }
 
                 $formated_data[] = $worker_array;
