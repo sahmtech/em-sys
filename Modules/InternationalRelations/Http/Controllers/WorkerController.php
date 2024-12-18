@@ -1471,18 +1471,36 @@ class WorkerController extends Controller
                 $passport_numbers[] = $worker_array['passport_number'];
 
                 if (!empty($value[5])) {
-                    $worker_array['company_id'] = $value[5];
+                    $worker_array['sponsor'] = $value[5];
                 } else {
                     throw new \Exception(__('essentials::lang.sponsor_required') . " at row $row_no");
                 }
 
-                if (!empty($value[7])) {
-                    if (is_numeric($value[7])) {
+                $worker_array['project'] = $value[6];
+                $worker_array['gender'] = $value[7];
+
+                if (!empty($value[8])) {
+                    if (is_numeric($value[8])) {
                         // Convert Excel numeric date
-                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[7])->format('Y-m-d');
+                        $worker_array['dob'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[8])->format('Y-m-d');
                     } else {
                         // Convert string date
-                        $date = DateTime::createFromFormat('d/m/Y', $value[7]);
+                        $date = DateTime::createFromFormat('d/m/Y', $value[8]);
+                        if ($date) {
+                            $worker_array['dob'] = $date->format('Y-m-d');
+                        } else {
+                            throw new \Exception(__('essentials::lang.invalid_date_format') . " at row $row_no");
+                        }
+                    }
+                }
+
+                if (!empty($value[9])) {
+                    if (is_numeric($value[9])) {
+                        // Convert Excel numeric date
+                        $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[9])->format('Y-m-d');
+                    } else {
+                        // Convert string date
+                        $date = DateTime::createFromFormat('d/m/Y', $value[9]);
                         if ($date) {
                             $worker_array['arrival_date'] = $date->format('Y-m-d');
                         } else {
