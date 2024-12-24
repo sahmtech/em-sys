@@ -638,35 +638,8 @@ class WkProcedureController extends Controller
 
             if ($procedureId) {
                 $type = WKprocedure::where('id', $procedureId)->first()->request_type_id;
-
-                // $request_processes = RequestProcess::
-
-                // dd($wk_pocedures);
-
-                // if ($wk_pocedures->count() != $wk_pocedures_end->count()) {
-                //     $output = [
-                //         'success' => false,
-                //         'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_pending_requests'),
-                //     ];
-                //     return redirect()->back()->with(['status' => $output]);
-                // }
-
                 $requests = UserRequest::where('request_type_id', $type)->where('status', 'pending')->get();
-
-                $procedureIds = [];
-                foreach ($steps as $step) {
-                    if (isset($step['procedure_id'])) {
-                        $procedureIds[] = $step['procedure_id'];
-                    }
-                }
-                // print_r($procedureIds);
-
-                $procedureIds_end = WKprocedure::whereIn('id', $procedureIds)
-                    ->where('end', 1)
-                    ->count() === WKprocedure::whereIn('id', $procedureIds)->count();
-
-                if (!$procedureIds_end) {
-
+                if ($requests->count() != 0) {
                     $output = [
                         'success' => false,
                         'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_pending_requests'),

@@ -785,6 +785,8 @@
                     url: url,
                     type: 'GET',
                     success: function(response) {
+                        debugger
+
                         console.log(response.procedures);
                         console.log(response.superior_dep);
                         if (response.superior_dep) {
