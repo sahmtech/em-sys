@@ -19,6 +19,7 @@
         margin-top: 10px;
         margin-bottom: 10px;
     }
+    
 </style>
 @section('content')
 
@@ -410,12 +411,12 @@
                                 </div>
                                 <br>
                             </div>
-                            {{-- <div>
+                            <div>
                                 <button type="button"class="btn btn-sm btn-warning my-button addStep"
                                     id="edit_modal_add_step">
                                     @lang('essentials::lang.add_managment')
                                 </button>
-                            </div> --}}
+                            </div>
 
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
@@ -576,11 +577,26 @@
                 ]
             });
             $(document).on('click', 'button.delete_procedure_button', function() {
+
                 swal({
                     title: LANG.sure,
                     text: LANG.confirm_delete_procedure,
-                    icon: "warning",
-                    buttons: true,
+                    buttons: {
+                        cancel: {
+                            text: "إلغاء",
+                            value: null,
+                            visible: true,
+                            className: "btn btn-secondary custom-btn", // Added custom class for styling
+                            closeModal: true
+                        },
+                        confirm: {
+                            text: "موافق",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-danger custom-btn", // Added custom class for styling
+                            closeModal: true
+                        }
+                    },
                     dangerMode: true,
                 }).then((willDelete) => {
                     if (willDelete) {
@@ -592,7 +608,6 @@
                             success: function(result) {
                                 if (result.success == true) {
                                     toastr.success(result.msg);
-                                    //  procedures_table.ajax.reload();
                                     window.location.reload();
                                 } else {
                                     toastr.error(result.msg);
@@ -601,6 +616,7 @@
                         });
                     }
                 });
+
             });
             /////////////////////////////start add///////////////////////////////////////////////////////
             let add_modal_steps_count = 0;

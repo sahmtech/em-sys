@@ -628,6 +628,7 @@ class WkProcedureController extends Controller
 
         return redirect()->back()->with(['status' => $output]);
     }
+
     public function updateEmployeeProcedure(Request $request)
     {
         \DB::beginTransaction();
@@ -638,35 +639,8 @@ class WkProcedureController extends Controller
 
             if ($procedureId) {
                 $type = WKprocedure::where('id', $procedureId)->first()->request_type_id;
-
-                // $request_processes = RequestProcess::
-
-                // dd($wk_pocedures);
-
-                // if ($wk_pocedures->count() != $wk_pocedures_end->count()) {
-                //     $output = [
-                //         'success' => false,
-                //         'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_pending_requests'),
-                //     ];
-                //     return redirect()->back()->with(['status' => $output]);
-                // }
-
                 $requests = UserRequest::where('request_type_id', $type)->where('status', 'pending')->get();
-
-                $procedureIds = [];
-                foreach ($steps as $step) {
-                    if (isset($step['procedure_id'])) {
-                        $procedureIds[] = $step['procedure_id'];
-                    }
-                }
-                // print_r($procedureIds);
-
-                $procedureIds_end = WKprocedure::whereIn('id', $procedureIds)
-                    ->where('end', 1)
-                    ->count() === WKprocedure::whereIn('id', $procedureIds)->count();
-
-                if (!$procedureIds_end) {
-
+                if ($requests->count() != 0) {
                     $output = [
                         'success' => false,
                         'msg' => __('ceomanagment::lang.cant_edit_procedure_it_have_pending_requests'),
@@ -674,6 +648,11 @@ class WkProcedureController extends Controller
                     return redirect()->back()->with(['status' => $output]);
                 }
             }
+
+            // Delete any procedures that are not passed or have invalid states
+            WKprocedure::whereNotIn('id', array_column($steps, 'procedure_id'))
+                ->where('end', 0) // Delete rows that are incomplete
+                ->delete();
 
             RequestsType::where('id', $type)->update(['goes_to_superior' => $request->superior_department]);
 
@@ -715,10 +694,10 @@ class WkProcedureController extends Controller
 
                         // Handle escalations: update, delete if removed, and create new
                         $existingEscalations = ProcedureEscalation::where('procedure_id', $workflowStep->id)->get()->keyBy('escalates_to');
-                        error_log($workflowStep->id);
-                        error_log(json_encode($existingEscalations->toArray()));
 
-                        $newEscalations = $step['edit_modal_escalates_to_steps'] ?? [];
+                        $newEscalations = array_filter($step['edit_modal_escalates_to_steps'] ?? [], function ($escalation) {
+                            return !empty($escalation) && EssentialsDepartment::find($escalation);
+                        });
                         $newEscalatesAfter = $step['edit_modal_escalates_after_steps'] ?? [];
 
                         // Ensure the new escalations and escalates_after arrays have the same length
@@ -727,8 +706,6 @@ class WkProcedureController extends Controller
                         } else {
                             $newEscalationData = [];
                         }
-
-                        error_log(json_encode($newEscalationData));
 
                         // Delete escalations that are no longer in the list
                         $escalationsToDelete = array_diff($existingEscalations->keys()->toArray(), $newEscalations);
@@ -760,6 +737,7 @@ class WkProcedureController extends Controller
                         'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
                         'action_type' => $step['edit_action_type'] ?? null,
                     ]);
+                    $end_workflowStep[] = $workflowStep;
 
                     // Create tasks for the new procedure
                     if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {
@@ -776,7 +754,7 @@ class WkProcedureController extends Controller
                     // Create escalations for the new procedure
                     if (isset($step['edit_modal_escalates_to_steps']) && isset($step['edit_modal_escalates_after_steps'])) {
                         foreach ($step['edit_modal_escalates_to_steps'] as $key => $escalationDept) {
-                            if (!is_null($escalationDept)) {
+                            if (!empty($escalationDept) && EssentialsDepartment::find($escalationDept)) {
                                 ProcedureEscalation::create([
                                     'procedure_id' => $workflowStep->id,
                                     'escalates_to' => $escalationDept,
@@ -787,11 +765,50 @@ class WkProcedureController extends Controller
                     }
                 }
 
+                if ($procedureId != null) {
+                    $type = WKprocedure::where('id', $procedureId)->first()->request_type_id;
+
+                    // Retrieve all procedures of the same type for employees
+                    $WKprocedures = WKprocedure::where('request_owner_type', 'employee')
+                        ->where('request_type_id', $type)
+                        ->get();
+
+                    // Reset all `end` fields to 0
+                    WKprocedure::where('request_owner_type', 'employee')
+                        ->where('request_type_id', $type)
+                        ->update(['end' => 0]);
+
+                    // Get the last procedure and update its `end` to 1 and `next_department_id` to null
+                    $lastProcedure = $WKprocedures->last();
+                    if ($lastProcedure) {
+                        $lastProcedure->update([
+                            'next_department_id' => null,
+                            'end' => 1,
+                        ]);
+                    }
+                }
+
                 // Update the next_department_id for the previous step
                 foreach ($previousStepIds as $id) {
                     WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
                 }
                 $previousStepIds = [$workflowStep->id];
+            }
+
+            if (!empty($end_workflowStep)) {
+                $lastStep = end($end_workflowStep);
+
+                // Update the last step's end and next_department_id
+                WkProcedure::where('id', $lastStep->id)->update([
+                    'next_department_id' => null,
+                    'end' => 1,
+                ]);
+            } else {
+                $lastStepId = end($previousStepIds);
+                WkProcedure::where('id', $lastStepId)->update([
+                    'next_department_id' => null,
+                    'end' => 1,
+                ]);
             }
 
             \DB::commit();
@@ -801,129 +818,11 @@ class WkProcedureController extends Controller
             \DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
             $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
+            return redirect()->back()->with(['status' => $output]);
         }
 
         return redirect()->route('employeesProcedures')->with(['status' => $output]);
-
     }
-
-    // public function updateEmployeeProcedure(Request $request)
-    // {
-    //     \DB::beginTransaction();
-    //     try {
-    //         $steps = $request->input('step');
-    //         $type = $request->input('type');
-    //         $business_id = $request->input('business');
-
-    //         // Update the "goes_to_superior" field in RequestsType
-    //         RequestsType::where('id', $type)->update(['goes_to_superior' => $request->superior_department]);
-
-    //         $previousStepIds = [];
-    //         foreach ($steps as $index => $step) {
-    //             $procedureId = $step['procedure_id'] ?? null;
-    //             $start_dep = $step['edit_modal_department_id_steps'][0];
-
-    //             if ($procedureId) {
-    //                 error_log($procedureId);
-    //                 $workflowStep = WkProcedure::find($procedureId);
-    //                 if ($workflowStep) {
-    //                     $workflowStep->update([
-    //                         'department_id' => $start_dep,
-    //                         'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
-    //                         'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
-    //                         'action_type' => $step['edit_action_type'] ?? null,
-    //                     ]);
-
-    //                     // Handle tasks and escalations for the existing step
-    //                     $this->handleTasksAndEscalations($workflowStep->id, $step);
-    //                 }
-    //             } else {
-    //                 // Create a new procedure if procedureId does not exist
-    //                 $workflowStep = WkProcedure::create([
-    //                     'request_type_id' => $type,
-    //                     'request_owner_type' => 'employee',
-    //                     'department_id' => $start_dep,
-    //                     'business_id' => $business_id,
-    //                     'next_department_id' => null,
-    //                     'start' => $index === 0 ? 1 : 0,
-    //                     'end' => $index === count($steps) - 1 ? 1 : 0,
-    //                     'can_reject' => $step['edit_modal_can_reject_steps'][0] ?? 0,
-    //                     'can_return' => $step['edit_modal_can_return_steps'][0] ?? 0,
-    //                     'action_type' => $step['edit_action_type'] ?? null,
-    //                 ]);
-
-    //                 // Handle tasks and escalations for the new step
-    //                 $this->handleTasksAndEscalations($workflowStep->id, $step);
-    //             }
-
-    //             // Update the next_department_id for the previous step
-    //             foreach ($previousStepIds as $id) {
-    //                 WkProcedure::where('id', $id)->update(['next_department_id' => $start_dep]);
-    //             }
-    //             $previousStepIds = [$workflowStep->id];
-    //         }
-
-    //         \DB::commit();
-
-    //         $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
-    //     } catch (\Exception $e) {
-    //         \DB::rollBack();
-    //         \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
-    //         $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
-    //     }
-
-    //     return redirect()->route('employeesProcedures')->with(['status' => $output]);
-    // }
-
-    // protected function handleTasksAndEscalations($procedureId, $step)
-    // {
-    //     // Handle tasks: update, delete if removed, and create new
-    //     $existingTaskIds = ProcedureTask::where('procedure_id', $procedureId)->pluck('task_id')->toArray();
-    //     $newTaskIds = array_filter($step['edit_tasks'] ?? []);
-
-    //     // Delete tasks that are no longer in the list
-    //     $tasksToDelete = array_diff($existingTaskIds, $newTaskIds);
-    //     if (!empty($tasksToDelete)) {
-    //         ProcedureTask::where('procedure_id', $procedureId)->whereIn('task_id', $tasksToDelete)->delete();
-    //     }
-
-    //     // Add new tasks
-    //     foreach ($newTaskIds as $taskId) {
-    //         if (!in_array($taskId, $existingTaskIds)) {
-    //             ProcedureTask::create([
-    //                 'procedure_id' => $procedureId,
-    //                 'task_id' => $taskId,
-    //             ]);
-    //         }
-    //     }
-
-    //     // Handle escalations: update, delete if removed, and create new
-    //     $existingEscalations = ProcedureEscalation::where('procedure_id', $procedureId)->get()->keyBy('escalates_to');
-    //     $newEscalations = $step['edit_modal_escalates_to_steps'] ?? [];
-    //     $newEscalatesAfter = $step['edit_modal_escalates_after_steps'] ?? [];
-
-    //     if (count($newEscalations) === count($newEscalatesAfter) && count($newEscalations) > 0) {
-    //         $newEscalationData = array_combine($newEscalations, $newEscalatesAfter);
-    //     } else {
-    //         $newEscalationData = [];
-    //     }
-
-    //     // Delete escalations that are no longer in the list
-    //     $escalationsToDelete = array_diff($existingEscalations->keys()->toArray(), $newEscalations);
-    //     if (!empty($escalationsToDelete)) {
-    //         ProcedureEscalation::where('procedure_id', $procedureId)->whereIn('escalates_to', $escalationsToDelete)->delete();
-    //     }
-
-    //     // Update or create escalations
-    //     foreach ($newEscalationData as $escalatesTo => $escalatesAfter) {
-    //         if (!is_null($escalatesTo) && !is_null($escalatesAfter)) {
-    //             ProcedureEscalation::updateOrCreate(
-    //                 ['procedure_id' => $procedureId, 'escalates_to' => $escalatesTo],
-    //                 ['escalates_after' => $escalatesAfter]
-    //             );
-    //         }
-    //     }
-    // }
 
     /**
      * Remove the specified resource from storage.
