@@ -832,7 +832,6 @@ class WkProcedureController extends Controller
 
             $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
         } catch (\Exception $e) {
-            return $e->getMessage();
 
             \DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
