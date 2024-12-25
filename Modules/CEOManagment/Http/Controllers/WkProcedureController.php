@@ -708,9 +708,26 @@ class WkProcedureController extends Controller
                         }
 
                         // Delete escalations that are no longer in the list
+                        // Delete escalations that are no longer in the list
                         $escalationsToDelete = array_diff($existingEscalations->keys()->toArray(), $newEscalations);
                         if (!empty($escalationsToDelete)) {
-                            ProcedureEscalation::where('procedure_id', $workflowStep->id)->whereIn('escalates_to', $escalationsToDelete)->delete();
+                            // Start by deleting the related ProcedureTask before removing the ProcedureEscalation
+                            foreach ($escalationsToDelete as $escalatesTo) {
+                                // Find the procedure ID and escalates_to value
+                                $escalation = ProcedureEscalation::where('procedure_id', $workflowStep->id)
+                                    ->where('escalates_to', $escalatesTo)
+                                    ->first();
+
+                                if ($escalation) {
+                                    // Delete associated ProcedureTasks for this procedure
+                                    ProcedureTask::where('procedure_id', $workflowStep->id)
+                                        ->where('task_id', $escalation->task_id) // Adjust this if the relationship is different
+                                        ->delete();
+
+                                    // Now delete the ProcedureEscalation itself
+                                    $escalation->delete();
+                                }
+                            }
                         }
 
                         // Update or create escalations
