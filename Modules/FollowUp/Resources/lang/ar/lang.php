@@ -404,7 +404,7 @@ return [
     'createdBy' => 'بواسطة',
     'business_id' => 'يتبع لشركة',
     'penalties_violations' => 'الجزاءات والمخالفات',
-    'descrption' => 'الوصف',
+    'descrption' => 'وصف المخالفة',
     'amount' => 'المبلغ',
     'date' => 'التاريخ',
     'Implemented' => 'تم التنفيذ',

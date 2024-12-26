@@ -329,7 +329,7 @@ return [
     'createdBy' => 'Created By',
     'business_id' => 'belongs to company',
     'penalties_violations' => 'Penalties and Violations',
-    'descrption' => 'Descrption',
+    'descrption' => 'Description of Violation',
     'amount' => 'Amount',
     'date' => 'Date',
     'Implemented' => 'Implemented',

@@ -383,13 +383,13 @@
 
                         <li>
                             <a href="#assets_tab" data-toggle="tab" aria-expanded="true">
-                                <i class="fas fa-file" aria-hidden="true"></i>
+                                <i class="fas fa-laptop" aria-hidden="true"></i>
 
                                 @lang('followup::lang.asset')</a>
                         </li>
                         <li>
                             <a href="#penaltiesViolations_tab" data-toggle="tab" aria-expanded="true">
-                                <i class="fas fa-file" aria-hidden="true"></i>
+                                <i class="fas fa-gavel" aria-hidden="true"></i>
 
                                 @lang('followup::lang.penalties_violations')</a>
                         </li>
