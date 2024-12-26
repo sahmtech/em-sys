@@ -382,6 +382,13 @@
                         </li>
 
                         <li>
+                            <a href="#assets_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-file" aria-hidden="true"></i>
+
+                                @lang('followup::lang.asset')</a>
+                        </li>
+
+                        <li>
                             <a href="#timesheet_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
 
@@ -551,6 +558,55 @@
                                                         </td>
                                                     </tr>
                                                 @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="assets_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('followup::lang.asset_name')</th>
+                                                    <th>@lang('followup::lang.asset_code')</th>
+                                                    <th>@lang('followup::lang.delivery_date')</th>
+                                                    <th>@lang('followup::lang.asset_category')</th>
+                                                    <th>@lang('followup::lang.quantity')</th>
+                                                    <th>@lang('followup::lang.createdBy')</th>
+                                                    <th>@lang('followup::lang.business_id')</th>
+                                                    <th>@lang('followup::lang.note')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($assets as $asset)
+                                                    @php
+                                                        $assetDetails = $asset->asset ?? null;
+                                                        $createdBy = $assetDetails->createdBy ?? null;
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $assetDetails->name ?? '' }}</td>
+                                                        <td>{{ $assetDetails->asset_code ?? '' }}</td>
+                                                        <td>{{ $asset->created_at ? $asset->created_at->format('Y-m-d') : '' }}
+                                                        </td>
+                                                        <td>{{ $assetDetails->assetCategory->name ?? '' }}</td>
+                                                        <td>{{ (int) ($asset->quantity ?? 0) }}</td>
+                                                        <td>
+                                                            {{ trim(($createdBy->first_name ?? '') . ' ' . ($createdBy->mid_name ?? '') . ' ' . ($createdBy->last_name ?? '')) ?: '' }}
+                                                        </td>
+                                                        <td>{{ $assetDetails->company->name ?? '' }}</td>
+
+                                                        <td>{{ $assetDetails->description ?? '' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+
                                             </tbody>
                                         </table>
                                     </div>
