@@ -403,5 +403,13 @@ return [
     'asset_image' => 'صورة العهدة',
     'createdBy' => 'بواسطة',
     'business_id' => 'يتبع لشركة',
+    'penalties_violations' => 'الجزاءات والمخالفات',
+    'descrption' => 'الوصف',
+    'amount' => 'المبلغ',
+    'date' => 'التاريخ',
+    'Implemented' => 'تم التنفيذ',
+    'Not implemented' => 'لم يتم التنفيذ',
+    'implement_status' => 'حالة التنفيذ',
+    'application_date' => 'تاريخ التنفيذ',
 
 ];

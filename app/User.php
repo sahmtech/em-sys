@@ -25,6 +25,7 @@ use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\EssentialsWorkCard;
+use Modules\Essentials\Entities\Penalties;
 use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\Essentials\Entities\WorkCard;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
@@ -666,5 +667,10 @@ class User extends Authenticatable
     public function assetReceiver()
     {
         return $this->belongsTo(AssetTransaction::class, 'receiver');
+    }
+
+    public function penalties()
+    {
+        return $this->belongsTo(Penalties::class, 'user_id');
     }
 }

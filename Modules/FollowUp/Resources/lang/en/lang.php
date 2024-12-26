@@ -328,5 +328,13 @@ return [
     'asset_image' => 'Asset Image',
     'createdBy' => 'Created By',
     'business_id' => 'belongs to company',
+    'penalties_violations' => 'Penalties and Violations',
+    'descrption' => 'Descrption',
+    'amount' => 'Amount',
+    'date' => 'Date',
+    'Implemented' => 'Implemented',
+    'Not implemented' => 'Not implemented',
+    'implement_status' => 'implementation status',
+    'application_date' => 'implementation date',
 
 ];
