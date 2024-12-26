@@ -25,6 +25,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\Penalties;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Activitylog\Models\Activity;
@@ -334,6 +335,7 @@ class EssentailsworkersController extends Controller
         $document_delivery = null;
 
         $assets = AssetTransaction::where('receiver', $user->id)->get();
+        $penalties = Penalties::where('user_id', $user->id)->get();
 
         if ($user->user_type == 'employee') {
 
@@ -452,7 +454,8 @@ class EssentailsworkersController extends Controller
             'from',
             'request_attachments',
             'request',
-            'assets'
+            'assets',
+            'penalties'
         ));
     }
 
