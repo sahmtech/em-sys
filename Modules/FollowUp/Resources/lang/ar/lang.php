@@ -394,5 +394,14 @@ return [
     'deal_timesheet' => 'اعتماد التايم شيت',
 
     'add_branch' => 'إضافة الي فرع',
+    'asset' => 'العهد',
+    'asset_name' => 'إسم العهدة',
+    'asset_code' => 'كود العهدة',
+    'delivery_date' => 'تاريخ التسليم',
+    'asset_category' => 'فئة العهدة ',
+    'quantity' => 'الكمية',
+    'asset_image' => 'صورة العهدة',
+    'createdBy' => 'بواسطة',
+    'business_id' => 'يتبع لشركة',
 
 ];

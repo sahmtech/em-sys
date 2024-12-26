@@ -2,8 +2,8 @@
 
 namespace Modules\AssetManagement\Entities;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Asset extends Model
 {
@@ -28,6 +28,16 @@ class Asset extends Model
     public function businessLocation()
     {
         return $this->belongsTo(\App\BusinessLocation::class, 'location_id');
+    }
+
+    public function assetCategory()
+    {
+        return $this->belongsTo(\App\Category::class, 'category_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(\App\Business::class, 'business_id');
     }
 
     public function media()

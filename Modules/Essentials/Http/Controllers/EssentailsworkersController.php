@@ -14,6 +14,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\AssetManagement\Entities\AssetTransaction;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsCountry;
@@ -332,6 +333,8 @@ class EssentailsworkersController extends Controller
         $documents = null;
         $document_delivery = null;
 
+        $assets = AssetTransaction::where('receiver', $user->id)->get();
+
         if ($user->user_type == 'employee') {
 
             $documents = $user->OfficialDocument;
@@ -448,7 +451,8 @@ class EssentailsworkersController extends Controller
             'can_edit',
             'from',
             'request_attachments',
-            'request'
+            'request',
+            'assets'
         ));
     }
 

@@ -17,6 +17,8 @@
                     {{ @format_date($user->dob) }}
                 @endif
             </p>
+
+
             <p><strong>@lang('lang_v1.nationality'):</strong>
                 {{ !empty($nationality) ? json_decode($nationality, true)['nationality'] : '' }}</p>
 
