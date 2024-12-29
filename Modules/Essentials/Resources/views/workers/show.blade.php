@@ -891,8 +891,6 @@
 @endsection
 @section('javascript')
     <!-- document & note.js -->
-
-
     <script type="text/javascript">
         $(document).ready(function() {
             $('#user_id').change(function() {
@@ -902,14 +900,11 @@
             });
         });
     </script>
-
-
     <script type="text/javascript">
         $(document).ready(function() {
             $('input[type="checkbox"]').prop('disabled', true);
         });
     </script>
-
     <script>
         $(document).ready(function() {
             $('.file-link').on('click', function(e) {
@@ -983,6 +978,4 @@
             }
         }
     </script>
-
-
 @endsection
