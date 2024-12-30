@@ -9,6 +9,18 @@
             <span>@lang('helpdesk::lang.tickets_of_number', ['number' => $ticket->id])</span>
         </h1>
     </section>
+    @if (session('status'))
+        <script>
+            var status = @json(session('status')); // Convert the session data into a JavaScript object
+
+            if (status.success) {
+                toastr.success(status.msg); // Show success message using Toastr
+            } else {
+                toastr.error(status.msg); // Show error message using Toastr (if success is false)
+            }
+        </script>
+    @endif
+
 
 
     <section class="content">
@@ -56,8 +68,13 @@
                             </div>
 
                             <div class="col-md-4">
-                                <a href="{{ route('tickets.index') }}" class="btn btn-danger">@lang('helpdesk::lang.close_ticket')</a>
+                                @if ($ticket->status_id == 1)
+                                    <a href="{{ route('tickets.status', ['id' => $ticket->id]) }}" class="btn btn-danger">
+                                        @lang('helpdesk::lang.close_ticket')
+                                    </a>
+                                @endif
                             </div>
+
                         </div>
                         <div class="clearfix"></div>
                         <br>
@@ -70,6 +87,7 @@
                         <div class="col-md-12">
 
                             <table class="table table-bordered table-striped">
+
                                 @foreach ($ticket->replies->reverse() as $key => $reply)
                                     <tr>
                                         <td>
@@ -77,16 +95,17 @@
                                             <p>{{ $reply->created_at }}</p>
                                             <p>{{ $reply->user->first_name }}</p>
                                             <p>{{ $reply->message }}</p>
-                                         
-                                        
+
+
                                             @if (isset($reply->attachments) && count($reply->attachments) > 0)
-                                            <p>
-                                                <button type="button" class="btn btn-xs btn-primary btn-view-reply_attachment"
-                                                data-replay-attachment-id="{{ $reply->id }}">
-                                                    @lang('helpdesk::lang.view_attachments')
-                                                </button>
-                                            </p>
-                                        @endif
+                                                <p>
+                                                    <button type="button"
+                                                        class="btn btn-xs btn-primary btn-view-reply_attachment"
+                                                        data-replay-attachment-id="{{ $reply->id }}">
+                                                        @lang('helpdesk::lang.view_attachments')
+                                                    </button>
+                                                </p>
+                                            @endif
 
                                             <br>
                                         </td>

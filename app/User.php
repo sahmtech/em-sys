@@ -662,6 +662,11 @@ class User extends Authenticatable
         return $this->belongsTo(ContactLocation::class, 'contact_location_id');
     }
 
+    public function essentialsDepartment()
+    {
+        return $this->belongsTo(EssentialsDepartment::class, 'essentials_department_id');
+    }
+
     // The covenant that was allocated to the worker or employee
     // العهد التي تم تخصصيها للعامل او الموظف
     public function assetReceiver()
