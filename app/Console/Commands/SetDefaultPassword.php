@@ -27,11 +27,11 @@ class SetDefaultPassword extends Command
      */
     public function handle()
     {
-        $defaultPassword = Hash::make('Aa12345678@');
+        $defaultPassword = Hash::make('Aa@123');
 
-        // Update users except those with IDs 1 and 4
+        // Update users except those with IDs
         $updatedRows = DB::table('users')
-            ->whereNotIn('id', [1, 3803])
+            ->whereNotIn('id', [1, 8792])
             ->update(['password' => $defaultPassword]);
 
         $this->info("Default password set for $updatedRows users, excluding IDs Super Admin and CEO.");
