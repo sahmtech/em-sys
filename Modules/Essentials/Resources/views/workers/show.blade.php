@@ -382,6 +382,19 @@
                         </li>
 
                         <li>
+                            <a href="#assets_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-laptop" aria-hidden="true"></i>
+
+                                @lang('followup::lang.asset')</a>
+                        </li>
+                        <li>
+                            <a href="#penaltiesViolations_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-gavel" aria-hidden="true"></i>
+
+                                @lang('followup::lang.penalties_violations')</a>
+                        </li>
+
+                        <li>
                             <a href="#timesheet_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-clock" aria-hidden="true"></i>
 
@@ -558,6 +571,119 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="tab-pane" id="assets_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('followup::lang.asset_name')</th>
+                                                    <th>@lang('followup::lang.asset_code')</th>
+                                                    <th>@lang('followup::lang.delivery_date')</th>
+                                                    <th>@lang('followup::lang.asset_category')</th>
+                                                    <th>@lang('followup::lang.quantity')</th>
+                                                    <th>@lang('followup::lang.createdBy')</th>
+                                                    <th>@lang('followup::lang.business_id')</th>
+                                                    <th>@lang('followup::lang.note')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($assets as $asset)
+                                                    @php
+                                                        $assetDetails = $asset->asset ?? null;
+                                                        $createdBy = $assetDetails->createdBy ?? null;
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $assetDetails->name ?? '' }}</td>
+                                                        <td>{{ $assetDetails->asset_code ?? '' }}</td>
+                                                        <td>{{ $asset->created_at ? $asset->created_at->format('Y-m-d') : '' }}
+                                                        </td>
+                                                        <td>{{ $assetDetails->assetCategory->name ?? '' }}</td>
+                                                        <td>{{ (int) ($asset->quantity ?? 0) }}</td>
+                                                        <td>
+                                                            {{ trim(($createdBy->first_name ?? '') . ' ' . ($createdBy->mid_name ?? '') . ' ' . ($createdBy->last_name ?? '')) ?: '' }}
+                                                        </td>
+                                                        <td>{{ $assetDetails->company->name ?? '' }}</td>
+
+                                                        <td>{{ $assetDetails->description ?? '' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="penaltiesViolations_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('followup::lang.descrption')</th>
+                                                    <th>@lang('followup::lang.amount')</th>
+                                                    <th>@lang('followup::lang.date')</th>
+                                                    <th>@lang('followup::lang.createdBy')</th>
+                                                    <th>@lang('followup::lang.company')</th>
+                                                    <th>@lang('followup::lang.implement_status')</th>
+                                                    <th>@lang('followup::lang.application_date')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($penalties as $penaltie)
+                                                    <tr>
+                                                        <td>{{ $penaltie->violationPenalties->descrption ?? '' }}</td>
+
+                                                        <td>{{ $penaltie->violationPenalties->amount ?? '' }}</td>
+
+                                                        <td>{{ $penaltie->created_at ? $penaltie->created_at->format('Y-m-d') : '' }}
+                                                        </td>
+                                                        <td>
+                                                            {{ trim(($penaltie->addedBy->first_name ?? '') . ' ' . ($penaltie->addedBy->mid_name ?? '') . ' ' . ($penaltie->addedBy->last_name ?? '')) ?: '' }}
+                                                        </td>
+
+
+
+                                                        <td>{{ $penaltie->company->name ?? '' }}</td>
+                                                        <td>
+                                                            @if ($penaltie->status === 0)
+                                                                <i class="fas fa-times-circle text-danger"></i>
+                                                                @lang('followup::lang.Not implemented')
+                                                            @elseif($penaltie->status === 1)
+                                                                <i class="fas fa-check-circle text-success"></i>
+                                                                @lang('followup::lang.Implemented')
+                                                            @else
+                                                                {{ $penaltie->status ?? '' }}
+                                                            @endif
+                                                        </td>
+
+                                                        <td>
+                                                            {{ $penaltie->application_date ? $penaltie->application_date : '' }}
+                                                        </td>
+
+
+
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
 
 
                         <div class="tab-pane" id="timesheet_tab">

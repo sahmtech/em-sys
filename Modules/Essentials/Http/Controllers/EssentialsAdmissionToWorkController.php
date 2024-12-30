@@ -2,20 +2,16 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\AccessRole;
-use App\AccessRoleCompany;
-use App\Company;
 use App\User;
-
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 
 class EssentialsAdmissionToWorkController extends Controller
 {
@@ -28,6 +24,7 @@ class EssentialsAdmissionToWorkController extends Controller
 
     public function index()
     {
+
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
@@ -41,7 +38,7 @@ class EssentialsAdmissionToWorkController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $departments =  EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -61,8 +58,6 @@ class EssentialsAdmissionToWorkController extends Controller
 
             )->where('essentials_admission_to_works.is_active', 1);
 
-
-
         if (!empty(request()->input('admissions_status')) && request()->input('admissions_status') !== 'all') {
             $admissionToWork->where('essentials_admission_to_works.admissions_status', request()->input('admissions_status'));
         }
@@ -71,8 +66,6 @@ class EssentialsAdmissionToWorkController extends Controller
             $admissionToWork->where('essentials_admission_to_works.admissions_type', request()->input('admissions_type'));
         }
 
-
-
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start = request()->start_date;
             $end = request()->end_date;
@@ -80,11 +73,7 @@ class EssentialsAdmissionToWorkController extends Controller
                 ->whereDate('essentials_admission_to_works.admissions_date', '<=', $end);
         }
 
-
         if (request()->ajax()) {
-
-
-
 
             return Datatables::of($admissionToWork)
 
@@ -109,7 +98,6 @@ class EssentialsAdmissionToWorkController extends Controller
                             $html .= '&nbsp; <a href="#" class="btn btn-xs btn-warning change_admission_activity"  data-admission-id="' . $row->id . '" data-orig-value="' . $row->is_active . '"><i class="glyphicon glyphicon-stop"></i> ' . __('essentials::lang.end_admission_activate') . '</a>';
                         }
 
-
                         return $html;
                     }
                 )
@@ -127,15 +115,15 @@ class EssentialsAdmissionToWorkController extends Controller
                 ->filterColumn('admissions_status', function ($query, $keyword) {
                     $query->where('essentials_admission_to_works.admissions_status', 'like', "%$keyword%");
                 })
-                // ->filterColumn('admissions_date', function ($query, $keyword) {
-                //     $query->whereDate('essentials_admission_to_works.admissions_date', '=', $keyword);
-                // })
+            // ->filterColumn('admissions_date', function ($query, $keyword) {
+            //     $query->whereDate('essentials_admission_to_works.admissions_date', '=', $keyword);
+            // })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
         $query = User::whereIn('id', $userIds);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
@@ -191,8 +179,6 @@ class EssentialsAdmissionToWorkController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         try {
             $input = $request->only(['employee', 'admissions_type', 'admissions_status', 'admissions_date']);
 
@@ -200,13 +186,11 @@ class EssentialsAdmissionToWorkController extends Controller
             $input2['admissions_type'] = $input['admissions_type'];
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];
-            $input2['created_by'] =  Auth::user()->id;
-
+            $input2['created_by'] = Auth::user()->id;
 
             $previous_admission = EssentialsAdmissionToWork::where('employee_id', $input2['employee_id'])
                 ->latest('created_at')
                 ->first();
-
 
             if ($previous_admission) {
                 $previous_admission->is_active = 0;
@@ -215,7 +199,6 @@ class EssentialsAdmissionToWorkController extends Controller
             }
 
             EssentialsAdmissionToWork::create($input2);
-
 
             $output = [
                 'success' => true,
@@ -241,15 +224,12 @@ class EssentialsAdmissionToWorkController extends Controller
         return redirect()->route('admissionToWork')->with(compact('users', 'departments'));
     }
 
-
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
         try {
-
 
             $admission = EssentialsAdmissionToWork::where('id', $id)->where('is_active', 1)->first();
 
@@ -291,13 +271,10 @@ class EssentialsAdmissionToWorkController extends Controller
      * @return Renderable
      */
 
-
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         $work = EssentialsAdmissionToWork::findOrFail($id);
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
@@ -309,14 +286,11 @@ class EssentialsAdmissionToWorkController extends Controller
         return view('essentials::employee_affairs.admission_to_work.edit')->with(compact('users', 'departments', 'work'));
     }
 
-
     public function update(Request $request, $id)
     {
 
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
             $input = $request->only(['employee', 'admissions_type', 'admissions_status', 'admissions_date']);
@@ -327,7 +301,7 @@ class EssentialsAdmissionToWorkController extends Controller
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];
 
-            $input2['updated_by'] =  Auth::user()->id;
+            $input2['updated_by'] = Auth::user()->id;
 
             EssentialsAdmissionToWork::where('id', $id)->update($input2);
             $output = [

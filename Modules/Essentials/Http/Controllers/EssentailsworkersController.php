@@ -14,6 +14,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\AssetManagement\Entities\AssetTransaction;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsCountry;
@@ -24,6 +25,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\Penalties;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Activitylog\Models\Activity;
@@ -332,6 +334,9 @@ class EssentailsworkersController extends Controller
         $documents = null;
         $document_delivery = null;
 
+        $assets = AssetTransaction::where('receiver', $user->id)->get();
+        $penalties = Penalties::where('user_id', $user->id)->get();
+
         if ($user->user_type == 'employee') {
 
             $documents = $user->OfficialDocument;
@@ -448,7 +453,9 @@ class EssentailsworkersController extends Controller
             'can_edit',
             'from',
             'request_attachments',
-            'request'
+            'request',
+            'assets',
+            'penalties'
         ));
     }
 

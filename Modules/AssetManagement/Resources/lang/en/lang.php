@@ -95,4 +95,5 @@ return [
     'maintenance_note' => 'Maintenance note',
     'edit_asset' => 'Edit asset',
     'delete_asset' => 'Delete asset',
+    'asset' => 'Assets',
 ];

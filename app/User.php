@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Laravel\Passport\HasApiTokens;
+use Modules\AssetManagement\Entities\AssetTransaction;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsCountry;
@@ -24,6 +25,7 @@ use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\EssentialsWorkCard;
+use Modules\Essentials\Entities\Penalties;
 use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\Essentials\Entities\WorkCard;
 use Modules\FollowUp\Entities\FollowupUserAccessProject;
@@ -474,8 +476,6 @@ class User extends Authenticatable
         return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id')->where('is_active', 1);
     }
 
-    
-
     public function proposal_worker()
     {
         return $this->belongsTo(IrProposedLabor::class, 'proposal_worker_id');
@@ -660,5 +660,17 @@ class User extends Authenticatable
     public function contactLocation()
     {
         return $this->belongsTo(ContactLocation::class, 'contact_location_id');
+    }
+
+    // The covenant that was allocated to the worker or employee
+    // العهد التي تم تخصصيها للعامل او الموظف
+    public function assetReceiver()
+    {
+        return $this->belongsTo(AssetTransaction::class, 'receiver');
+    }
+
+    public function penalties()
+    {
+        return $this->belongsTo(Penalties::class, 'user_id');
     }
 }

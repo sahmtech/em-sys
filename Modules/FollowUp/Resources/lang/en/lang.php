@@ -318,5 +318,23 @@ return [
 
     //  ''=>'',
     'add_branch' => 'Add to branch',
+    'asset' => 'Assets',
+
+    'asset_name' => 'Asset Name',
+    'asset_code' => 'Asset code',
+    'delivery_date' => 'delivery date',
+    'asset_category' => 'Asset Category',
+    'quantity' => 'Quantity',
+    'asset_image' => 'Asset Image',
+    'createdBy' => 'Created By',
+    'business_id' => 'belongs to company',
+    'penalties_violations' => 'Penalties and Violations',
+    'descrption' => 'Description of Violation',
+    'amount' => 'Amount',
+    'date' => 'Date',
+    'Implemented' => 'Implemented',
+    'Not implemented' => 'Not implemented',
+    'implement_status' => 'implementation status',
+    'application_date' => 'implementation date',
 
 ];
