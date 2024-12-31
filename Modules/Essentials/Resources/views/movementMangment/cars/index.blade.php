@@ -103,7 +103,6 @@
 
 @section('javascript')
 
-
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -134,8 +133,9 @@
                     // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
 
                     {
-                        "data": "car_typeModel"
+                        "data": "car_typeModel",
                     },
+
                     {
                         "data": "plate_number"
                     },

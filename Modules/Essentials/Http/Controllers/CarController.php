@@ -3,18 +3,17 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\Contact;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use App\User;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarImage;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\CarType;
-use Modules\HousingMovements\Entities\HousingMovmentInsurance;
 use Yajra\DataTables\Facades\DataTables;
 
 class CarController extends Controller
@@ -27,9 +26,8 @@ class CarController extends Controller
     public function index(Request $request)
     {
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_index_cars =  auth()->user()->can('essentials.cars');
+        $can_index_cars = auth()->user()->can('essentials.cars');
         if (!($is_admin || $can_index_cars)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -44,7 +42,6 @@ class CarController extends Controller
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
 
-
                 $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
             }
 
@@ -53,7 +50,6 @@ class CarController extends Controller
             $can_insurance_car = auth()->user()->can('car.insurance');
 
             return DataTables::of($Cars)
-
 
                 ->editColumn('car_typeModel', function ($row) {
                     return $row->CarModel->CarType?->name_ar ?? '' . ' - ' . $row->CarModel?->name_ar ?? '';
@@ -94,7 +90,7 @@ class CarController extends Controller
                 })
 
                 ->editColumn('number_seats', function ($row) {
-                    return  $row->number_seats ?? '';
+                    return $row->number_seats ?? '';
                 })
                 ->editColumn('color', function ($row) {
                     return $row->color ?? '';
@@ -111,27 +107,26 @@ class CarController extends Controller
                     function ($row) use ($is_admin, $can_edit_car, $can_delete_car, $can_insurance_car) {
 
                         $html = '';
-                        if ($is_admin  || $can_edit_car) {
+                        if ($is_admin || $can_edit_car) {
                             $html .= '
-                            <a href="' . route('essentials.car.edit', ['id' => $row->id])  . '"
-                            data-href="' . route('essentials.car.edit', ['id' => $row->id])  . ' "
+                            <a href="' . route('essentials.car.edit', ['id' => $row->id]) . '"
+                            data-href="' . route('essentials.car.edit', ['id' => $row->id]) . ' "
                              class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_car_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
-                             <a href="' . route('essentials.car.show', ['id' => $row->id])  . '"
-                             data-href="' . route('essentials.car.show', ['id' => $row->id])  . ' "
+                             <a href="' . route('essentials.car.show', ['id' => $row->id]) . '"
+                             data-href="' . route('essentials.car.show', ['id' => $row->id]) . ' "
                               class="btn btn-xs btn-modal btn-info show_car_button"  data-container="#show_car_model">' . __("housingmovements::lang.show") . '</a>
                          ';
                         }
-                        if ($is_admin  || $can_delete_car) {
+                        if ($is_admin || $can_delete_car) {
                             $html .= '
-                            <button data-href="' .  route('essentials.car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                            <button data-href="' . route('essentials.car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
                         }
-                        if ($is_admin  || $can_insurance_car) {
+                        if ($is_admin || $can_insurance_car) {
                             $html .= '
-                <a href="' .  route('essentials.car-insurance', ['id' => $row->id]) . '" style="margin-top: 2px;" class="btn btn-xs btn-info">' . __("essentials::lang.insurance") . '</a>
+                <a href="' . route('essentials.car-insurance', ['id' => $row->id]) . '" style="margin-top: 2px;" class="btn btn-xs btn-info">' . __("essentials::lang.insurance") . '</a>
             ';
                         }
-
 
                         return $html;
                     }
@@ -157,13 +152,12 @@ class CarController extends Controller
     public function create()
     {
 
-
         $carTypes = CarType::all();
         // $insurance_companies = Contact::where('type', 'insurance')->get();
         return view('essentials::movementMangment.cars.create', compact('carTypes'));
     }
 
-    // 	
+    //
     public function getCarModelByCarType_id($carType_id)
     {
         if (request()->ajax()) {
@@ -180,7 +174,7 @@ class CarController extends Controller
     {
         try {
             DB::beginTransaction();
-            $car =  Car::create([
+            $car = Car::create([
                 'plate_number' => $request->input('plate_number'),
                 'color' => $request->input('color'),
                 // 'user_id' => $request->input('user_id'),
@@ -196,7 +190,6 @@ class CarController extends Controller
                 'examination_status' => $request->input('examination_status'),
                 // 'insurance_status' => $request->input('insurance_status'),
 
-
             ]);
 
             if ($request->hasFile('car_image')) {
@@ -206,7 +199,7 @@ class CarController extends Controller
                     $image->move($destinationPath, $filename);
                     CarImage::create([
                         'car_image' => $filename,
-                        'car_id' => $car->id
+                        'car_id' => $car->id,
                     ]);
                 }
             }
@@ -257,7 +250,6 @@ class CarController extends Controller
         return view('essentials::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes'));
     }
 
-
     public function show($id)
     {
         $car = Car::find($id);
@@ -265,7 +257,7 @@ class CarController extends Controller
             $carModel = CarModel::find($car->car_model_id);
             $carModels = CarModel::where('car_type_id', $carModel->car_type_id)->get();
             $carTypes = CarType::all();
-            $carImage =  CarImage::where('car_id', $id)->get();
+            $carImage = CarImage::where('car_id', $id)->get();
         }
         // $insurance_companies = Contact::where('type', 'insurance')->get();
         return view('essentials::movementMangment.cars.show', compact('car', 'carModel', 'carModels', 'carTypes', 'carImage'));
@@ -299,8 +291,6 @@ class CarController extends Controller
                 'insurance_status' => $request->input('insurance_status'),
             ]);
 
-
-
             if ($car->images) {
                 $car->images()->delete();
                 if ($request->hasFile('car_image')) {
@@ -310,7 +300,7 @@ class CarController extends Controller
                         $image->move($destinationPath, $filename);
                         CarImage::create([
                             'car_image' => $filename,
-                            'car_id' => $car->id
+                            'car_id' => $car->id,
                         ]);
                     }
                 }
@@ -322,7 +312,7 @@ class CarController extends Controller
                         $image->move($destinationPath, $filename);
                         CarImage::create([
                             'car_image' => $filename,
-                            'car_id' => $car->id
+                            'car_id' => $car->id,
                         ]);
                     }
                 }
