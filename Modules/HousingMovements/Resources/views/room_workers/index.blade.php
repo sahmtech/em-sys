@@ -13,7 +13,6 @@
     <!-- Main content -->
     <section class="content">
 
-
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
 
@@ -21,9 +20,12 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="workers_table">
                         <tr class="bg-green">
+                            <th>#</th>
+
                             <th>
                                 <input type="checkbox" id="select-all">
                             </th>
+
                             <th>{{ __('followup::lang.name') }}</th>
                             <th>{{ __('housingmovements::lang.still_housed') }}</th>
                             <th>{{ __('followup::lang.sponsor') }}</th>
@@ -59,6 +61,10 @@
                         </div>
                         @foreach ($users as $user)
                             <tr>
+                                <td>
+                                    {{ $loop->index + 1 }}
+
+                                </td>
                                 <td>
                                     <input type="checkbox" class="select-row" data-id="{{ $user->id }}">
 
@@ -264,7 +270,7 @@
                 });
 
                 $('#submitsBtn').click(function(e) {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     var selectedOption = $('#roomSelector option:selected');
                     var beds_count = selectedOption.data('beds_count');
 
@@ -273,19 +279,19 @@
                         bed_count_exceeded: "{{ __('messages.bed_count_exceeded') }}",
                     };
 
-                  
-                
+
+
 
                     if (selectedRows > beds_count) {
                         alert(messages.bed_count_exceeded);
-                        return; 
+                        return;
                     } else {
-                        var formData = new FormData($('#transfer_form')[0]); 
+                        var formData = new FormData($('#transfer_form')[0]);
 
                         $.ajax({
                             type: 'POST',
                             url: $('#transfer_form').attr(
-                            'action'), 
+                                'action'),
                             data: formData,
                             processData: false,
                             contentType: false,
@@ -293,7 +299,7 @@
                                 console.log(result);
                                 console.log(result);
                                 if (result.success === true) {
-      
+
                                     toastr.success(result.msg);
 
                                     window.location.reload();
@@ -340,16 +346,16 @@
                     var selectedOption = $(this).find('option:selected');
                     var beds_count = selectedOption.data('beds_count');
                     $('#bedCountMessage').text("Selected room has " + beds_count + " beds.");
-                 
+
                 });
 
                 $('#changeStatusModal').on('shown.bs.modal', function(e) {
-                $('#roomSelector').select2({
-                    dropdownParent: $(
-                        '#changeStatusModal'),
-                    width: '100%',
+                    $('#roomSelector').select2({
+                        dropdownParent: $(
+                            '#changeStatusModal'),
+                        width: '100%',
+                    });
                 });
-            });
             });
         </script>
 
