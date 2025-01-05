@@ -64,6 +64,7 @@
                                     <th>@lang('housingmovements::lang.area')</th>
                                     <th>@lang('housingmovements::lang.total_beds')</th>
                                     <th>@lang('housingmovements::lang.available_beds')</th>
+                                    <th>@lang('housingmovements::lang.buys_beds')</th>
                                     <th>@lang('housingmovements::lang.contents')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -186,6 +187,9 @@
                     },
                     {
                         data: 'beds_count'
+                    },
+                    {
+                        data: 'buys_beds'
                     },
                     {
                         data: 'contents'

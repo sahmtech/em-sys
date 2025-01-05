@@ -343,5 +343,6 @@ return [
     'show_timesheet' => 'عرض معلومات التايم شيت',
     'deal_timesheet' => 'اعتماد التايم شيت',
     'import_new_arrival_workers' => 'إضافة وصول جديد للعمال',
+    'buys_beds' => 'عدد الأسرة المشغولة',
 
 ];

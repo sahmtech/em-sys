@@ -76,6 +76,15 @@ class RoomController extends Controller
                     return $total_beds;
                 })
 
+                ->addColumn('buys_beds', function ($row) use ($buildings) {
+
+                    $buys_beds_count = HtrRoomsWorkersHistory::where('room_id', $row->id)
+                        ->where('still_housed', 1)
+                        ->count();
+
+                    return $buys_beds_count;
+                })
+
                 ->addColumn('checkbox', function ($row) {
                     return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
                 })
