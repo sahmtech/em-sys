@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\HelpDesk\Entities\HdAttachment;
+use Modules\HelpDesk\Entities\HdTicket;
 use Modules\HelpDesk\Entities\HdTicketReply;
 
 class HdTicketReplyController extends Controller
@@ -56,6 +57,13 @@ class HdTicketReplyController extends Controller
                     ]);
                 }
             }
+
+            $ticket = HdTicket::find($request->ticket_id);
+
+            $ticket->update([
+                'status_id' => 1,
+            ]);
+
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
@@ -70,7 +78,7 @@ class HdTicketReplyController extends Controller
             ];
         }
 
-        return redirect()->route('tickets.show',['id' => $request->ticket_id])->with('status', $output);
+        return redirect()->route('tickets.show', ['id' => $request->ticket_id])->with('status', $output);
     }
 
     /**

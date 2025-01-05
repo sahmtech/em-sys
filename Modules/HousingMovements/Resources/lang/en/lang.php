@@ -170,5 +170,6 @@ return [
     'car_info' => 'Car information',
     'show' => 'show',
     'import_new_arrival_workers' => 'Add new arrival of workers',
+    'buys_beds' => 'number of beds occupied',
 
 ];

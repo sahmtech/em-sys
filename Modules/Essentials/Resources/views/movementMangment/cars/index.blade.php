@@ -103,7 +103,6 @@
 
 @section('javascript')
 
-
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -116,7 +115,7 @@
 
             cars_table = $('#cars_table').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: '{{ route('essentials.cars') }}',
                     data: function(d) {
@@ -134,8 +133,9 @@
                     // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
 
                     {
-                        "data": "car_typeModel"
+                        "data": "car_typeModel",
                     },
+
                     {
                         "data": "plate_number"
                     },

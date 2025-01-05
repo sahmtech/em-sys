@@ -64,6 +64,7 @@
                                     <th>@lang('housingmovements::lang.area')</th>
                                     <th>@lang('housingmovements::lang.total_beds')</th>
                                     <th>@lang('housingmovements::lang.available_beds')</th>
+                                    <th>@lang('housingmovements::lang.buys_beds')</th>
                                     <th>@lang('housingmovements::lang.contents')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -186,6 +187,9 @@
                     },
                     {
                         data: 'beds_count'
+                    },
+                    {
+                        data: 'buys_beds'
                     },
                     {
                         data: 'contents'
@@ -360,7 +364,7 @@
                             $('#roomNumbersDisplay').empty();
 
                             $.each(response, function(roomId, roomInfo) {
-                               
+
                                 var workerSelectDropdown = $('<select>', {
                                     id: 'workerSelectId_' + roomId,
                                     name: 'workers[' + roomId + '][]',
@@ -439,15 +443,15 @@
                         console.log(result);
                         if (result.success === true) {
                             toastr.success(result.msg);
-                          //  rooms_table.ajax.reload();
+                            //  rooms_table.ajax.reload();
                             window.location.reload();
 
                             $('#changeStatusModal').modal('hide');
-                          
+
                         } else {
                             toastr.error(result.msg);
                         }
-                       
+
                     },
                     error: function(error) {
                         console.error("Error submitting data:", error);
@@ -456,7 +460,7 @@
             });
 
 
-        
+
 
         });
     </script>

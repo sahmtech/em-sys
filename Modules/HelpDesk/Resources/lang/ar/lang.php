@@ -19,10 +19,14 @@ return [
     'add_reply' => 'أضف رد',
     'close_ticket' => 'أغلق التذكرة',
     'view_attachments' => 'عرض المرفقات',
-    'ticket_number'=>'رقم التذكرة'
-
+    'ticket_number' => 'رقم التذكرة',
+    'ticket_user_create' => 'إسم صاحب التذكرة',
+    'ticket_created_at' => 'تاريخ فتح التذكرة',
+    'ticket_department' => 'الإدارة',
+    'user_reply' => 'تم الرد من قبل',
+    'no_replies_yet' => ' لم يتم الرد بعد',
+    'priority' => 'الأولوية',
 
 ];
-
 
 // ''=>'',

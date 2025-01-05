@@ -2,32 +2,29 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
+use App\User;
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
 use Modules\HousingMovements\Entities\HtrRoom;
 use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
-use App\User;
+use Yajra\DataTables\Facades\DataTables;
 
 class RoomController extends Controller
 {
     protected $moduleUtil;
-
 
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
     }
 
-
     public function index()
     {
 
         $business_id = request()->session()->get('user.business_id');
-
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_housing_crud_rooms = auth()->user()->can('housingmovements.crud_rooms');
@@ -37,7 +34,6 @@ class RoomController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
 
@@ -55,8 +51,6 @@ class RoomController extends Controller
             ->orderBy('id', 'desc');
         if (request()->ajax()) {
 
-
-
             if (!empty(request()->input('htr_building')) && request()->input('htr_building') !== 'all') {
                 $rooms->where('htr_building_id', request()->input('htr_building'));
             }
@@ -70,11 +64,25 @@ class RoomController extends Controller
             }
             return Datatables::of($rooms)
 
-
                 ->editColumn('htr_building_id', function ($row) use ($buildings) {
                     $item = $buildings[$row->htr_building_id] ?? '';
 
                     return $item;
+                })
+
+                ->addColumn('total_beds', function ($row) use ($buildings) {
+                    $total_beds = $row->total_beds;
+
+                    return $total_beds;
+                })
+
+                ->addColumn('buys_beds', function ($row) use ($buildings) {
+
+                    $buys_beds_count = HtrRoomsWorkersHistory::where('room_id', $row->id)
+                        ->where('still_housed', 1)
+                        ->count();
+
+                    return $buys_beds_count;
                 })
 
                 ->addColumn('checkbox', function ($row) {
@@ -84,15 +92,15 @@ class RoomController extends Controller
                     'action',
                     function ($row) use ($is_admin, $can_room_workers, $can_room_edit, $can_room_delete) {
                         $html = '';
-                        if ($is_admin  || $can_room_workers) {
-                            $html .= '<a href="' . route('show_room_workers', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-eye"></i> ' . __('housingmovements::lang.show_rooms_residents') . '</a>
+                        if ($is_admin || $can_room_workers) {
+                            $html .= '<a href="' . route('show_room_workers', ['id' => $row->id]) . '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-eye"></i> ' . __('housingmovements::lang.show_rooms_residents') . '</a>
 
                         &nbsp;';
                         }
-                        if ($is_admin  || $can_room_edit) {
+                        if ($is_admin || $can_room_edit) {
                             $html .= '&nbsp;<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                         }
-                        if ($is_admin  || $can_room_delete) {
+                        if ($is_admin || $can_room_delete) {
 
                             $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_room_button" data-href="' . route('room.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
@@ -119,7 +127,6 @@ class RoomController extends Controller
             )
             ->pluck('full_name', 'users.id');
 
-
         $roomStatusOptions = [
             'busy' => __('housingmovements::lang.busy_rooms'),
             'available' => __('housingmovements::lang.available_rooms'),
@@ -131,7 +138,6 @@ class RoomController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-
 
         $can_crud_rooms = auth()->user()->can('housingmovements.crud_rooms');
         if (!$can_crud_rooms) {
@@ -162,7 +168,6 @@ class RoomController extends Controller
                 }
             }
             return Datatables::of($empty_rooms)
-
 
                 ->editColumn('htr_building_id', function ($row) use ($buildings) {
                     $item = $buildings[$row->htr_building_id] ?? '';
@@ -208,7 +213,7 @@ class RoomController extends Controller
                 'appointment.location',
                 'contract',
                 'OfficialDocument',
-                'workCard'
+                'workCard',
             ])
             ->get();
 
@@ -245,7 +250,7 @@ class RoomController extends Controller
                 $carbon_now = \Carbon::now();
                 HtrRoomsWorkersHistory::where('worker_id', $userId)->update([
                     'still_housed' => '0',
-                    'leave_date' => $carbon_now
+                    'leave_date' => $carbon_now,
                 ]);
                 $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)
                     ->latest()
@@ -253,7 +258,6 @@ class RoomController extends Controller
                     ->first();
 
                 $room = HtrRoom::where('id', $roomId)->first();
-
 
                 if ($room) {
                     $room->beds_count += 1;
@@ -298,7 +302,6 @@ class RoomController extends Controller
     {
         try {
 
-
             $selectedRowsData = json_decode($request->input('selectedRowsData'), true);
 
             if (empty($selectedRowsData)) {
@@ -310,17 +313,14 @@ class RoomController extends Controller
 
             foreach ($selectedRowsData as $row) {
 
-
                 $userId = $row['id'];
 
                 $carbon_now = \Carbon::now();
 
-
                 HtrRoomsWorkersHistory::where('worker_id', $userId)->update([
                     'still_housed' => '0',
-                    'leave_date' => $carbon_now
+                    'leave_date' => $carbon_now,
                 ]);
-
 
                 $roomId = HtrRoomsWorkersHistory::where('worker_id', $userId)->pluck('room_id');
 
@@ -367,7 +367,6 @@ class RoomController extends Controller
         return $output;
     }
 
-
     public function getSelectedroomsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');
@@ -390,8 +389,6 @@ class RoomController extends Controller
                     'beds_count' => $otherRoom->beds_count,
                 ];
             }
-
-
 
             if ($room) {
                 $existingWorkerIds = HtrRoomsWorkersHistory::where('room_id', $roomId)
@@ -423,7 +420,6 @@ class RoomController extends Controller
                         ->pluck('full_name', 'id');
                 }
 
-
                 $data['rooms'][] = [
                     'room_id' => $room->id,
                     'room_number' => $room->room_number,
@@ -436,8 +432,6 @@ class RoomController extends Controller
 
         return response()->json($data);
     }
-
-
 
     public function room_data(Request $request)
     {
@@ -475,17 +469,14 @@ class RoomController extends Controller
                                             ->increment('beds_count');
                                     }
 
-
                                     $transferHistory = new HtrRoomsWorkersHistory();
                                     $transferHistory->room_id = $transferRoomId;
                                     $transferHistory->worker_id = $workerId;
                                     $transferHistory->still_housed = 1;
                                     $transferHistory->save();
 
-
                                     $user = User::find($workerId);
                                     $user->update(['room_id' => $transferRoomId, 'updated_by' => auth()->user()->id]);
-
 
                                     DB::table('htr_rooms')
                                         ->where('id', $transferRoomId)
@@ -536,12 +527,10 @@ class RoomController extends Controller
         return response()->json($output);
     }
 
-
     /**
      * Show the form for creating a new resource.
      * @return Renderable
      */
-
 
     public function workers_housed(Request $request)
     {
@@ -613,7 +602,6 @@ class RoomController extends Controller
         return $output;
     }
 
-
     /**
      * Store a newly created resource in storage.
      * @param Request $request
@@ -662,8 +650,6 @@ class RoomController extends Controller
         return response()->json($output);
     }
 
-
-
     /**
      * Show the specified resource.
      * @param int $id
@@ -684,8 +670,6 @@ class RoomController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         $room = DB::table('htr_rooms')->find($roomId);
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
         $output = [
@@ -700,18 +684,14 @@ class RoomController extends Controller
         return response()->json($output);
     }
 
-
     public function update(Request $request, $roomId)
     {
 
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         try {
             $input = $request->only(['room_number', 'htr_building', 'area', 'total_beds', 'contents']);
-
 
             $input2['room_number'] = $input['room_number'];
             $input2['htr_building_id'] = $input['htr_building'];
@@ -719,9 +699,7 @@ class RoomController extends Controller
             $input2['total_beds'] = $input['total_beds'];
             $input2['contents'] = $input['contents'];
 
-
             DB::table('htr_rooms')->where('id', $roomId)->update($input2);
-
 
             $output = [
                 'success' => true,
@@ -736,18 +714,13 @@ class RoomController extends Controller
             ];
         }
 
-
         return response()->json($output);
     }
-
-
 
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
 
         try {
 

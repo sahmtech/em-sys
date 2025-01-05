@@ -125,11 +125,12 @@
 
                                     <select class="form-control" name="manufacturing_year" id="manufacturing_year">
                                         @php
-                                            $currentYear = date('Y');
-                                            for ($year = $currentYear; $year >= 1900; $year--) {
+                                            $currentYear = date('Y') + 1; // Add 1 to the current year
+                                            for ($year = $currentYear; $year >= 2000; $year--) {
                                                 echo '<option value="' . $year . '">' . $year . '</option>';
                                             }
                                         @endphp
+
 
 
                                     </select>

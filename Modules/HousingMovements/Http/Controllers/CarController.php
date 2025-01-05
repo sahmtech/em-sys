@@ -3,15 +3,12 @@
 namespace Modules\HousingMovements\Http\Controllers;
 
 use App\Contact;
-use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\CarType;
@@ -30,19 +27,14 @@ class CarController extends Controller
         $Cars = Car::all();
         $carTypes = CarModel::all();
 
-
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
 
-
                 $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
             }
 
-
-
             return DataTables::of($Cars)
-
 
                 ->editColumn('car_typeModel', function ($row) {
                     return $row->CarModel->CarType?->name_ar ?? '' . ' - ' . $row->CarModel?->name_ar ?? '';
@@ -83,7 +75,7 @@ class CarController extends Controller
                 })
 
                 ->editColumn('number_seats', function ($row) {
-                    return  $row->number_seats ?? '';
+                    return $row->number_seats ?? '';
                 })
                 ->editColumn('color', function ($row) {
                     return $row->color ?? '';
@@ -101,14 +93,13 @@ class CarController extends Controller
                         $html = '';
 
                         $html .= '
-                        <a href="' . route('car.edit', ['id' => $row->id])  . '"
-                        data-href="' . route('car.edit', ['id' => $row->id])  . ' "
+                        <a href="' . route('car.edit', ['id' => $row->id]) . '"
+                        data-href="' . route('car.edit', ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_car_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         $html .= '
-                    <button data-href="' .  route('car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                    <button data-href="' . route('car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
 
                         return $html;
                     }
@@ -134,13 +125,12 @@ class CarController extends Controller
     public function create()
     {
 
-
         $carTypes = CarType::all();
         $insurance_companies = Contact::where('type', 'insurance')->get();
         return view('housingmovements::movementMangment.cars.create', compact('carTypes', 'insurance_companies'));
     }
 
-    // 	
+    //
     public function getCarModelByCarType_id($carType_id)
     {
         if (request()->ajax()) {
@@ -174,9 +164,7 @@ class CarController extends Controller
                 'examination_status' => $request->input('examination_status'),
                 'insurance_status' => $request->input('insurance_status'),
 
-
             ]);
-
 
             DB::commit();
             return redirect()->back()
@@ -318,7 +306,6 @@ class CarController extends Controller
             $filters_search_carModle = $request->input("search_carModle");
             $filters_search_plate_number = $request->input("search_plate_number");
 
-
             $query->whereHas('User', function ($q) use ($filters) {
                 $q->where('first_name', 'like', "%{$filters}%")
                     ->orwhere('last_name', 'like', "%{$filters}%");
@@ -339,7 +326,6 @@ class CarController extends Controller
         }
 
         $Cars = $query->paginate(5);
-
 
         $carTypes = CarType::all();
         $after_serch = true;

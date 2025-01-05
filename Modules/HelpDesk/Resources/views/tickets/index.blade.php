@@ -2,13 +2,31 @@
 @section('title', __('helpdesk::lang.tickets'))
 
 @section('content')
-
+    <style>
+        .badge-orange {
+            background-color: #fd7e14;
+            color: white;
+        }
+    </style>
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
             <span>@lang('helpdesk::lang.tickets')</span>
         </h1>
     </section>
+    @if (session('status'))
+        <script>
+            var status = @json(session('status')); // Convert the session data into a JavaScript object
+
+            if (status.success) {
+                toastr.success(status.msg); // Show success message using Toastr
+            } else {
+                toastr.error(status.msg); // Show error message using Toastr (if success is false)
+            }
+        </script>
+    @endif
+
+
 
 
     <section class="content">
@@ -31,9 +49,16 @@
                         <table class="table table-bordered table-striped" id="tickets_table">
                             <thead>
                                 <tr>
-                                    <th>@lang('helpdesk::lang.ticket_number')</th>
+                                    {{-- <th>@lang('helpdesk::lang.ticket_number')</th> --}}
+                                    <th style="white-space: nowrap; width: 2%;">@lang('helpdesk::lang.ticket_number')</th>
                                     <th>@lang('helpdesk::lang.title')</th>
+                                    <th>@lang('helpdesk::lang.ticket_user_create')</th>
+                                    <th>@lang('helpdesk::lang.ticket_department')</th>
+                                    <th>@lang('helpdesk::lang.user_reply')</th>
+
+                                    <th>@lang('helpdesk::lang.priority')</th>
                                     <th>@lang('helpdesk::lang.status')</th>
+                                    <th>@lang('helpdesk::lang.ticket_created_at')</th>
                                     <th>@lang('helpdesk::lang.last_update_date')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -71,7 +96,11 @@
                                         'id' => 'urgency_select',
                                     ]) !!}
                                 </div>
+
                                 <div class="clearfix"></div>
+
+
+
                                 <div class="form-group col-md-6">
                                     {!! Form::label('title', __('helpdesk::lang.title') . ':*') !!}
                                     {!! Form::text('title', null, [
@@ -81,6 +110,7 @@
                                         'required',
                                     ]) !!}
                                 </div>
+
                                 <div class="form-group col-md-6">
                                     {!! Form::label('attachments', __('helpdesk::lang.attachments') . ':') !!}
                                     {!! Form::file('attachments[]', [
@@ -91,6 +121,7 @@
                                         'multiple',
                                     ]) !!}
                                 </div>
+
                                 <div class="form-group col-md-12">
                                     {!! Form::label('message', __('helpdesk::lang.message') . ':*') !!}
                                     {!! Form::textarea('message', null, [
@@ -100,6 +131,7 @@
                                         'required',
                                     ]) !!}
                                 </div>
+
                             </div>
                         </div>
 
@@ -146,10 +178,28 @@
                         data: 'title'
                     },
                     {
-                        data: 'status'
+                        data: 'user'
+                    },
+
+                    {
+                        data: 'department'
                     },
                     {
-                        data: 'last_update_date'
+                        data: 'user_reply'
+                    },
+                    {
+                        data: 'priority'
+                    },
+
+                    {
+                        data: 'status'
+                    },
+
+                    {
+                        data: 'created_at'
+                    },
+                    {
+                        data: 'updated_at'
                     },
                     {
                         data: 'action'

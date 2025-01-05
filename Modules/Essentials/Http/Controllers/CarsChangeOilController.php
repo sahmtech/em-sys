@@ -21,8 +21,6 @@ class CarsChangeOilController extends Controller
     public function index(Request $request)
     {
 
-
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_carsChangeOil = auth()->user()->can('essentials.carsChangeOil');
         if (!($is_admin || $can_carsChangeOil)) {
@@ -32,24 +30,25 @@ class CarsChangeOilController extends Controller
             ]);
         }
         $CarsChangeOil = HousingMovementsCarsChangeOil::all();
+        
 
-      
         $can_change_oil_edit = auth()->user()->can('change.oil.edit');
         $can_change_oil_delete = auth()->user()->can('change.oil.delete');
         if (request()->ajax()) {
 
             // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
 
-
             //     $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
             // }
 
-
             return DataTables::of($CarsChangeOil)
-
 
                 ->editColumn('car', function ($row) {
                     return $row->car->CarModel->CarType->name_ar . ' - ' . $row->car->CarModel->name_ar ?? '';
+                })
+
+                ->editColumn('plate_number', function ($row) {
+                    return $row->car->plate_number ?? '';
                 })
 
                 ->editColumn('current_speedometer', function ($row) {
@@ -58,13 +57,13 @@ class CarsChangeOilController extends Controller
 
                 ->editColumn('next_change_oil', function ($row) {
 
-                    return  $row->next_change_oil ?? '';
+                    return $row->next_change_oil ?? '';
                 })
                 ->editColumn('invoice_no', function ($row) {
                     return $row->invoice_no ?? '';
                 })
                 ->editColumn('date', function ($row) {
-                    return  Carbon::parse($row->date)->format('Y-m-d') ?? '';
+                    return Carbon::parse($row->date)->format('Y-m-d') ?? '';
                 })
 
                 ->addColumn(
@@ -72,16 +71,16 @@ class CarsChangeOilController extends Controller
                     function ($row) use ($is_admin, $can_change_oil_edit, $can_change_oil_delete) {
 
                         $html = '';
-                        if ($is_admin  || $can_change_oil_edit) {
+                        if ($is_admin || $can_change_oil_edit) {
                             $html .= '
-                        <a href="' . route('essentials.cars-change-oil.edit', ['id' => $row->id])  . '"
-                        data-href="' . route('essentials.cars-change-oil.edit', ['id' => $row->id])  . ' "
+                        <a href="' . route('essentials.cars-change-oil.edit', ['id' => $row->id]) . '"
+                        data-href="' . route('essentials.cars-change-oil.edit', ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_carsChangeOil_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if ($is_admin  || $can_change_oil_delete) {
+                        if ($is_admin || $can_change_oil_delete) {
                             $html .= '
-                    <button data-href="' .  route('essentials.cars-change-oil.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carsChangeOil_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                    <button data-href="' . route('essentials.cars-change-oil.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carsChangeOil_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
                         }
 
@@ -130,7 +129,6 @@ class CarsChangeOilController extends Controller
                 'invoice_no' => $request->input('invoice_no'),
                 'date' => $request->input('date'),
             ]);
-
 
             DB::commit();
             return redirect()->back()
@@ -189,7 +187,6 @@ class CarsChangeOilController extends Controller
                 'invoice_no' => $request->input('invoice_no'),
                 'date' => $request->input('date'),
             ]);
-
 
             DB::commit();
             return redirect()->back()

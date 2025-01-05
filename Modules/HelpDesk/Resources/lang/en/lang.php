@@ -1,0 +1,32 @@
+<?php
+return [
+    'ticket' => 'ticket',
+    'tickets' => 'tickets',
+    'status' => 'status',
+    'title' => 'subject',
+    'last_update_date' => 'last update date',
+    'urgency' => 'importance',
+    'low' => 'low',
+    'mid' => 'medium',
+    'high' => 'high',
+    'urgent' => 'urgent',
+    'add_ticket' => 'open ticket',
+    'message' => 'message body',
+    'attachments' => 'attachments',
+    'tickets_of_number' => 'Ticket number :number',
+    'ticket_info' => 'ticket information',
+    'requester' => 'ticket submitter',
+    'add_reply' => 'Add reply',
+    'close_ticket' => 'Close ticket',
+    'view_attachments' => 'View Attachments',
+    'ticket_number' => 'ticket number',
+    'ticket_user_create' => 'Ticket holder name',
+    'ticket_created_at' => 'Ticket Opening Date',
+    'ticket_department' => 'Department',
+    'user_reply' => 'replyed by',
+    'no_replies_yet' => ' لم يتم الرد بعد',
+    'priority' => 'priority',
+
+];
+
+// ''=>'',

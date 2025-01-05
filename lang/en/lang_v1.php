@@ -1578,5 +1578,6 @@ return [
     'product_prices_imported_successfully' => 'product prices imported successfully',
     'select_branch' => 'Please select a branch',
     'company_id_ins' => 'Sponsor number in sponsor field',
+    'close_ticket' => 'ticket has been closed',
 
 ];

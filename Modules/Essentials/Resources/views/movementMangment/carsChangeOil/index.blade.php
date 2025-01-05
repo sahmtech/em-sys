@@ -11,7 +11,7 @@
 
     <!-- Main content -->
     <section class="content">
-    
+
 
         <div class="row">
             <div class="col-md-12">
@@ -34,10 +34,12 @@
                     @endslot
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="carsChangeOil_table" style="margin-bottom: 100px;">
+                        <table class="table table-bordered table-striped" id="carsChangeOil_table"
+                            style="margin-bottom: 100px;">
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">@lang('housingmovements::lang.car')</th>
+                                    <th style="text-align: center;">@lang('housingmovements::lang.plate_number')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.current_speedometer')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.next_change_oil')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.invoice_no')</th>
@@ -72,7 +74,9 @@
 
             carsChangeOil_table = $('#carsChangeOil_table').DataTable({
                 processing: true,
-                serverSide: true,
+                // serverSide: true,
+                serverSide: false,
+
                 ajax: {
                     url: '{{ route('essentials.cars-change-oil') }}',
                     data: function(d) {
@@ -86,23 +90,28 @@
                         }
                     }
                 },
-                
+
                 columns: [
                     // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
                     {
-                        "data": "car"
+                        data: "car"
+                    },
+
+                    {
+                        data: "plate_number"
+                    },
+
+                    {
+                        data: "current_speedometer"
                     },
                     {
-                        "data": "current_speedometer"
+                        data: "next_change_oil"
                     },
                     {
-                        "data": "next_change_oil"
+                        data: "invoice_no"
                     },
                     {
-                        "data": "invoice_no"
-                    },
-                    {
-                        "data": "date"
+                        data: "date"
                     },
 
                     {
