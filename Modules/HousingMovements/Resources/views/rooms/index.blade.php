@@ -360,7 +360,7 @@
                             $('#roomNumbersDisplay').empty();
 
                             $.each(response, function(roomId, roomInfo) {
-                               
+
                                 var workerSelectDropdown = $('<select>', {
                                     id: 'workerSelectId_' + roomId,
                                     name: 'workers[' + roomId + '][]',
@@ -439,15 +439,15 @@
                         console.log(result);
                         if (result.success === true) {
                             toastr.success(result.msg);
-                          //  rooms_table.ajax.reload();
+                            //  rooms_table.ajax.reload();
                             window.location.reload();
 
                             $('#changeStatusModal').modal('hide');
-                          
+
                         } else {
                             toastr.error(result.msg);
                         }
-                       
+
                     },
                     error: function(error) {
                         console.error("Error submitting data:", error);
@@ -456,7 +456,7 @@
             });
 
 
-        
+
 
         });
     </script>

@@ -76,17 +76,6 @@ class RoomController extends Controller
                     return $total_beds;
                 })
 
-                ->addColumn('beds_count', function ($row) {
-                    $occupied_beds = HtrRoomsWorkersHistory::where([
-                        ['room_id', '=', $row->id],
-                        ['still_housed', '=', 1],
-                    ])->count();
-
-                    $available_beds = $row->total_beds - $occupied_beds;
-
-                    return $occupied_beds === 0 ? $row->total_beds : max(0, $available_beds);
-                })
-
                 ->addColumn('checkbox', function ($row) {
                     return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
                 })
