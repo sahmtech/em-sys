@@ -909,9 +909,12 @@ class WkProcedureController extends Controller
 
     public function updateEmployeeProcedure(Request $request)
     {
+
         \DB::beginTransaction();
         try {
             $steps = $request->input('step');
+            // dd($steps);
+
             $procedureId = $steps[0]['procedure_id'];
             $business_id = $request->input('business') ?? session()->get('user.business_id');
 
@@ -929,9 +932,11 @@ class WkProcedureController extends Controller
 
             // Delete any procedures that are not passed or have invalid states
             $procedureIdsToDelete = WKprocedure::whereNotIn('id', array_column($steps, 'procedure_id'))
-                ->where('end', 0) // Only incomplete rows
+                ->where('request_type_id', $type) // Only incomplete rows
                 ->pluck('id') // Get IDs of the procedures to delete
                 ->toArray();
+
+            // dd($procedureIdsToDelete);
 
             // Delete related tasks for the procedures
             if (!empty($procedureIdsToDelete)) {
@@ -1028,11 +1033,13 @@ class WkProcedureController extends Controller
                         }
                     }
                 } else {
+
+                    $new_dept = $step['edit_modal_department_id_steps'][1];
                     // Create a new procedure if procedureId does not exist
                     $workflowStep = WkProcedure::create([
                         'request_type_id' => $type,
                         'request_owner_type' => 'employee',
-                        'department_id' => $start_dep,
+                        'department_id' => $new_dept,
                         'business_id' => $business_id,
                         'next_department_id' => null,
                         'start' => $index === 0 ? 1 : 0,
@@ -1042,6 +1049,8 @@ class WkProcedureController extends Controller
                         'action_type' => $step['edit_action_type'] ?? null,
                     ]);
                     $end_workflowStep[] = $workflowStep;
+
+                   
 
                     // Create tasks for the new procedure
                     if (isset($step['edit_tasks']) && $step['edit_action_type'] === 'task') {

@@ -336,5 +336,7 @@ return [
     'Not implemented' => 'Not implemented',
     'implement_status' => 'implementation status',
     'application_date' => 'implementation date',
+    'leaves_used' => 'Leaves used',
+    'leave_type' => 'leave type',
 
 ];

@@ -411,5 +411,7 @@ return [
     'Not implemented' => 'لم يتم التنفيذ',
     'implement_status' => 'حالة التنفيذ',
     'application_date' => 'تاريخ التنفيذ',
+    'leaves_used' => ' الإجازات المستخدمة ',
+    'leave_type' => 'نوع الإيجازة',
 
 ];
