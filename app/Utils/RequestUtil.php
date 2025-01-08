@@ -1196,7 +1196,7 @@ class RequestUtil extends Util
     // store request  //
     public function storeRequest($request, $departmentIds)
     {
-
+        DB::beginTransaction();
         try {
 
             $attachmentPath = $request->attachment ? $request->attachment->store('/requests_attachments') : null;
@@ -1579,8 +1579,10 @@ class RequestUtil extends Util
                     'success' => 1,
                     'msg' => __('messages.added_success'),
                 ];
+                DB::commit();
                 return redirect()->back()->with('success', $output['msg']);
             } else {
+                DB::rollBack();
                 $output = [
                     'success' => 0,
                     'msg' => __('messages.something_went_wrong'),
@@ -1588,6 +1590,7 @@ class RequestUtil extends Util
                 return redirect()->back()->withErrors([$output['msg']]);
             }
         } catch (\Exception $e) {
+            DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
@@ -1662,66 +1665,70 @@ class RequestUtil extends Util
         $acessRoleCompany = AccessRoleCompany::where('company_id', $userCompanyId)->pluck('access_role_id')->toArray();
 
         $rolesFromAccessRoles = AccessRole::whereIn('id', $acessRoleCompany)->pluck('role_id')->toArray();
-
-        if ($process->superior_department_id) {
-            $viewRequestPermission = $this->getViewRequestsPermission($process->superior_department_id);
-            if ($viewRequestPermission) {
-                $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
-                $rolesIds = $permission_id->roles->pluck('id')->toArray();
-                $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
-                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
-                })->where('essentials_department_id', $process->superior_department_id);
-            }
-        } else {
-            $procedure = $process->procedure_id;
-            error_log($procedure);
-            $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
-            $viewRequestPermission = $this->getViewRequestsPermission($department_id);
-            error_log(json_encode($viewRequestPermission));
-            if ($viewRequestPermission) {
-                $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
-                $rolesIds = $permission_id->roles->pluck('id')->toArray();
-                error_log(json_encode($rolesIds));
-                $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
-                    $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
-                })->where('essentials_department_id', $department_id);
+        if ($process) {
+            if ($process->superior_department_id) {
+                $viewRequestPermission = $this->getViewRequestsPermission($process->superior_department_id);
+                if ($viewRequestPermission) {
+                    $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+                    $rolesIds = $permission_id->roles->pluck('id')->toArray();
+                    $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
+                        $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+                    })->where('essentials_department_id', $process->superior_department_id);
+                }
+            } else {
+                $procedure = $process->procedure_id;
+                error_log($procedure);
+                $department_id = WKProcedure::where('id', $procedure)->first()->department_id;
+                $viewRequestPermission = $this->getViewRequestsPermission($department_id);
+                error_log(json_encode($viewRequestPermission));
+                if ($viewRequestPermission) {
+                    $permission_id = Permission::with('roles')->where('name', $viewRequestPermission)->first();
+                    $rolesIds = $permission_id->roles->pluck('id')->toArray();
+                    error_log(json_encode($rolesIds));
+                    $users = User::whereHas('roles', function ($query) use ($rolesIds, $rolesFromAccessRoles) {
+                        $query->whereIn('id', $rolesIds)->whereIn('id', $rolesFromAccessRoles);
+                    })->where('essentials_department_id', $department_id);
+                }
             }
         }
 
         $input['task_id'] = $request->request_no;
 
         $to_dos = ToDo::create($input);
-        $usersData = $users->get();
+        if (!empty($users)) {
+            $usersData = $users->get();
 
-        $to_dos->users()->sync($usersData);
+            $to_dos->users()->sync($usersData);
 
-        $user_ids = $users->pluck('id')->toArray();
-        $to = $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
-            ->pluck('full_name')->toArray();
-        if (!empty($user_ids)) {
-            $to = [];
-            $userName = User::where('id', $request->related_to)->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
-                ->pluck('full_name')->toArray()[0];
-            $sentNotification = SentNotification::create([
-                'via' => 'dashboard',
-                'type' => 'GeneralManagementNotification',
-                'title' => $input['task'],
-                'msg' => __('request.' . $request_type) . ' ' . $userName,
-                'sender_id' => auth()->user()->id,
-                'to' => json_encode($to),
-            ]);
-            // $details = new stdClass();
-            // $details->title =  $input['task'];
-            // $details->message = $request_type;
-
-            foreach ($user_ids as $user_id) {
-                SentNotificationsUser::create([
-                    'sent_notifications_id' => $sentNotification->id,
-                    'user_id' => $user_id,
+            $user_ids = $users->pluck('id')->toArray();
+            $to = $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+                ->pluck('full_name')->toArray();
+            if (!empty($user_ids)) {
+                $to = [];
+                $userName = User::where('id', $request->related_to)->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+                    ->pluck('full_name')->toArray()[0];
+                $sentNotification = SentNotification::create([
+                    'via' => 'dashboard',
+                    'type' => 'GeneralManagementNotification',
+                    'title' => $input['task'],
+                    'msg' => __('request.' . $request_type) . ' ' . $userName,
+                    'sender_id' => auth()->user()->id,
+                    'to' => json_encode($to),
                 ]);
-                // User::where('id', $user_id)->first()?->notify(new GeneralNotification($details, false, true));
+                // $details = new stdClass();
+                // $details->title =  $input['task'];
+                // $details->message = $request_type;
+
+                foreach ($user_ids as $user_id) {
+                    SentNotificationsUser::create([
+                        'sent_notifications_id' => $sentNotification->id,
+                        'user_id' => $user_id,
+                    ]);
+                    // User::where('id', $user_id)->first()?->notify(new GeneralNotification($details, false, true));
+                }
             }
         }
+
     }
 
     ////// change request status ///////////////////

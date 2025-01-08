@@ -2,32 +2,28 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use Modules\Sales\Entities\SalesProject;
-use Modules\Essentials\Entities\EssentialsCountry;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
-use App\User;
 use App\AccessRole;
 use App\AccessRoleRequest;
 use App\Company;
-use Carbon\Carbon;
-use App\Request as Req;
-use Modules\CEOManagment\Entities\RequestsType;
 use App\ContactLocation;
+use App\Request as Req;
 use App\RequestProcess;
+use App\User;
 use App\Utils\RequestUtil;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
-use Modules\CEOManagment\Entities\WkProcedure;
-
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Modules\CEOManagment\Entities\RequestsType;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsLeaveType;
-
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentialsLeaveType;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Sales\Entities\SalesProject;
+use Yajra\DataTables\Facades\DataTables;
 
 class EssentialsRequestController extends Controller
 {
@@ -37,14 +33,12 @@ class EssentialsRequestController extends Controller
      */
     protected $requestUtil;
 
-
     public function __construct(RequestUtil $requestUtil)
     {
         $this->requestUtil = $requestUtil;
     }
 
-
-    //// HRM ////////
+    /// HRM ///
     public function requests()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -82,7 +76,6 @@ class EssentialsRequestController extends Controller
 
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
-
 
     //////// Employee Affairs //////////
     public function employee_affairs_all_requests()
@@ -173,7 +166,6 @@ class EssentialsRequestController extends Controller
         $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
-
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'today');
     }
 
@@ -188,8 +180,6 @@ class EssentialsRequestController extends Controller
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
 
-
-
     //////// Employee Requests //////////
 
     public function my_requests()
@@ -203,8 +193,6 @@ class EssentialsRequestController extends Controller
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
         $saleProjects = SalesProject::all()->pluck('name', 'id');
-
-
 
         if (request()->ajax()) {
 
@@ -221,18 +209,16 @@ class EssentialsRequestController extends Controller
                 'wk_procedures.department_id as department_id',
                 'users.id_proof_number',
                 'wk_procedures.can_return',
-                'users.assigned_to'
+                'users.assigned_to',
 
             ])
                 ->leftjoin('request_processes', 'request_processes.worker_request_id', '=', 'requests.id')
                 ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'requests.worker_id')->where('users.id', auth()->user()->id);
 
-
             return DataTables::of($requestsProcess ?? [])
 
                 ->editColumn('created_at', function ($row) {
-
 
                     return Carbon::parse($row->created_at);
                 })
@@ -250,11 +236,9 @@ class EssentialsRequestController extends Controller
 
                 ->rawColumns(['status'])
 
-
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-
 
         return view('essentials::requests.allRequest')->with(compact('main_reasons', 'saleProjects', 'classes', 'leaveTypes'));
     }
@@ -305,7 +289,7 @@ class EssentialsRequestController extends Controller
                 $join->on('requests.id', '=', 'latest_process.request_id');
             })
             ->leftJoin('request_processes as process', 'process.id', '=', 'latest_process.max_id')
-            //   ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+        //   ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
             ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'requests.related_to')->where('process.sub_status', null);
 
@@ -315,7 +299,6 @@ class EssentialsRequestController extends Controller
             $requestsProcess = $requestsProcess->where('requests.related_to', $user->id);
             $userDepartment = [$user->essentials_department_id];
         }
-
 
         if (request()->ajax()) {
             return DataTables::of($requestsProcess ?? [])
@@ -336,20 +319,16 @@ class EssentialsRequestController extends Controller
 
                     $status = trans('essentials::lang.' . $row->status);
 
-
                     return $status;
                 })
                 ->editColumn('can_return', function ($row) {
                     $buttonsHtml = '';
 
-
                     $buttonsHtml .= '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' . $row->id . '">' . trans('essentials::lang.view_request') . '</button>';
-
 
                     return $buttonsHtml;
                 })
                 ->rawColumns(['status', 'can_return'])
-
 
                 ->make(true);
         }
