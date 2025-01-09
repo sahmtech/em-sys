@@ -22,7 +22,6 @@ class RequestTypeController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_edit_requests_type = auth()->user()->can('generalmanagement.edit_requests_type');
         $can_delete_requests_type = auth()->user()->can('generalmanagement.delete_requests_type');
@@ -61,7 +60,7 @@ class RequestTypeController extends Controller
             'salaryIntroLetter',
             'QiwaContract',
             'ExitWithoutReturnReport',
-            'residenceIssue'
+            'residenceIssue',
         ];
 
         $typesWithBoth = RequestsType::whereExists(function ($query) {
@@ -79,7 +78,6 @@ class RequestTypeController extends Controller
         $requestsTypes = RequestsType::all();
 
         if (request()->ajax()) {
-
 
             return datatables::of($requestsTypes)
                 ->addColumn('tasks', function ($requestType) {
@@ -104,11 +102,9 @@ class RequestTypeController extends Controller
                             <i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
-
                         return $html;
                     }
                 )
-
 
                 ->rawColumns(['action', 'tasks'])
                 ->make(true);
@@ -141,7 +137,6 @@ class RequestTypeController extends Controller
             ];
             return redirect()->back()->with(['status' => $output]);
         }
-
 
         try {
             $input = $request->only(['type', 'for', 'selfish_service', 'user_type']);
@@ -197,10 +192,8 @@ class RequestTypeController extends Controller
             ];
         }
 
-
         return redirect()->back()->with(['status' => $output]);
     }
-
 
     // public function update(Request $request)
 
@@ -225,7 +218,6 @@ class RequestTypeController extends Controller
 
     //             foreach ($descriptions as $index => $description) {
 
-
     //                 if (!empty($description)) {
 
     //                     $taskInput = [
@@ -234,12 +226,10 @@ class RequestTypeController extends Controller
     //                         'request_type_id' => $request->request_type_id,
     //                     ];
 
-
     //                     Task::create($taskInput);
     //                 }
     //             }
     //         }
-
 
     //         $output = [
     //             'success' => true,
@@ -333,9 +323,6 @@ class RequestTypeController extends Controller
         return response()->json($output);
     }
 
-
-
-
     private function getTypePrefix($type)
     {
 
@@ -374,7 +361,7 @@ class RequestTypeController extends Controller
             'salaryIntroLetter' => 'salIntroLetter_',
             'QiwaContract' => 'QiwaCont_',
             'ExitWithoutReturnReport' => 'exitReport_',
-            'residenceIssue' => 'ResIsu_'
+            'residenceIssue' => 'ResIsu_',
         ];
 
         return $typePrefixMap[$type];
@@ -426,7 +413,6 @@ class RequestTypeController extends Controller
 
         return response()->json($tasks);
     }
-
 
     public function getRequestType($id)
     {

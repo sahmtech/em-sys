@@ -61,6 +61,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('updateRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'update'])->name('updateRequestType');
         Route::get('/get-tasks-for-type', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'getTasksForType'])->name('get-tasks-for-type');
         Route::get('/getRequestType/{request_type_id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'getRequestType'])->name('getRequestType');
+        Route::get('/editRequestType/{request_type_id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'editRequestType'])->name('editRequestType');
+
         Route::post('/update_selfish_service/{id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'updateSelfishService'])->name('update_selfish_service');
 
         Route::get('/departments', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index'])->name('departments');

@@ -796,5 +796,7 @@ return [
     'sponsor_required' => 'The sponsor is required on line number',
     'arrival_date_required' => 'arrival date required on line in number',
     'createdBy' => ' Created By',
+    'rejected' => 'rejected',
+    'pending' => 'Pending',
 
 ];

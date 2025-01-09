@@ -475,7 +475,7 @@
 
                         tasksContainer.append(
                             '<button class="btn btn-primary add-task-btn" type="button">Add New Task</button>'
-                            );
+                        );
 
                         tasksContainer.on('click', '.remove-task-btn-edit', function() {
                             var taskGroup = $(this).closest('.task-input-group');
