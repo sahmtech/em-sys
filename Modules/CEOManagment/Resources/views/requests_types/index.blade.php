@@ -178,7 +178,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         {!! Form::open([
-                            'route' => ['updateRequestType', ':id'], // Route with dynamic ID
+                            'route' => ['updateRequestType', ':id'],
                             'method' => 'POST',
                             'id' => 'editRequestTypeFormBtn',
                             'enctype' => 'multipart/form-data',
@@ -196,12 +196,51 @@
                             <div class="row">
                                 <div class="form-group col-md-3">
                                     {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
-                                    {!! Form::text('type', null, [
-                                        'class' => 'form-control',
-                                        'id' => 'type_select',
-                                        'readonly' => true,
-                                        'style' => 'height:37px',
-                                    ]) !!}
+                                    {!! Form::select(
+                                        'type',
+                                        [
+                                            'exitRequest' => __('ceomanagment::lang.exitRequest'),
+                                            'returnRequest' => __('ceomanagment::lang.returnRequest'),
+                                            'escapeRequest' => __('ceomanagment::lang.escapeRequest'),
+                                            'advanceSalary' => __('ceomanagment::lang.advanceSalary'),
+                                            'leavesAndDepartures' => __('ceomanagment::lang.leavesAndDepartures'),
+                                            'atmCard' => __('ceomanagment::lang.atmCard'),
+                                            'residenceRenewal' => __('ceomanagment::lang.residenceRenewal'),
+                                            'residenceIssue' => __('ceomanagment::lang.residenceIssue'),
+                                            'workerTransfer' => __('ceomanagment::lang.workerTransfer'),
+                                            'residenceCard' => __('ceomanagment::lang.residenceCard'),
+                                            'workInjuriesRequest' => __('ceomanagment::lang.workInjuriesRequest'),
+                                            'residenceEditRequest' => __('ceomanagment::lang.residenceEditRequest'),
+                                            'baladyCardRequest' => __('ceomanagment::lang.baladyCardRequest'),
+                                            'mofaRequest' => __('ceomanagment::lang.mofaRequest'),
+                                            'insuranceUpgradeRequest' => __('ceomanagment::lang.insuranceUpgradeRequest'),
+                                            'chamberRequest' => __('ceomanagment::lang.chamberRequest'),
+                                            'cancleContractRequest' => __('ceomanagment::lang.cancleContractRequest'),
+                                            'WarningRequest' => __('ceomanagment::lang.WarningRequest'),
+                                            'assetRequest' => __('ceomanagment::lang.assetRequest'),
+                                            'passportRenewal' => __('ceomanagment::lang.passportRenewal'),
+                                            'AjirAsked' => __('ceomanagment::lang.AjirAsked'),
+                                            'AlternativeWorker' => __('ceomanagment::lang.AlternativeWorker'),
+                                            'TransferringGuaranteeFromExternalClient' => __('ceomanagment::lang.TransferringGuaranteeFromExternalClient'),
+                                            'Permit' => __('ceomanagment::lang.Permit'),
+                                            'FamilyInsurace' => __('ceomanagment::lang.FamilyInsurace'),
+                                            'Ajir_link' => __('ceomanagment::lang.Ajir_link'),
+                                            'authorizationRequest' => __('ceomanagment::lang.authorizationRequest'),
+                                            'ticketReservationRequest' => __('ceomanagment::lang.ticketReservationRequest'),
+                                            'interviewsRequest' => __('ceomanagment::lang.interviewsRequest'),
+                                            'salaryInquiryRequest' => __('ceomanagment::lang.salaryInquiryRequest'),
+                                            'moqimPrint' => __('ceomanagment::lang.moqimPrint'),
+                                            'salaryIntroLetter' => __('ceomanagment::lang.salaryIntroLetter'),
+                                            'QiwaContract' => __('ceomanagment::lang.QiwaContract'),
+                                            'ExitWithoutReturnReport' => __('ceomanagment::lang.ExitWithoutReturnReport'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'type_select',
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
                                 </div>
 
                                 <div class="form-group col-md-3">
