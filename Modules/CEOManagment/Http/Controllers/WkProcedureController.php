@@ -861,7 +861,7 @@ class WkProcedureController extends Controller
                     }
                 } else {
 
-                    $new_dept = $step['edit_modal_department_id_steps'][1] ?? null;
+                    $new_dept = $step['edit_modal_department_id_steps'][1] ?? $step['edit_modal_department_id_steps'][0];
                     // dd($new_dept);
                     // Create a new procedure if procedureId does not exist
                     $workflowStep = WkProcedure::create([
