@@ -26,6 +26,7 @@ use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Entities\Penalties;
+use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Activitylog\Models\Activity;
@@ -335,6 +336,9 @@ class EssentailsworkersController extends Controller
         $document_delivery = null;
 
         $assets = AssetTransaction::where('receiver', $user->id)->get();
+
+        $user_leave_balances = UserLeaveBalance::where('user_id', $user->id)->with('leave_type')->get();
+
         $penalties = Penalties::where('user_id', $user->id)->get();
 
         if ($user->user_type == 'employee') {
@@ -455,7 +459,8 @@ class EssentailsworkersController extends Controller
             'request_attachments',
             'request',
             'assets',
-            'penalties'
+            'penalties',
+            'user_leave_balances'
         ));
     }
 

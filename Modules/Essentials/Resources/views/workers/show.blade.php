@@ -382,6 +382,13 @@
                         </li>
 
                         <li>
+                            <a href="#leaves_used_tab" data-toggle="tab" aria-expanded="true">
+                                <i class="fas fa-file" aria-hidden="true"></i>
+
+                                @lang('followup::lang.leaves_used')</a>
+                        </li>
+
+                        <li>
                             <a href="#assets_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-laptop" aria-hidden="true"></i>
 
@@ -572,6 +579,53 @@
                             </div>
                         </div>
 
+                        <div class="tab-pane" id="leaves_used_tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="payroll_group_table"
+                                            style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('followup::lang.leave_type')</th>
+                                                    <th>@lang('essentials::lang.duration')</th>
+                                                    <th>@lang('essentials::lang.gender')</th>
+                                                    <th>@lang('essentials::lang.date')</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                @foreach ($user_leave_balances as $user_leave_balance)
+                                                    <tr>
+                                                        <td>{{ $user_leave_balance->leave_type->leave_type ?? '' }}</td>
+
+                                                        <td>
+                                                            {{ $user_leave_balance->amount ?? '' }}
+                                                        </td>
+
+                                                        <td>
+
+                                                            @if ($user_leave_balance->user->gender ?? null)
+                                                                {{ $user_leave_balance->user->gender === 'male' ? 'ذكر' : 'أنثى' }}
+                                                            @else
+                                                                {{-- Handle cases where gender is null or not set --}}
+                                                                غير محدد
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            {{ $user_leave_balance->created_at ? $user_leave_balance->created_at->format('Y-m-d') : '' }}
+                                                        </td>
+
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="tab-pane" id="assets_tab">
                             <div class="row">
                                 <div class="col-md-12">
@@ -683,8 +737,6 @@
                                 </div>
                             </div>
                         </div>
-
-
 
                         <div class="tab-pane" id="timesheet_tab">
                             <div class="row">
@@ -873,8 +925,6 @@
                                 </div>
                             </div>
                         </div>
-
-
 
                         <div class="tab-pane" id="activities_tab">
                             <div class="row">

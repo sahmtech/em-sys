@@ -317,9 +317,7 @@ class EssentialsRequestController extends Controller
                 ->editColumn('status', function ($row) {
                     $status = '';
 
-                    if (!is_null($row->status)) {
-                        $status = trans('essentials::lang.' . $row->status);
-                    }
+                    $status = trans('essentials::lang.' . $row->status);
 
                     return $status;
                 })

@@ -24,6 +24,7 @@
                     @endif
 
                     <div class="table-responsive">
+
                         <table class="table table-bordered table-striped" id="requests_types">
                             <thead>
                                 <tr>
@@ -47,7 +48,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
 
-                        {!! Form::open(['route' => 'storeRequestType', 'enctype' => 'multipart/form-data']) !!}
+                        {!! Form::open(['route' => 'updateRequestType', 'enctype' => 'multipart/form-data']) !!}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                     aria-hidden="true">&times;</span></button>
@@ -142,9 +143,107 @@
                                     </div>
 
                                 </div>
-                                <div class="form-group col-md-6" class="checkbox">
-                                    <label style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                        {!! Form::checkbox('selfish_service', '1', false) !!}
+
+
+                                <div class="form-group col-md-6">
+                                    <div class="checkbox">
+                                        <label for="selfish_service_select" class="d-flex align-items-center"
+                                            style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                            {!! Form::checkbox('selfish_service', '1', old('selfish_service', $selfishServiceValue ?? false), [
+                                                'id' => 'selfish_service_select',
+                                                'class' => 'custom-checkbox',
+                                                'aria-checked' => old('selfish_service', $selfishServiceValue ?? false) ? 'true' : 'false',
+                                            ]) !!}
+                                            <span class="ml-2">@lang('ceomanagment::lang.selfish_service')</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="editRequestTypeBtnModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        {!! Form::open([
+                            'route' => ['updateRequestType', ':id'], // Route with dynamic ID
+                            'method' => 'POST',
+                            'id' => 'editRequestTypeFormBtn',
+                            'enctype' => 'multipart/form-data',
+                        ]) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">@lang('ceomanagment::lang.edit_requests_type')</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <input type="hidden" name="requestTypeId" id="requestTypeId">
+
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
+                                    {!! Form::text('type', null, [
+                                        'class' => 'form-control',
+                                        'id' => 'type_select',
+                                        'readonly' => true,
+                                        'style' => 'height:37px',
+                                    ]) !!}
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    {!! Form::label('for', __('ceomanagment::lang.request_for') . ':*') !!}
+                                    {!! Form::select(
+                                        'for',
+                                        [
+                                            'worker' => __('ceomanagment::lang.worker'),
+                                            'employee' => __('ceomanagment::lang.employee'),
+                                            'both' => __('ceomanagment::lang.both'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'for_select',
+                                            'placeholder' => __('ceomanagment::lang.select_type'),
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('user_type', __('ceomanagment::lang.user_type') . ':*') !!}
+                                    {!! Form::select(
+                                        'user_type',
+                                        [
+                                            'resident' => __('ceomanagment::lang.resident'),
+                                            'citizen' => __('ceomanagment::lang.citizen'),
+                                            'both' => __('ceomanagment::lang.both'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'user_type_select',
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>
+                                        {!! Form::checkbox('selfish_service', '1', false, ['id' => 'selfish_service_select']) !!}
                                         @lang('ceomanagment::lang.selfish_service')
                                     </label>
                                 </div>
@@ -184,7 +283,8 @@
 
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                            <button type="button" class="btn btn-default"
+                                data-dismiss="modal">@lang('messages.close')</button>
                         </div>
                         {!! Form::close() !!}
                     </div>
@@ -544,6 +644,146 @@
                     });
                 });
             });
+
+            // $(document).on('click', '.edit-request-type-btn', function(e) {
+            //     e.preventDefault();
+
+            //     var url = $(this).data('url');
+            //     var requestTypeId = $(this).data('id');
+
+            //     // Fetch data and populate modal
+            //     $.ajax({
+            //         url: url,
+            //         type: 'GET',
+            //         success: function(response) {
+            //             if (response.status === 'success') {
+            //                 var tasksContainer = $('#tasks-container-modal');
+            //                 tasksContainer.empty();
+
+            //                 // Populate modal fields
+            //                 $('#editRequestTypeForm #requestTypeId').val(requestTypeId);
+            //                 $('#editRequestTypeForm #type_select').val(response.requestType
+            //                     .type);
+            //                 $('#editRequestTypeForm #for_select').val(response.requestType.for);
+            //                 $('#editRequestTypeForm #user_type_select').val(response.requestType
+            //                     .user_type);
+            //                 $('#editRequestTypeForm #selfish_service_select').prop('checked',
+            //                     response.requestType.selfish_service == 1);
+
+            //                 // Show modal
+            //                 $('#editRequestTypeBtnModal').modal('show');
+            //             } else {
+            //                 console.error('Failed to fetch data');
+            //             }
+            //         },
+            //         error: function() {
+            //             console.error('Error fetching request type data');
+            //         }
+            //     });
+            // });
+            $(document).on('click', '.edit-request-type-btn', function(e) {
+                e.preventDefault();
+
+                var url = $(this).data('url'); // Base URL for update
+                var requestTypeId = $(this).data('id'); // ID of the request type
+
+                // Set the form action dynamically
+                $('#editRequestTypeForm').attr('action', url.replace(':id', requestTypeId));
+
+                // Fetch data and populate modal
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#editRequestTypeBtnModal #requestTypeId').val(requestTypeId);
+                            $('#editRequestTypeBtnModal #type_select').val(response.requestType
+                                .type);
+                            $('#editRequestTypeBtnModal #for_select').val(response.requestType
+                                .for);
+                            $('#editRequestTypeBtnModal #user_type_select').val(response
+                                .requestType.user_type);
+                            $('#editRequestTypeBtnModal #selfish_service_select').prop(
+                                'checked', response.requestType.selfish_service == 1);
+
+                            // Show modal
+                            $('#editRequestTypeBtnModal').modal('show');
+                        } else {
+                            console.error('Failed to fetch data');
+                        }
+                    },
+                    error: function() {
+                        console.error('Error fetching request type data');
+                    }
+                });
+            });
+
+
+            $(document).on('click', '.edit-request-type', function(e) {
+                e.preventDefault(); // Prevent the default anchor click behavior.
+
+                var url = $(this).data('url'); // URL from the data attribute
+                var requestTypeId = $(this).data('id'); // ID from the data attribute
+
+                // Fetch request type data via AJAX
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            // Populate modal fields
+                            $('#editRequestTypeFormBtn').attr('action', url);
+                            $('#requestTypeId').val(requestTypeId);
+                            $('#type_select').val(response.data.type);
+                            $('#for_select').val(response.data.for);
+                            $('#user_type_select').val(response.data.user_type);
+                            $('#selfish_service_select').prop('checked', response.data
+                                .selfish_service === 1);
+
+                            // Show modal
+                            $('#editRequestTypeBtnModal').modal('show');
+                        } else {
+                            alert(response.message || 'Failed to fetch data.');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        alert('Error fetching request type data.');
+                    },
+                });
+            });
+
+
+
+            // Form Submission
+            $('#editRequestTypeForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var formAction = $(this).attr('action');
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: formAction,
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.msg);
+                            $('#editRequestTypeBtnModal').modal('hide');
+                            location.reload();
+                        } else {
+                            toastr.error(response.msg);
+                        }
+                    },
+                    error: function() {
+                        toastr.error('An error occurred while saving data.');
+                    }
+                });
+            });
+
+
+
+
 
             // Add a hidden input field to store deleted task IDs
             $('#editRequestTypeForm').append(
