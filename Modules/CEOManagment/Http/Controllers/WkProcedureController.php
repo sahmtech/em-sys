@@ -726,7 +726,6 @@ class WkProcedureController extends Controller
             \DB::commit();
             $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
         } catch (\Exception $e) {
-            return $e->getMessage() . ' Line:' . $e->getLine();
             \DB::rollBack();
             error_log('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
             $output = ['success' => false, 'msg' => $e->getMessage()];
@@ -964,8 +963,6 @@ class WkProcedureController extends Controller
 
             $output = ['success' => true, 'msg' => __('lang_v1.updated_success')];
         } catch (\Exception $e) {
-            return $e->getMessage() . ' OnLine:' . $e->getLine();
-
             \DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
             $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
