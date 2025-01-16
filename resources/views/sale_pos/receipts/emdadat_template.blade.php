@@ -304,6 +304,11 @@
                             <!-- Adjust top margin to avoid overlap with QR code/barcode -->
                             <div
                                 style="width: 100%; font-size: 14px; line-height: 1.5; border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9;">
+                                <!-- Title/Header -->
+                                <h2
+                                    style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
+                                    تفاصيل العميل</h2>
+
                                 <table
                                     style="width: 100%; border-collapse: collapse; text-align: right; direction: rtl;">
                                     <tbody>
@@ -454,9 +459,9 @@
                                         </tr>
                                         @endif
                                     </tbody>
-
                                 </table>
                             </div>
+
                         </div>
 
 
