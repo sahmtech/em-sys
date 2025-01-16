@@ -271,7 +271,7 @@
                                 {{-- QR Code --}}
                                 <img class="center-block"
                                     src="data:image/png;base64,{{ DNS2D::getBarcodePNG($receipt_details->qr_code_text, 'QRCODE', 3, 3, [39, 48, 54]) }}"
-                                    style="max-width: 170px; margin-top: 10px; border-radius: 5px;">
+                                    style="max-width: 200px; margin-top: 10px; border-radius: 5px;">
                                 @endif
 
                                 {{-- Invoice Details --}}
@@ -788,7 +788,7 @@
         </tfoot>
     </table>
 
-    <div style="margin: 20px auto; width: 90%; text-align: center; font-family: Arial, sans-serif;">
+    {{-- <div style="margin: 20px auto; width: 90%; text-align: center; font-family: Arial, sans-serif;">
         <h4 style="margin-bottom: 20px; font-weight: bold;">يرجي تحويل المبلغ المستحق علي بيانات الحساب البنكي التالي
         </h4>
         <h4 style="margin-bottom: 20px; font-weight: bold;">Please remit the amount due to our bank account as per the
@@ -874,7 +874,7 @@
             </tbody>
         </table>
 
-    </div>
+    </div> --}}
     @if (!empty($receipt_details->letter_footer))
     <div class="page-footer">
         <img id="footer-image" width="100%" src="{{ $receipt_details->letter_footer }}" alt="footer">
