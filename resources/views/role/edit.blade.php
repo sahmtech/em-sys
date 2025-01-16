@@ -9,7 +9,7 @@
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    {{-- <section class="content">
         @php
             $pos_settings = !empty(session('business.pos_settings'))
                 ? json_decode(session('business.pos_settings'), true)
@@ -37,12 +37,14 @@
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-3">
                     <label class="custom_permission_lable">@lang('user.permissions'):</label>
                 </div>
             </div>
             <br>
+
             <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="row check_group">
@@ -64,6 +66,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="row check_group">
@@ -159,6 +162,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="row check_group">
@@ -2195,6 +2199,6 @@
 
             {!! Form::close() !!}
         @endcomponent
-    </section>
+    </section> --}}
     <!-- /.content -->
 @endsection

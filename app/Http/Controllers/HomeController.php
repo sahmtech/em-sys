@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\BusinessLocation;
 use App\Charts\CommonChart;
 use App\Currency;
 use App\Media;
-use App\SentNotification;
 use App\SentNotificationsUser;
 use App\Transaction;
 use App\User;
@@ -17,14 +15,13 @@ use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use App\VariationLocationDetails;
 use Carbon\Carbon;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Modules\Essentials\Http\Controllers\MovmentDashboardController;
-use Modules\Sales\Entities\SalesProject;
+use Yajra\DataTables\Facades\DataTables;
 
 class HomeController extends Controller
 {
@@ -53,14 +50,12 @@ class HomeController extends Controller
         Util $commonUtil,
         RestaurantUtil $restUtil
     ) {
-        $this->businessUtil = $businessUtil;
+        $this->businessUtil    = $businessUtil;
         $this->transactionUtil = $transactionUtil;
-        $this->moduleUtil = $moduleUtil;
-        $this->commonUtil = $commonUtil;
-        $this->restUtil = $restUtil;
+        $this->moduleUtil      = $moduleUtil;
+        $this->commonUtil      = $commonUtil;
+        $this->restUtil        = $restUtil;
     }
-
-
 
     /**
      * Show the application dashboard.
@@ -70,17 +65,17 @@ class HomeController extends Controller
     public function index()
     {
 
-        $user = User::where('id', auth()->user()->id)->first();
-        $isSuperAdmin =  $user->user_type == 'superadmin';
+        $user         = User::where('id', auth()->user()->id)->first();
+        $isSuperAdmin = $user->user_type == 'superadmin';
         if (Str::contains($user->user_type, 'user_customer')) {
             return redirect()->action([\Modules\Crm\Http\Controllers\DashboardController::class, 'index']);
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->businessUtil->is_admin(auth()->user());
-        $is_customer = $user->user_type == 'customer';
-        $roles = auth()->user()->roles;
+        $is_admin          = $this->businessUtil->is_admin(auth()->user());
+        $is_customer       = $user->user_type == 'customer';
+        $roles             = auth()->user()->roles;
         $roleHasPermission = false;
         foreach ($roles as $role) {
 
@@ -90,13 +85,11 @@ class HomeController extends Controller
             }
         }
 
-
-        if (!($isSuperAdmin  ||  $is_customer ||  auth()->user()->can('dashboard.data') || $roleHasPermission)) {
+        if (! ($isSuperAdmin || $is_customer || auth()->user()->can('dashboard.data') || $roleHasPermission)) {
             return view('home.index');
         }
 
-
-        $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
+        $fy       = $this->businessUtil->getCurrentFinancialYear($business_id);
         $currency = Currency::where('id', request()->session()->get('business.currency_id'))->first();
 
         //ensure start date starts from at least 30 days before to get sells last 30 days
@@ -108,18 +101,18 @@ class HomeController extends Controller
         $all_locations = BusinessLocation::forDropdown($business_id)->toArray();
 
         //Chart for sells last 30 days
-        $labels = [];
+        $labels          = [];
         $all_sell_values = [];
-        $dates = [];
+        $dates           = [];
         for ($i = 29; $i >= 0; $i--) {
-            $date = \Carbon::now()->subDays($i)->format('Y-m-d');
+            $date    = \Carbon::now()->subDays($i)->format('Y-m-d');
             $dates[] = $date;
 
             $labels[] = date('j M Y', strtotime($date));
 
             $total_sell_on_date = $sells_this_fy->where('date', $date)->sum('total_sells');
 
-            if (!empty($total_sell_on_date)) {
+            if (! empty($total_sell_on_date)) {
                 $all_sell_values[] = (float) $total_sell_on_date;
             } else {
                 $all_sell_values[] = 0;
@@ -133,14 +126,14 @@ class HomeController extends Controller
             foreach ($dates as $date) {
                 $total_sell_on_date_location = $sells_this_fy->where('date', $date)->where('location_id', $loc_id)->sum('total_sells');
 
-                if (!empty($total_sell_on_date_location)) {
+                if (! empty($total_sell_on_date_location)) {
                     $values[] = (float) $total_sell_on_date_location;
                 } else {
                     $values[] = 0;
                 }
             }
             $location_sells[$loc_id]['loc_label'] = $loc_name;
-            $location_sells[$loc_id]['values'] = $values;
+            $location_sells[$loc_id]['values']    = $values;
         }
 
         $sells_chart_1 = new CommonChart;
@@ -151,7 +144,7 @@ class HomeController extends Controller
                 ['currency' => $currency->code]
             )));
 
-        if (!empty($location_sells)) {
+        if (! empty($location_sells)) {
             foreach ($location_sells as $location_sell) {
                 $sells_chart_1->dataset($location_sell['loc_label'], 'line', $location_sell['values']);
             }
@@ -161,13 +154,13 @@ class HomeController extends Controller
             $sells_chart_1->dataset(__('report.all_locations'), 'line', $all_sell_values);
         }
 
-        $labels = [];
-        $values = [];
-        $date = strtotime($fy['start']);
-        $last = date('m-Y', strtotime($fy['end']));
+        $labels    = [];
+        $values    = [];
+        $date      = strtotime($fy['start']);
+        $last      = date('m-Y', strtotime($fy['end']));
         $fy_months = [];
         do {
-            $month_year = date('m-Y', $date);
+            $month_year  = date('m-Y', $date);
             $fy_months[] = $month_year;
 
             $labels[] = \Carbon::createFromFormat('m-Y', $month_year)
@@ -176,7 +169,7 @@ class HomeController extends Controller
 
             $total_sell_in_month_year = $sells_this_fy->where('yearmonth', $month_year)->sum('total_sells');
 
-            if (!empty($total_sell_in_month_year)) {
+            if (! empty($total_sell_in_month_year)) {
                 $values[] = (float) $total_sell_in_month_year;
             } else {
                 $values[] = 0;
@@ -190,14 +183,14 @@ class HomeController extends Controller
             foreach ($fy_months as $month) {
                 $total_sell_in_month_year_location = $sells_this_fy->where('yearmonth', $month)->where('location_id', $loc_id)->sum('total_sells');
 
-                if (!empty($total_sell_in_month_year_location)) {
+                if (! empty($total_sell_in_month_year_location)) {
                     $values_data[] = (float) $total_sell_in_month_year_location;
                 } else {
                     $values_data[] = 0;
                 }
             }
             $fy_sells_by_location_data[$loc_id]['loc_label'] = $loc_name;
-            $fy_sells_by_location_data[$loc_id]['values'] = $values_data;
+            $fy_sells_by_location_data[$loc_id]['values']    = $values_data;
         }
 
         $sells_chart_2 = new CommonChart;
@@ -206,7 +199,7 @@ class HomeController extends Controller
                 'home.total_sells',
                 ['currency' => $currency->code]
             )));
-        if (!empty($fy_sells_by_location_data)) {
+        if (! empty($fy_sells_by_location_data)) {
             foreach ($fy_sells_by_location_data as $location_sell) {
                 $sells_chart_2->dataset($location_sell['loc_label'], 'line', $location_sell['values']);
             }
@@ -215,21 +208,18 @@ class HomeController extends Controller
             $sells_chart_2->dataset(__('report.all_locations'), 'line', $values);
         }
 
-
-
-
         //Get Dashboard widgets from module
         $module_widgets = $this->moduleUtil->getModuleData('dashboard_widget');
 
         $widgets = [];
 
         foreach ($module_widgets as $widget_array) {
-            if (!empty($widget_array['position'])) {
+            if (! empty($widget_array['position'])) {
                 $widgets[$widget_array['position']][] = $widget_array['widget'];
             }
         }
 
-        $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+        $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         if ($is_customer) {
             return redirect()->route('agent_home');
@@ -238,7 +228,6 @@ class HomeController extends Controller
         // $essentialsControllerClass = \Modules\Essentials\Http\Controllers\DataController::class;
         // $essentialsController = new $essentialsControllerClass();
         //$essentialsPermissions = $essentialsController->user_permissions();
-
 
         //sales
         // $salesControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
@@ -266,24 +255,20 @@ class HomeController extends Controller
         // $accountingController = new $accountingControllerClass();
         // $accountingPermissions = $accountingController->user_permissions();
 
-
         // //connector
         // $ConnectorControllerClass = \Modules\Connector\Http\Controllers\DataController::class;
         // $ConnectorController = new $ConnectorControllerClass();
         // $ConnectorPermissions = $ConnectorController->user_permissions();
-
 
         //AssetManagement
         // $AssetManagementControllerClass = \Modules\AssetManagement\Http\Controllers\DataController::class;
         // $AssetManagementController = new $AssetManagementControllerClass();
         // $AssetManagementPermissions = $AssetManagementController->user_permissions();
 
-
         // //CRM
         // $CRMControllerClass = \Modules\Crm\Http\Controllers\DataController::class;
         // $CRMController = new $CRMControllerClass();
         // $CRMPermissions = $CRMController->user_permissions();
-
 
         $generalManagmentDashPermission = [
             ['value' => 'generalmanagement.generalmanagement_dashboard'],
@@ -348,9 +333,9 @@ class HomeController extends Controller
         $payrollsPermissions = [
             ['value' => 'essentials.payrolls_management'],
         ];
-        $reportsPermissions = [["value" => 'report.reports'],];
+        $reportsPermissions = [["value" => 'report.reports']];
 
-        $businessSectorPermissions = [["value" => 'businessSector.dashboard'],];
+        $businessSectorPermissions = [["value" => 'business_sector.businessSector']];
 
         // $settingsPermissions = [
         //     ['value' => 'business_settings.access'],
@@ -372,40 +357,40 @@ class HomeController extends Controller
 
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
-            ['id' => 'general_management',  'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
-            ['id' => 'general_management_office',  'permissions' => $generalManagmentOfficeDashPermission, 'title' => __('generalmanagmentoffice::lang.generalmanagmentoffice'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagmentOffice\Http\Controllers\DashboardController::class, 'index'])],
-            ['id' => 'ceo_management',  'permissions' => $CEODashPermission, 'title' => __('ceomanagment::lang.CEO_Managment'), 'icon' => "fas fa-chart-line", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
-            ['id' => 'operationsmanagmentgovernment',  'permissions' => $OperationMangmentDashPermission, 'title' => __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'), 'icon' => "fas fa-cogs", 'link' => action([\Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'general_management', 'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'general_management_office', 'permissions' => $generalManagmentOfficeDashPermission, 'title' => __('generalmanagmentoffice::lang.generalmanagmentoffice'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagmentOffice\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'ceo_management', 'permissions' => $CEODashPermission, 'title' => __('ceomanagment::lang.CEO_Managment'), 'icon' => "fas fa-chart-line", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'operationsmanagmentgovernment', 'permissions' => $OperationMangmentDashPermission, 'title' => __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'), 'icon' => "fas fa-cogs", 'link' => action([\Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])],
 
             // ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
-            ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
-            ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
-            ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => '	far fa-handshake', 'link' =>   route('essentials_word_cards_dashboard')],
-            ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' =>   route('employee_affairs_dashboard')],
-            ['id' => 'payrolls',  'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls_management'), 'icon' => 'fas fa-coins', 'link' =>   route('payrolls_dashboard')],
-            ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
+            ['id' => 'user_management', 'permissions' => $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' => route('users.index')],
+            ['id' => 'hrm', 'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' => route('essentials_landing')],
+            ['id' => 'workCards', 'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => '	far fa-handshake', 'link' => route('essentials_word_cards_dashboard')],
+            ['id' => 'employeeAffairs', 'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' => route('employee_affairs_dashboard')],
+            ['id' => 'payrolls', 'permissions' => $payrollsPermissions, 'title' => __('essentials::lang.payrolls_management'), 'icon' => 'fas fa-coins', 'link' => route('payrolls_dashboard')],
+            ['id' => 'medical_insurance', 'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('insurance-dashbord')],
 
-            ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
-            ['id' => 'informationtechnologymanagment',  'permissions' => $InformationTechnologDashPermission, 'title' => __('informationtechnologymanagment::lang.informationtechnologymanagment'), 'icon' => "fas fa-laptop-code", 'link' => action([\Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'essentials', 'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
+            ['id' => 'informationtechnologymanagment', 'permissions' => $InformationTechnologDashPermission, 'title' => __('informationtechnologymanagment::lang.informationtechnologymanagment'), 'icon' => "fas fa-laptop-code", 'link' => action([\Modules\InformationTechnologyManagment\Http\Controllers\DashboardController::class, 'index'])],
 
-            ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
-            ['id' => 'businessSector',  'permissions' => $businessSectorPermissions, 'title' =>  __('business_sector.businessSector'), 'icon' => 'fa fas fa-users', 'link' =>  route('businessSector')],
-            ['id' => 'FollowUp',  'permissions' => $followupDashPermission, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
-            ['id' => 'houseingMovements',  'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
-            ['id' => 'movements',  'permissions' => $movmentsPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' =>   action([MovmentDashboardController::class, 'index'])],
-            ['id' => 'internationalrelations',  'permissions' => $internationalrelationsDashPermission, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
-            ['id' => 'legalAffairs',  'permissions' => $legalAffairsPermissions, 'title' => __('legalaffairs::lang.legalaffairs'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
-            ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
+            ['id' => 'sales', 'permissions' => $salesDashPermission, 'title' => __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' => route('sales_landing')],
+            ['id' => 'businessSector', 'permissions' => $businessSectorPermissions, 'title' => __('business_sector.businessSector'), 'icon' => 'fa fas fa-users', 'link' => route('businessSector')],
+            ['id' => 'FollowUp', 'permissions' => $followupDashPermission, 'title' => __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
+            ['id' => 'houseingMovements', 'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' => action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'movements', 'permissions' => $movmentsPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' => action([MovmentDashboardController::class, 'index'])],
+            ['id' => 'internationalrelations', 'permissions' => $internationalrelationsDashPermission, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'legalAffairs', 'permissions' => $legalAffairsPermissions, 'title' => __('legalaffairs::lang.legalaffairs'), 'icon' => 'fas fa-balance-scale', 'link' => route('legalAffairs.dashboard')],
+            ['id' => 'reports', 'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
 
             // ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             // ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
-            ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' => route('accountingLanding'),],
-            ['id' => 'assetManagement',  'permissions' => $assetPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
+            ['id' => 'accounting', 'permissions' => $accountingPermissions, 'title' => __('accounting::lang.accounting'), 'icon' => 'fas fa-money-check fa', 'link' => route('accountingLanding')],
+            ['id' => 'assetManagement', 'permissions' => $assetPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' => action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
             //  ['id' => 'crm',  'permissions' => $CRMPermissions, 'title' => __('crm::lang.crm'),'icon' =>'fas fa fa-broadcast-tower', 'link' => action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']),],
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             // ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
             //  ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fas fa-user-circle', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
-            ['id' => 'settings',  'permissions' => [], 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
+            ['id' => 'settings', 'permissions' => [], 'title' => __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
         ];
         $cards = [];
 
@@ -417,22 +402,22 @@ class HomeController extends Controller
 
         if ($is_general_manager) {
             $cards = [
-                ['id' => 'general_management',  'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
-                ['id' => 'ceo_management',  'permissions' => $CEODashPermission, 'title' => __('ceomanagment::lang.CEO_Managment'), 'icon' => "fas fa-chart-line", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
-                ['id' => 'human_resources_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.human_resources_management'), 'icon' => 'fa fas fa-users', 'link' => route('generalmanagement.human_resources_management')],
-                ['id' => 'financial_accounting_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.financial_accounting_management'), 'icon' => 'fas fa-money-check fa', 'link' => route('accountingLanding'),],
-                ['id' => 'follow_up_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.follow_up_management'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
-                ['id' => 'international_relations_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.international_relations_management'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
-                ['id' => 'housing_movement_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.housing_movement_management'), 'icon' => 'fa fas fa-home', 'link' => route('generalmanagement.housing_movement_management')],
-                ['id' => 'sells_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.sells_management'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
-                ['id' => 'businessSector',  'permissions' => $businessSectorPermissions, 'title' =>  __('business_sector.businessSector'), 'icon' => 'fa fas fa-users', 'link' =>  route('businessSector')],
+                ['id' => 'general_management', 'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
+                ['id' => 'ceo_management', 'permissions' => $CEODashPermission, 'title' => __('ceomanagment::lang.CEO_Managment'), 'icon' => "fas fa-chart-line", 'link' => action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index'])],
+                ['id' => 'human_resources_management', 'permissions' => [], 'title' => __('generalmanagement::lang.human_resources_management'), 'icon' => 'fa fas fa-users', 'link' => route('generalmanagement.human_resources_management')],
+                ['id' => 'financial_accounting_management', 'permissions' => [], 'title' => __('generalmanagement::lang.financial_accounting_management'), 'icon' => 'fas fa-money-check fa', 'link' => route('accountingLanding')],
+                ['id' => 'follow_up_management', 'permissions' => [], 'title' => __('generalmanagement::lang.follow_up_management'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
+                ['id' => 'international_relations_management', 'permissions' => [], 'title' => __('generalmanagement::lang.international_relations_management'), 'icon' => 'fa fas fa-dharmachakra', 'link' => action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
+                ['id' => 'housing_movement_management', 'permissions' => [], 'title' => __('generalmanagement::lang.housing_movement_management'), 'icon' => 'fa fas fa-home', 'link' => route('generalmanagement.housing_movement_management')],
+                ['id' => 'sells_management', 'permissions' => [], 'title' => __('generalmanagement::lang.sells_management'), 'icon' => 'fas fa-dollar-sign', 'link' => route('sales_landing')],
+                ['id' => 'businessSector', 'permissions' => $businessSectorPermissions, 'title' => __('business_sector.businessSector'), 'icon' => 'fa fas fa-users', 'link' => route('businessSector')],
 
-                ['id' => 'legal_affairs_management',  'permissions' => [], 'title' =>  __('generalmanagement::lang.legal_affairs_management'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
-                ['id' => 'reports',  'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
+                ['id' => 'legal_affairs_management', 'permissions' => [], 'title' => __('generalmanagement::lang.legal_affairs_management'), 'icon' => 'fas fa-balance-scale', 'link' => route('legalAffairs.dashboard')],
+                ['id' => 'reports', 'permissions' => $reportsPermissions, 'title' => __('report.reports'), 'icon' => 'fa fas fa-file-alt', 'link' => route('reports.landing')],
             ];
         } else {
             foreach ($cardsPack as $card) {
-                if (!empty($card['permissions'])) {
+                if (! empty($card['permissions'])) {
                     $canAccessCard = false;
                     foreach ($card['permissions'] as $permission) {
                         if ($isSuperAdmin || $is_admin || auth()->user()->can($permission['value'])) {
@@ -449,7 +434,7 @@ class HomeController extends Controller
                         error_log("cant " . $card['title']);
                     }
                 } else {
-                    if (($is_admin &&  $user_id == 1) || $isSuperAdmin) {
+                    if (($is_admin && $user_id == 1) || $isSuperAdmin) {
                         $cards[] = $card;
                     }
                     //$cards[] = $card;
@@ -464,8 +449,6 @@ class HomeController extends Controller
         // return view('custom_views.home', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
     }
 
-
-
     public function getMyNotifications()
     {
         try {
@@ -474,7 +457,7 @@ class HomeController extends Controller
             $nots = $notifications->get();
 
             foreach ($nots as $notification) {
-                if (!($notification->read_at)) {
+                if (! ($notification->read_at)) {
                     $notification->update(['read_at' => Carbon::now()]);
                 }
             }
@@ -482,7 +465,7 @@ class HomeController extends Controller
             if (request()->ajax()) {
                 return DataTables::of($notifications)
                     ->addColumn('sender', function ($row) {
-                        $tmp =  json_decode($row)->sent_notification->created_by;
+                        $tmp = json_decode($row)->sent_notification->created_by;
                         return $tmp->first_name . ' ' . $tmp->last_name;
                     })
                     ->addColumn('type', function ($row) {
@@ -510,7 +493,6 @@ class HomeController extends Controller
         return view('custom_views.my_notifications');
     }
 
-
     /**
      * Retrieves purchase and sell details for a given time period.
      *
@@ -519,8 +501,8 @@ class HomeController extends Controller
     public function getTotals()
     {
         if (request()->ajax()) {
-            $start = request()->start;
-            $end = request()->end;
+            $start       = request()->start;
+            $end         = request()->end;
             $location_id = request()->location_id;
             $business_id = request()->session()->get('user.business_id');
 
@@ -546,22 +528,22 @@ class HomeController extends Controller
                 $location_id
             );
 
-            $total_purchase_inc_tax = !empty($purchase_details['total_purchase_inc_tax']) ? $purchase_details['total_purchase_inc_tax'] : 0;
+            $total_purchase_inc_tax        = ! empty($purchase_details['total_purchase_inc_tax']) ? $purchase_details['total_purchase_inc_tax'] : 0;
             $total_purchase_return_inc_tax = $transaction_totals['total_purchase_return_inc_tax'];
 
-            $output = $purchase_details;
-            $output['total_purchase'] = $total_purchase_inc_tax;
-            $output['total_purchase_return'] = $total_purchase_return_inc_tax;
+            $output                               = $purchase_details;
+            $output['total_purchase']             = $total_purchase_inc_tax;
+            $output['total_purchase_return']      = $total_purchase_return_inc_tax;
             $output['total_purchase_return_paid'] = $this->transactionUtil->getTotalPurchaseReturnPaid($business_id, $start, $end, $location_id);
 
-            $total_sell_inc_tax = !empty($sell_details['total_sell_inc_tax']) ? $sell_details['total_sell_inc_tax'] : 0;
-            $total_sell_return_inc_tax = !empty($transaction_totals['total_sell_return_inc_tax']) ? $transaction_totals['total_sell_return_inc_tax'] : 0;
+            $total_sell_inc_tax               = ! empty($sell_details['total_sell_inc_tax']) ? $sell_details['total_sell_inc_tax'] : 0;
+            $total_sell_return_inc_tax        = ! empty($transaction_totals['total_sell_return_inc_tax']) ? $transaction_totals['total_sell_return_inc_tax'] : 0;
             $output['total_sell_return_paid'] = $this->transactionUtil->getTotalSellReturnPaid($business_id, $start, $end, $location_id);
 
-            $output['total_sell'] = $total_sell_inc_tax;
+            $output['total_sell']        = $total_sell_inc_tax;
             $output['total_sell_return'] = $total_sell_return_inc_tax;
 
-            $output['invoice_due'] = $sell_details['invoice_due'] - $total_ledger_discount['total_sell_discount'];
+            $output['invoice_due']   = $sell_details['invoice_due'] - $total_ledger_discount['total_sell_discount'];
             $output['total_expense'] = $transaction_totals['total_expense'];
 
             //NET = TOTAL SALES - INVOICE DUE - EXPENSE
@@ -619,7 +601,7 @@ class HomeController extends Controller
                 $query->whereIn('variation_location_details.location_id', $permitted_locations);
             }
 
-            if (!empty(request()->input('location_id'))) {
+            if (! empty(request()->input('location_id'))) {
                 $query->where('variation_location_details.location_id', request()->input('location_id'));
             }
 
@@ -670,7 +652,7 @@ class HomeController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $today = \Carbon::now()->format('Y-m-d H:i:s');
+            $today       = \Carbon::now()->format('Y-m-d H:i:s');
 
             $query = Transaction::join(
                 'contacts as c',
@@ -695,7 +677,7 @@ class HomeController extends Controller
                 $query->whereIn('transactions.location_id', $permitted_locations);
             }
 
-            if (!empty(request()->input('location_id'))) {
+            if (! empty(request()->input('location_id'))) {
                 $query->where('transactions.location_id', request()->input('location_id'));
             }
 
@@ -711,8 +693,8 @@ class HomeController extends Controller
 
             return Datatables::of($dues)
                 ->addColumn('due', function ($row) {
-                    $total_paid = !empty($row->total_paid) ? $row->total_paid : 0;
-                    $due = $row->final_total - $total_paid;
+                    $total_paid = ! empty($row->total_paid) ? $row->total_paid : 0;
+                    $due        = $row->final_total - $total_paid;
 
                     return '<span class="display_currency" data-currency_symbol="true">' .
                         $due . '</span>';
@@ -722,7 +704,7 @@ class HomeController extends Controller
                 ->editColumn('supplier', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br> @endif {{$supplier}}')
                 ->editColumn('ref_no', function ($row) {
                     if (auth()->user()->can('purchase.view')) {
-                        return  '<a href="#" data-href="' . action([\App\Http\Controllers\PurchaseController::class, 'show'], [$row->id]) . '"
+                        return '<a href="#" data-href="' . action([\App\Http\Controllers\PurchaseController::class, 'show'], [$row->id]) . '"
                                     class="btn-modal" data-container=".view_modal">' . $row->ref_no . '</a>';
                     }
 
@@ -745,7 +727,7 @@ class HomeController extends Controller
     {
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $today = \Carbon::now()->format('Y-m-d H:i:s');
+            $today       = \Carbon::now()->format('Y-m-d H:i:s');
 
             $query = Transaction::join(
                 'contacts as c',
@@ -772,7 +754,7 @@ class HomeController extends Controller
                 $query->whereIn('transactions.location_id', $permitted_locations);
             }
 
-            if (!empty(request()->input('location_id'))) {
+            if (! empty(request()->input('location_id'))) {
                 $query->where('transactions.location_id', request()->input('location_id'));
             }
 
@@ -788,15 +770,15 @@ class HomeController extends Controller
 
             return Datatables::of($dues)
                 ->addColumn('due', function ($row) {
-                    $total_paid = !empty($row->total_paid) ? $row->total_paid : 0;
-                    $due = $row->final_total - $total_paid;
+                    $total_paid = ! empty($row->total_paid) ? $row->total_paid : 0;
+                    $due        = $row->final_total - $total_paid;
 
                     return '<span class="display_currency" data-currency_symbol="true">' .
                         $due . '</span>';
                 })
                 ->editColumn('invoice_no', function ($row) {
                     if (auth()->user()->can('sell.view')) {
-                        return  '<a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '"
+                        return '<a href="#" data-href="' . action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]) . '"
                                     class="btn-modal" data-container=".view_modal">' . $row->invoice_no . '</a>';
                     }
 
@@ -815,26 +797,25 @@ class HomeController extends Controller
 
     public function loadMoreNotifications()
     {
-        $notifications = SentNotificationsUser::with('sentNotification')->where('user_id', auth()->user()->id)->orderBy('created_at', 'DESC')->paginate(10);
+        $notifications      = SentNotificationsUser::with('sentNotification')->where('user_id', auth()->user()->id)->orderBy('created_at', 'DESC')->paginate(10);
         $notifications_data = [];
-        $icon_classes = ['GeneralManagement' => 'fas fa-user-tie'];
+        $icon_classes       = ['GeneralManagement' => 'fas fa-user-tie'];
         foreach ($notifications as $notification) {
-            $sent_notification = json_decode($notification)->sent_notification;
+            $sent_notification    = json_decode($notification)->sent_notification;
             $notifications_data[] = [
-                'title' =>  $sent_notification->title ?? '',
-                'msg' => $sent_notification->msg ?? '',
-                'icon_class' =>  $icon_classes[$sent_notification->type] ?? '',
+                'title'      => $sent_notification->title ?? '',
+                'msg'        => $sent_notification->msg ?? '',
+                'icon_class' => $icon_classes[$sent_notification->type] ?? '',
                 // 'link' => route('showNotificationModal'),
-                'link' => '',
+                'link'       => '',
                 'created_at' => Carbon::parse($sent_notification->created_at)->diffForHumans() ?? '',
-                'read_at' => $notification->read_at ?? '',
+                'read_at'    => $notification->read_at ?? '',
             ];
             //  $tmp = SentNotificationsUser::find($notification->id);
-            if (!($notification->read_at)) {
+            if (! ($notification->read_at)) {
                 $notification->update(['read_at' => Carbon::now()]);
             }
         }
-
 
         return view('layouts.partials.notification_list', compact('notifications_data'));
     }
@@ -859,9 +840,9 @@ class HomeController extends Controller
     public function getTotalUnreadNotifications()
     {
         $unread_notifications = auth()->user()->unreadNotifications;
-        $total_unread = $unread_notifications->count();
+        $total_unread         = $unread_notifications->count();
 
-        $notification_html = '';
+        $notification_html   = '';
         $modal_notifications = [];
         foreach ($unread_notifications as $unread_notification) {
             if (isset($data['show_popup'])) {
@@ -869,12 +850,12 @@ class HomeController extends Controller
                 $unread_notification->markAsRead();
             }
         }
-        if (!empty($modal_notifications)) {
+        if (! empty($modal_notifications)) {
             $notification_html = view('home.notification_modal')->with(['notifications' => $modal_notifications])->render();
         }
 
         return [
-            'total_unread' => $total_unread,
+            'total_unread'      => $total_unread,
             'notification_html' => $notification_html,
         ];
     }
@@ -882,35 +863,35 @@ class HomeController extends Controller
     private function __chartOptions($title)
     {
         return [
-            'yAxis' => [
+            'yAxis'  => [
                 'title' => [
                     'text' => $title,
                 ],
             ],
             'legend' => [
-                'align' => 'right',
+                'align'         => 'right',
                 'verticalAlign' => 'top',
-                'floating' => true,
-                'layout' => 'vertical',
-                'padding' => 20,
+                'floating'      => true,
+                'layout'        => 'vertical',
+                'padding'       => 20,
             ],
         ];
     }
 
     public function getCalendar()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->restUtil->is_admin(auth()->user(), $business_id);
+        $business_id   = request()->session()->get('user.business_id');
+        $is_admin      = $this->restUtil->is_admin(auth()->user(), $business_id);
         $is_superadmin = auth()->user()->can('superadmin');
         if (request()->ajax()) {
             $data = [
-                'start_date' => request()->start,
-                'end_date' => request()->end,
-                'user_id' => ($is_admin || $is_superadmin) && !empty(request()->user_id) ? request()->user_id : auth()->user()->id,
-                'location_id' => !empty(request()->location_id) ? request()->location_id : null,
+                'start_date'  => request()->start,
+                'end_date'    => request()->end,
+                'user_id'     => ($is_admin || $is_superadmin) && ! empty(request()->user_id) ? request()->user_id : auth()->user()->id,
+                'location_id' => ! empty(request()->location_id) ? request()->location_id : null,
                 'business_id' => $business_id,
-                'events' => request()->events ?? [],
-                'color' => '#007FFF',
+                'events'      => request()->events ?? [],
+                'color'       => '#007FFF',
             ];
             $events = [];
 
@@ -928,7 +909,7 @@ class HomeController extends Controller
         }
 
         $all_locations = BusinessLocation::forDropdown($business_id)->toArray();
-        $users = [];
+        $users         = [];
         if ($is_admin) {
             $users = User::forDropdown($business_id, false);
         }
@@ -971,8 +952,8 @@ class HomeController extends Controller
             try {
                 $business_id = request()->session()->get('user.business_id');
 
-                $model_id = $request->input('model_id');
-                $model = $request->input('model_type');
+                $model_id         = $request->input('model_id');
+                $model            = $request->input('model_type');
                 $model_media_type = $request->input('model_media_type');
 
                 DB::beginTransaction();
@@ -987,7 +968,7 @@ class HomeController extends Controller
 
                 $output = [
                     'success' => true,
-                    'msg' => __('lang_v1.success'),
+                    'msg'     => __('lang_v1.success'),
                 ];
             } catch (Exception $e) {
                 DB::rollBack();
@@ -996,7 +977,7 @@ class HomeController extends Controller
 
                 $output = [
                     'success' => false,
-                    'msg' => __('messages.something_went_wrong'),
+                    'msg'     => __('messages.something_went_wrong'),
                 ];
             }
 
