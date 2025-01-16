@@ -475,7 +475,7 @@
                                                     @if (!empty($line['product_description']))
                                                     <small>{!! $line['product_description'] !!}</small>
                                                     @else
-                                                    <small>—</small>
+                                                    <small></small>
                                                     @endif
                                                 </td>
                                                 <td class="text-end" style="padding: 10px; vertical-align: top;">
@@ -541,9 +541,8 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <td colspan="4" style="padding: 10px; border: 1px solid #d5d5d5;">
-                                                    Footer Content Here
-                                                </td>
+                                                {{-- <td colspan="4" style="padding: 10px; border: 1px solid #d5d5d5;">
+                                                </td> --}}
                                             </tr>
                                         </tfoot>
                                     </table>
