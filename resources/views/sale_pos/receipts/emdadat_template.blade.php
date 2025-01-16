@@ -1,33 +1,42 @@
 <style>
-    /* Table Styling */
-    .table .custom-bg {
-        background-color: #f1f1f1 !important;
-        -webkit-print-color-adjust: exact;
+    /* General Reset and Table Styling */
+    body {
+        width: 100%;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
     }
 
-    .main_table {
+    table {
         width: 100%;
         border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    /* Main Table Styling */
+    .main_table {
         background-color: #fff;
-        font-size: 14px;
         text-align: right;
+        border: 1px solid #ddd;
     }
 
     .main_table thead {
-        background-color: #f2f2f2;
-    }
-
-    .main_table th {
-        border: 1px solid #ddd;
-        padding: 10px;
         background-color: #007bff;
         color: #fff;
-        font-weight: bold;
     }
 
+    .main_table th,
     .main_table td {
         border: 1px solid #ddd;
         padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .main_table th {
+        font-weight: bold;
+        text-transform: uppercase;
     }
 
     .main_table tbody tr:nth-child(odd) {
@@ -40,21 +49,26 @@
 
     .main_table tbody tr:hover {
         background-color: #f1f1f1;
+        transition: background-color 0.3s ease;
     }
 
     .main_table img {
         border-radius: 5px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .main_table .custom-bg {
-        color: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .main_table tfoot td {
-        text-align: center;
         font-weight: bold;
         background-color: #f2f2f2;
+        text-align: center;
+    }
+
+    /* Slim Table Styling */
+    .table-slim,
+    .table-slim td,
+    .table-slim th {
+        border: 0.5px solid #d5d5d5 !important;
+        padding: 4px 6px !important;
     }
 
     /* Responsive Styling */
@@ -63,92 +77,46 @@
             font-size: 12px;
         }
 
-        .main_table td,
-        .main_table th {
-            padding: 6px;
+        .main_table th,
+        .main_table td {
+            padding: 8px;
         }
     }
 
-    /* General Table Adjustments */
-    .table {
-        margin-bottom: 5px;
-    }
-
-    .table-slim,
-    .table-slim td,
-    .table-slim th {
-        border: 0.5px solid #d5d5d5 !important;
-        padding: 2px 4px !important;
-    }
-
-    /* Footer Styling */
-    .page-footer,
-    .page-footer-space {
-        max-height: 60px !important;
-        margin-top: 30px !important;
+    /* Invoice and Footer Styling */
+    .invoice-container {
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+        line-height: 1.6;
     }
 
     .page-footer {
         position: fixed !important;
-        bottom: 0px !important;
-        margin-top: 10px !important;
-        width: 50%;
+        bottom: 0;
+        width: 100%;
+        max-height: 60px;
+        margin-top: 30px;
+        text-align: center;
+        background-color: #f2f2f2;
+        padding: 10px;
     }
 
     .footer-text {
-        width: 100%;
-        margin: auto;
-        padding-top: 20px;
-    }
-
-    /* Page Adjustments */
-    @page {
-        margin: 10px 0px 0px 0px !important;
-    }
-
-    table {
-        font-size: 13px;
-    }
-
-    table:not(.main_table) {
-        font-size: 13px;
-        page-break-inside: avoid;
-        page-break-after: avoid;
-    }
-
-    .invoice-container {
-        width: 93%;
-        margin: auto;
-        text-align: center;
-        line-height: 22px;
-        font-size: 14px;
-    }
-
-    .flex {
-        display: flex;
-        justify-content: space-between;
-        padding: 0;
-        margin: 5px 0px !important;
-    }
-
-    body {
-        width: 100%;
-        margin: auto;
+        margin: 0;
+        padding: 10px 0;
+        font-size: 12px;
+        color: #555;
     }
 
     /* Print-specific Styling */
     @media print {
-        .invoice-container thead {
-            display: table-header-group !important;
-        }
-
-        tfoot {
-            display: table-footer-group !important;
-        }
-
         body {
             margin: 0 !important;
-            width: 100%;
+        }
+
+        .invoice-container thead {
+            display: table-header-group !important;
         }
 
         .page-footer {
@@ -156,11 +124,32 @@
         }
 
         .page-footer-space {
-            max-height: 60px;
+            height: 60px;
         }
     }
-</style>
 
+    /* Additional Utility Classes */
+    .text-right {
+        text-align: right;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .flex {
+        display: flex;
+        justify-content: space-between;
+        padding: 0;
+        margin: 5px 0;
+    }
+
+    /* Custom Background Styling */
+    .custom-bg {
+        background-color: #f1f1f1 !important;
+        -webkit-print-color-adjust: exact;
+    }
+</style>
 
 <body>
     <table class="invoice-container">
@@ -271,7 +260,7 @@
                                 {{-- QR Code --}}
                                 <img class="center-block"
                                     src="data:image/png;base64,{{ DNS2D::getBarcodePNG($receipt_details->qr_code_text, 'QRCODE', 3, 3, [39, 48, 54]) }}"
-                                    style="max-width: 200px; margin-top: 10px; border-radius: 5px;">
+                                    style="max-width: 170px; margin-top: 10px; border-radius: 5px;">
                                 @endif
 
                                 {{-- Invoice Details --}}
@@ -311,104 +300,165 @@
 
 
 
-                        <div class="row col-xs-12 text-center" style="margin-top: 120px;">
+                        <div class="row col-xs-12 text-center" style="margin-top: 100px;">
                             <!-- Adjust top margin to avoid overlap with QR code/barcode -->
                             <div
                                 style="width: 100%; font-size: 14px; line-height: 1.5; border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9;">
-                                <table style="width: 100%; border-collapse: collapse;">
+                                <table
+                                    style="width: 100%; border-collapse: collapse; text-align: right; direction: rtl;">
                                     <tbody>
                                         @if (!empty($receipt_details->customer_info))
+
                                         @if (!empty($receipt_details->customer_name))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold; width: 30%;">
-                                                @lang(' Name') / الاسم :
+                                            <!-- Arabic Label -->
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>الاسم</span>
                                             </td>
-                                            <td style="padding: 10px;">{!! $receipt_details->customer_name !!}</td>
+                                            <!-- Value -->
+                                            <td style="padding: 10px; text-align: center;">{!!
+                                                $receipt_details->customer_name !!}</td>
+                                            <!-- English Label -->
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Name')</span>
+                                            </td>
+
                                         </tr>
                                         @endif
 
                                         @if (!empty($receipt_details->customer_mobile))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold; width: 30%;">
-                                                @lang(' Mobile') / الجوال :
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>الجوال</span>
                                             </td>
-                                            <td style="padding: 10px;">{!! $receipt_details->customer_mobile !!}</td>
+                                            <td style="padding: 10px; text-align: center;">{!!
+                                                $receipt_details->customer_mobile !!}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Mobile')</span>
+                                            </td>
+
                                         </tr>
                                         @endif
 
                                         @if (!empty($receipt_details->customer_tax_number))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold; width: 30%;">
-                                                @if (!empty($receipt_details->customer_tax_label))
-                                                {{ $receipt_details->customer_tax_label }}:
-                                                @else
-                                                @lang('Customer Tax Number') / رقم ضريبة العميل:
-                                                @endif
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>
+                                                    @if (!empty($receipt_details->customer_tax_label))
+                                                    {{ $receipt_details->customer_tax_label }}
+                                                    @else
+                                                    رقم ضريبة العميل
+                                                    @endif
+                                                </span>
                                             </td>
-                                            <td style="padding: 10px;">{!! $receipt_details->customer_tax_number !!}
+                                            <td style="padding: 10px; text-align: center;">{!!
+                                                $receipt_details->customer_tax_number !!}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Customer Tax Number')</span>
                                             </td>
+
+                                        </tr>
+                                        @endif
+                                        @endif
+
+                                        @if (!empty($receipt_details->external_dev_name))
+                                        <tr style="border: 1px solid #ddd;">
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>اسم المطور الخارجي</span>
+                                            </td>
+                                            <td style="padding: 10px; text-align: center;">{{
+                                                $receipt_details->external_dev_name }}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('External Developer Name')</span>
+                                            </td>
+
                                         </tr>
                                         @endif
 
-
-
-
-
-                                        @endif
                                         @if (!empty($receipt_details->client_id_label))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold;">
-                                                @lang('Client ID') / رقم العميل:
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>رقم العميل</span>
                                             </td>
-                                            <td style="padding: 10px;">{{ $receipt_details->client_id }}</td>
+                                            <td style="padding: 10px; text-align: center;">{{
+                                                $receipt_details->client_id }}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Client ID')</span>
+                                            </td>
+
                                         </tr>
                                         @endif
-                                        @if (!empty($receipt_details->customer_tax_label))
-                                        <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold;">
-                                                @lang('Customer Tax') / الضريبة على العميل:
-                                            </td>
-                                            <td style="padding: 10px;">{{ $receipt_details->customer_tax_number }}</td>
-                                        </tr>
-                                        @endif
+
                                         @if (!empty($receipt_details->customer_custom_fields))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold;">
-                                                @lang('Additional Information') / معلومات إضافية:
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>معلومات إضافية</span>
                                             </td>
-                                            <td style="padding: 10px;">{!! $receipt_details->customer_custom_fields !!}
+                                            <td style="padding: 10px; text-align: center;">{!!
+                                                $receipt_details->customer_custom_fields !!}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Additional Information')</span>
                                             </td>
+
                                         </tr>
                                         @endif
+
                                         @if (!empty($receipt_details->sales_person_label))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold;">
-                                                @lang('Sales Person') / مندوب المبيعات:
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>مندوب المبيعات</span>
                                             </td>
-                                            <td style="padding: 10px;">{{ $receipt_details->sales_person }}</td>
+                                            <td style="padding: 10px; text-align: center;">{{
+                                                $receipt_details->sales_person }}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Sales Person')</span>
+                                            </td>
+
                                         </tr>
                                         @endif
+
                                         @if (!empty($receipt_details->commission_agent_label))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold;">
-                                                @lang('Commission Agent') / وكيل العمولة:
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>وكيل العمولة</span>
                                             </td>
-                                            <td style="padding: 10px;">{{ $receipt_details->commission_agent }}</td>
+                                            <td style="padding: 10px; text-align: center;">{{
+                                                $receipt_details->commission_agent }}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Commission Agent')</span>
+                                            </td>
+
                                         </tr>
                                         @endif
+
                                         @if (!empty($receipt_details->customer_rp_label))
                                         <tr style="border: 1px solid #ddd;">
-                                            <td style="padding: 10px; font-weight: bold;">
-                                                @lang('Customer RP') / رصيد العميل:
+                                            <td
+                                                style="padding: 10px; font-weight: bold; text-align: right; width: 30%;">
+                                                <span>رصيد العميل</span>
                                             </td>
-                                            <td style="padding: 10px;">{{ $receipt_details->customer_total_rp }}</td>
+                                            <td style="padding: 10px; text-align: center;">{{
+                                                $receipt_details->customer_total_rp }}</td>
+                                            <td style="padding: 10px; font-weight: bold; text-align: left; width: 30%;">
+                                                <span>@lang('Customer RP')</span>
+                                            </td>
+
                                         </tr>
                                         @endif
                                     </tbody>
-                                </table>
 
+                                </table>
                             </div>
                         </div>
+
 
                         <div class="row" style="color: #000000 !important; margin-bottom:10px;">
                             @includeIf('sale_pos.receipts.partial.common_repair_invoice')
@@ -475,7 +525,7 @@
                                                     @if (!empty($line['product_description']))
                                                     <small>{!! $line['product_description'] !!}</small>
                                                     @else
-                                                    <small></small>
+                                                    <small>—</small>
                                                     @endif
                                                 </td>
                                                 <td class="text-end" style="padding: 10px; vertical-align: top;">
@@ -539,12 +589,13 @@
                                             </tr>
                                             @endforelse
                                         </tbody>
-                                        <tfoot>
+                                        {{-- <tfoot>
                                             <tr>
-                                                {{-- <td colspan="4" style="padding: 10px; border: 1px solid #d5d5d5;">
-                                                </td> --}}
+                                                <td colspan="4" style="padding: 10px; border: 1px solid #d5d5d5;">
+                                                    Footer Content Here
+                                                </td>
                                             </tr>
-                                        </tfoot>
+                                        </tfoot> --}}
                                     </table>
 
                                 </div>
