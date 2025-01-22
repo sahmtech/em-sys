@@ -1126,6 +1126,8 @@ class TransactionUtil extends Util
 
         $output['customer_info']          = '';
         $output['company_info']           = '';
+        $output['company_info_state']     = '';
+        $output['company_info_landmark']     = '';
         $output['customer_tax_number']    = '';
         $output['customer_tax_label']     = '';
         $output['customer_custom_fields'] = '';
@@ -1227,6 +1229,8 @@ class TransactionUtil extends Util
         if ($receipt_printer_type != 'printer') {
 
             $output['company_info'] .= $comapny_data->name;
+            $output['company_info_state'] .= $company_location->state;
+            $output['company_info_landmark'] .= $company_location->landmark;
 
         }
 
@@ -1236,15 +1240,15 @@ class TransactionUtil extends Util
 
         if ($receipt_printer_type != 'printer') {
             if (! empty($company_location->state)) {
-                $output['company_info'] .= e(__('business.state')) . e($company_location->state) . '<br>';
+                // $output['company_info'] .= e(__('business.state')) . e($company_location->state) . '<br>';
             }
 
             if (! empty($company_location->zip_code)) {
-                $output['company_info'] .= e(__('business.zip_code')) . e($company_location->zip_code) . '<br>';
+                // $output['company_info'] .= e(__('business.zip_code')) . e($company_location->zip_code) . '<br>';
             }
 
             if (! empty($company_location->landmark)) {
-                $output['company_info'] .= e(__('business.landmark')) . e($company_location->landmark) . '<br>';
+                // $output['company_info'] .= e(__('business.landmark')) . e($company_location->landmark) . '<br>';
             }
         }
 
