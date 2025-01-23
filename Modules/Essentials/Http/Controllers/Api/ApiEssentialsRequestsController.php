@@ -407,28 +407,31 @@ class ApiEssentialsRequestsController extends ApiController
             //     ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             //     ->where('users.id', $user->id);
             $leaveRequestType = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
-            $requests         = UserRequest::with('requestType')->select([
+            // dd($leaveRequestType);
 
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'request_processes.note as note',
-                'wk_procedures.department_id as department_id',
-                'users.id_proof_number',
-                'requests.*',
-            ])
-
-                ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
-                ->leftjoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
+            $requests = UserRequest::with('requestType')
+                ->select([
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                    'request_processes.note as note',
+                    'wk_procedures.department_id as department_id',
+                    'users.id_proof_number',
+                    'requests.*',
+                ])
+                ->leftJoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
+                ->leftJoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'requests.related_to')
                 ->whereNot('requests.request_type_id', $leaveRequestType)
                 ->where('users.id', $user->id);
+            // dd($requests->get());
 
             if ($status_filter) {
-
-                $requests = $requests->where('followup_worker_requests_process.status', $status_filter);
+                $requests = $requests->where('requests.status', $status_filter); // Correct table/column reference
             }
+            // dd($requests->get());
 
             $requests = $requests->get();
-            $result   = [];
+
+            $result = [];
             foreach ($requests as $request) {
                 $request['status'] = __('api.' . $request['status']);
                 $type              = json_decode($request)->request_type->type;
@@ -452,6 +455,7 @@ class ApiEssentialsRequestsController extends ApiController
 
             return new CommonResource($res);
         } catch (\Exception $e) {
+
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
