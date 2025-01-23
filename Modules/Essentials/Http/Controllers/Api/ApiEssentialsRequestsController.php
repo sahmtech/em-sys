@@ -387,28 +387,6 @@ class ApiEssentialsRequestsController extends ApiController
             $status_filter = request()->status;
             $user          = Auth::user();
 
-            // $requests = FollowupWorkerRequest::select([
-            //     'followup_worker_requests.request_no',
-            //     'followup_worker_requests.id',
-            //     'followup_worker_requests.type as type',
-            //     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-            //     'followup_worker_requests.created_at',
-            //     'followup_worker_requests_process.status',
-            //     'followup_worker_requests_process.status_note as note',
-            //     'followup_worker_requests.reason',
-            //     'essentials_wk_procedures.department_id as department_id',
-            //     'users.id_proof_number',
-            //     'followup_worker_requests.start_date',
-            //     'followup_worker_requests.end_date',
-
-            // ])
-            //     ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-            //     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-            //     ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            //     ->where('users.id', $user->id);
-            // $leaveRequestType = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
-            // dd($leaveRequestType);
-
             $requests = UserRequest::with('requestType')
                 ->select([
                     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
@@ -425,7 +403,7 @@ class ApiEssentialsRequestsController extends ApiController
             // dd($requests->get());
 
             if ($status_filter) {
-                $requests = $requests->where('requests.status', $status_filter); // Correct table/column reference
+                $requests = $requests->where('requests.status', $status_filter);
             }
             // dd($requests->get());
 
@@ -441,7 +419,7 @@ class ApiEssentialsRequestsController extends ApiController
                     'id'              => $request->id,
                     'type'            => $request['type'],
                     'user'            => $request->user,
-                    'created_at'      => $request->created_at,
+                    'created_at'      => $request->created_at->format('Y-m-d'),
                     'status'          => $request->status,
                     'note'            => $request->note,
                     'reason'          => $request->reason,
