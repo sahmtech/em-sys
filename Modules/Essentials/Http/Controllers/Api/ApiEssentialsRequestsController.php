@@ -406,7 +406,7 @@ class ApiEssentialsRequestsController extends ApiController
             //     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             //     ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             //     ->where('users.id', $user->id);
-            $leaveRequestType = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
+            // $leaveRequestType = RequestsType::where('type', 'leavesAndDepartures')->where('for', 'employee')->first()->id;
             // dd($leaveRequestType);
 
             $requests = UserRequest::with('requestType')
@@ -420,7 +420,7 @@ class ApiEssentialsRequestsController extends ApiController
                 ->leftJoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
                 ->leftJoin('wk_procedures', 'wk_procedures.id', '=', 'request_processes.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'requests.related_to')
-                ->whereNot('requests.request_type_id', $leaveRequestType)
+            // ->whereNot('requests.request_type_id', $leaveRequestType)
                 ->where('users.id', $user->id);
             // dd($requests->get());
 
