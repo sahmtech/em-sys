@@ -56,6 +56,7 @@ class JournalEntryController extends Controller
         $can_view_journal = auth()->user()->can('accounting.view_journal');
         $can_edit_journal = auth()->user()->can('accounting.edit_journal');
         $can_delete_journal = auth()->user()->can('accounting.delete_journal');
+
         $can_history_edit = auth()->user()->can('accounting.history_edit');
         $can_print = auth()->user()->can('accounting.print_journal');
 
@@ -114,7 +115,6 @@ class JournalEntryController extends Controller
                                     </a>
                                 </li>';
                         }
-
 
                         if ($is_admin || $can_print) {
                             $html .= '<li>
