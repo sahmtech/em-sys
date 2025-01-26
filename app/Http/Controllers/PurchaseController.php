@@ -79,13 +79,15 @@ class PurchaseController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
+        $company_id = Session::get('selectedCompanyId');
+        // dd($this->transactionUtil->getListPurchases($business_id, $company_id)->get());
         if (request()->ajax()) {
-            $purchases = $this->transactionUtil->getListPurchases($business_id);
+            $purchases = $this->transactionUtil->getListPurchases($business_id, $company_id);
 
-            $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $purchases->whereIn('transactions.location_id', $permitted_locations);
-            }
+            // $permitted_locations = auth()->user()->permitted_locations();
+            // if ($permitted_locations != 'all') {
+            //     $purchases->whereIn('transactions.location_id', $permitted_locations);
+            // }
 
             if (! empty(request()->supplier_id)) {
                 $purchases->where('contacts.id', request()->supplier_id);
@@ -317,6 +319,7 @@ class PurchaseController extends Controller
             $business_id = $request->session()->get('user.business_id');
             $company_id = Session::get('selectedCompanyId');
             $request['company_id'] = $company_id;
+            $request['location_id'] = $company_id == 2 ? 3 : 1;
             //Check if subscribed or not
             if (! $this->moduleUtil->isSubscribed($business_id)) {
                 return $this->moduleUtil->expiredResponse(action([\App\Http\Controllers\PurchaseController::class, 'index']));
@@ -336,7 +339,7 @@ class PurchaseController extends Controller
                 'contact_id' => 'required',
                 'transaction_date' => 'required',
                 'total_before_tax' => 'required',
-                // 'location_id' => 'required',
+                'location_id' => 'required',
                 'company_id' => 'required',
                 'final_total' => 'required',
                 'document' => 'file|max:' . (config('constants.document_size_limit') / 1000),
