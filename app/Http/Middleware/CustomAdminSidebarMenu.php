@@ -592,13 +592,13 @@ class CustomAdminSidebarMenu
                 __('agent.pills.pills'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'bills'],
             );
-            if (auth()->user()->user_type != 'customer') {
-                $menu->url(
-                    route('agentTimeSheet.index'),
-                    __('agent.time_sheet'),
-                    ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'time_sheet'],
-                );
-            }
+            // if (auth()->user()->user_type != 'customer') {
+            $menu->url(
+                route('agentTimeSheet.index'),
+                __('agent.time_sheet'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'time_sheet'],
+            );
+            // }
         });
     }
     public function connectorMenu()
@@ -812,7 +812,7 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('legalaffairs.contracts_management')) {
                 $menu->dropdown(
                     __('legalaffairs::lang.contracts_management'),
-                    function ($sub) use ($is_admin, ) {
+                    function ($sub) use ($is_admin,) {
 
                         if ($is_admin || auth()->user()->can('legalaffairs.crud_employee_contracts')) {
                             $sub->url(
@@ -2204,7 +2204,7 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'housingmovements' &&
-                        (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests'),
+                            (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests'),
                     ],
                 );
             }
@@ -3133,9 +3133,9 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'proposed_laborIndex'
-                        || request()->segment(2) == 'accepted_workers'
-                        || request()->segment(2) == 'workers_under_trialPeriod'
-                        || request()->segment(2) == 'unaccepted_workers',
+                            || request()->segment(2) == 'accepted_workers'
+                            || request()->segment(2) == 'workers_under_trialPeriod'
+                            || request()->segment(2) == 'unaccepted_workers',
                     ],
                 );
             }
@@ -3613,7 +3613,7 @@ class CustomAdminSidebarMenu
     //     });
     // }
 
-//////
+    //////
 
     // public function productsMenu()
     // {
