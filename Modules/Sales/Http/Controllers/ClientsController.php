@@ -60,8 +60,18 @@ class ClientsController extends Controller
 
         $contacts = DB::table('contacts')
             ->select([
-                'id', 'supplier_business_name', 'type', 'contact_id', 'created_by', 'created_at',
-                'commercial_register_no', 'mobile', 'email', 'city', 'note_draft', 'name',
+                'id',
+                'supplier_business_name',
+                'type',
+                'contact_id',
+                'created_by',
+                'created_at',
+                'commercial_register_no',
+                'mobile',
+                'email',
+                'city',
+                'note_draft',
+                'name',
 
             ])->where('business_id', $business_id)->where('type', 'draft')->whereNotIn('created_by', [1]);
         $cities = EssentialsCity::forDropdown();
@@ -127,8 +137,16 @@ class ClientsController extends Controller
 
         $contacts = DB::table('contacts')
             ->select([
-                'id', 'supplier_business_name', 'type', 'contact_id', 'created_by', 'created_at',
-                'commercial_register_no', 'mobile', 'email', 'city',
+                'id',
+                'supplier_business_name',
+                'type',
+                'contact_id',
+                'created_by',
+                'created_at',
+                'commercial_register_no',
+                'mobile',
+                'email',
+                'city',
 
             ])->where('business_id', $business_id)->where('type', 'lead');
         $cities = EssentialsCity::forDropdown();
@@ -188,8 +206,17 @@ class ClientsController extends Controller
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
                 ->select([
-                    'id', 'supplier_business_name', 'type', 'contact_id', 'qualified_by', 'qualified_on',
-                    'commercial_register_no', 'mobile', 'email', 'city', 'updated_at',
+                    'id',
+                    'supplier_business_name',
+                    'type',
+                    'contact_id',
+                    'qualified_by',
+                    'qualified_on',
+                    'commercial_register_no',
+                    'mobile',
+                    'email',
+                    'city',
+                    'updated_at',
                 ])
                 ->where('business_id', $business_id)
                 ->where('type', 'qualified')
@@ -234,8 +261,14 @@ class ClientsController extends Controller
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
                 ->select([
-                    'id', 'supplier_business_name', 'type', 'contact_id',
-                    'commercial_register_no', 'mobile', 'email', 'city',
+                    'id',
+                    'supplier_business_name',
+                    'type',
+                    'contact_id',
+                    'commercial_register_no',
+                    'mobile',
+                    'email',
+                    'city',
 
                 ])->where('business_id', $business_id)->where('type', 'unqualified');
 
@@ -270,8 +303,14 @@ class ClientsController extends Controller
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
                 ->select([
-                    'id', 'supplier_business_name', 'type', 'contact_id',
-                    'commercial_register_no', 'mobile', 'email', 'city',
+                    'id',
+                    'supplier_business_name',
+                    'type',
+                    'contact_id',
+                    'commercial_register_no',
+                    'mobile',
+                    'email',
+                    'city',
 
                 ])->where('business_id', $business_id)->where('type', 'converted');
 
@@ -327,11 +366,31 @@ class ClientsController extends Controller
             }
 
             $input = $request->only([
-                'contact_name', 'name_en', 'city', 'commercial_register_no', 'mobile', 'alternate_number', 'email',
+                'contact_name',
+                'name_en',
+                'city',
+                'commercial_register_no',
+                'mobile',
+                'alternate_number',
+                'email',
 
-                'last_name_cs', 'first_name_cs', 'english_name_cs', 'nationality_cs', 'email_cs', 'identityNO_cs', 'mobile_cs', 'username_cs', 'password_cs',
+                'last_name_cs',
+                'first_name_cs',
+                'english_name_cs',
+                'nationality_cs',
+                'email_cs',
+                'identityNO_cs',
+                'mobile_cs',
+                'username_cs',
+                'password_cs',
 
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'username_cf', 'password_cf',
+                'first_name_cf',
+                'last_name_cf',
+                'english_name_cf',
+                'email_cf',
+                'mobile_cf',
+                'username_cf',
+                'password_cf',
             ]);
 
             // $input['allow_login_cs'] = $request->filled('allow_login_cs');
@@ -452,7 +511,13 @@ class ClientsController extends Controller
             }
 
             $input = $request->only([
-                'contact_name', 'name_en', 'city', 'commercial_register_no', 'mobile', 'alternate_number', 'email',
+                'contact_name',
+                'name_en',
+                'city',
+                'commercial_register_no',
+                'mobile',
+                'alternate_number',
+                'email',
             ]);
 
             $latestRecord = Contact::whereIn('type', ['draft', 'lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
@@ -818,10 +883,21 @@ class ClientsController extends Controller
             }
 
             $input = $request->only([
-                'type', 'contact_id',
-                'supplier_business_name', 'commercial_register_no', 'mobile', 'alternate_number', 'email', 'user_id', 'selected_user_id',
+                'type',
+                'contact_id',
+                'supplier_business_name',
+                'commercial_register_no',
+                'mobile',
+                'alternate_number',
+                'email',
+                'user_id',
+                'selected_user_id',
 
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf',
+                'first_name_cf',
+                'last_name_cf',
+                'english_name_cf',
+                'email_cf',
+                'mobile_cf',
             ]);
 
             // $input['allow_login_cs'] = $request->filled('allow_login_cs');
@@ -910,6 +986,36 @@ class ClientsController extends Controller
                     $contract_follower = User::create($contract_follower_input);
                 }
             }
+
+
+
+            $contactId = $contact->id;
+            $tmp = User::where('crm_contact_id', $contactId)->first() ?? null;
+
+            if (!$tmp) {
+                //add contact as user can't log in
+                $userInfo['user_type'] = 'customer';
+                $userInfo['first_name'] = $contact->supplier_business_name;
+                $userInfo['allow_login'] = 0;
+                $userInfo['business_id'] = $business_id;
+                $userInfo['company_id'] = $business_id;
+                $userInfo['crm_contact_id'] = $contactId;
+                $userInfo['created_by'] = auth()->user()->id;
+                User::create($userInfo);
+            } else {
+                if (!$tmp->first_name) {
+                    $userInfo['user_type'] = 'customer';
+                    $userInfo['first_name'] = $contact->supplier_business_name;
+                    $userInfo['allow_login'] = 0;
+                    $userInfo['business_id'] = $business_id;
+                    $userInfo['company_id'] = $business_id;
+                    $userInfo['crm_contact_id'] = $contactId;
+                    $userInfo['created_by'] = auth()->user()->id;
+                    $tmp->update($userInfo);
+                }
+            }
+
+
 
             DB::commit();
 
