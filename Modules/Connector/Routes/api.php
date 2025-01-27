@@ -72,6 +72,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
     Route::get('new_product', [Modules\Connector\Http\Controllers\Api\ProductSellController::class, 'newProduct'])->name('new_product');
     Route::get('new_sell', [Modules\Connector\Http\Controllers\Api\ProductSellController::class, 'newSell'])->name('new_sell');
     Route::get('new_contactapi', [Modules\Connector\Http\Controllers\Api\ProductSellController::class, 'newContactApi'])->name('new_contactapi');
+
 });
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/crm')->group(function () {
@@ -89,7 +90,6 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
     Route::post('field-force/create', [Modules\Connector\Http\Controllers\Api\FieldForce\FieldForceController::class, 'store']);
     Route::post('field-force/update-visit-status/{id}', [Modules\Connector\Http\Controllers\Api\FieldForce\FieldForceController::class, 'updateStatus']);
 });
-
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(function () {
 
@@ -110,7 +110,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     //get request types
     Route::get('getRequestTypes', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getRequestTypes']);
 
-    Route::get('getMyRequests',  [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getMyRequests']);
+    Route::get('getMyRequests', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'getMyRequests']);
     Route::get('getMyToDo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getMyToDo']);
     //make request / leave request
     Route::post('makeRequest', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'storeApiRequest']);
@@ -122,7 +122,6 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
     Route::post('clock-in', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'clockin']);
 });
-
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/customer')->group(function () {
     Route::get('/home', [ApiCustomerController::class, 'home']);
@@ -136,5 +135,8 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/customer')->gro
     Route::get('/bills', [ApiCustomerController::class, 'bills']);
 });
 
-
 Route::post('connector/api/essentials/resetPassword', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'resetPassword']);
+Route::post('connector/api/check_update', [Modules\Connector\Http\Controllers\Api\VersionController::class, 'checkUpdate'])->name('check_update');
+
+//  Regiter User
+Route::post('connector/api/register', [Modules\Connector\Http\Controllers\Api\RegiterUserController::class, 'register'])->name('register');
