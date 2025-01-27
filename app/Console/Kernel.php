@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
             //IMPORTANT NOTE: This command will delete all business details and create dummy business, run only in demo server.
             $schedule->command('pos:dummyBusiness')
                 ->cron('0 */3 * * *')
-                //->everyThirtyMinutes()
+            //->everyThirtyMinutes()
                 ->emailOutputTo($email);
         }
 
@@ -42,6 +42,12 @@ class Kernel extends ConsoleKernel
         // $schedule->command('escalate:pending-requests')->everyMinute()->timezone('Asia/Riyadh');
         $schedule->command('populate:userleavebalances')->dailyAt('16:27')->timezone('Asia/Riyadh');
         $schedule->command('run:dialy-checks')->dailyAt('23:55')->timezone('Asia/Riyadh');
+
+        // EmployeeOfTheMonthService
+
+        $schedule->call(function () {
+            app(EmployeeOfTheMonthService::class)->evaluate();
+        })->monthly();
     }
 
     /**

@@ -413,7 +413,7 @@ class SellPosController extends Controller
                 $input['transaction_date'] = \Carbon::now();
             } else {
                 $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
-        //    dd($input['transaction_date']);
+                //    dd($input['transaction_date']);
             }
             if ($is_direct_sale) {
                 $input['is_direct_sale'] = 1;
@@ -1104,7 +1104,6 @@ class SellPosController extends Controller
                 'line_taxes'
             ))->render();
         }
-        // dd( $receipt_details);
 
         return $output;
     }
@@ -1547,7 +1546,7 @@ class SellPosController extends Controller
                 $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
 
                 if (!empty($request->input('transaction_date'))) {
-                    
+
                     $input['transaction_date'] = $this->productUtil->uf_date($request->input('transaction_date'), true);
                 }
 
@@ -2355,6 +2354,7 @@ class SellPosController extends Controller
             $is_delivery_note = !empty($request->input('delivery_note')) ? true : false;
 
             $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
+
             $receipt = $this->receiptContent(
                 $business_id,
                 $transaction->location_id,

@@ -1629,7 +1629,7 @@ return [
     'end_date' => 'تاريخ النهاية',
     'status' => 'الحالة',
     'pending' => 'بإنتظار الموافقة',
-    'rejected' => 'مع الرفض',
+    'rejected' => ' مرفوض',
     'approved' => 'قبول الطلب',
     'return_the_request' => 'إرجاع الطلب',
     'update' => 'تحديث',

@@ -265,7 +265,7 @@
                                     <th>{{ __('sale.payment_mode') }}</th>
                                     <th>{{ __('lang_v1.cost_center') }}</th>
                                     <th>{{ __('lang_v1.transfer_account') }}</th>
-                                        <th>{{ __('lang_v1.account_name') }}</th>
+                                    <th>{{ __('lang_v1.account_name') }}</th>
                                     <th>{{ __('sale.payment_note') }}</th>
                                 </tr>
                                 @foreach ($sell->payment_lines as $payment_line)
@@ -294,17 +294,17 @@
                                         </td>
                                         @if ($payment_line?->accountingAccount)
                                             <td>
-                                              @if (!empty($payment_line?->accountingAccount?->gl_code))
-                                              ({{ $payment_line?->accountingAccount?->gl_code }})
-                                              -
-                                          @endif
-                                          @if (Lang::has('accounting::lang.' . $payment_line?->accountingAccount?->name))
-                                              @lang('accounting::lang.' . $payment_line?->accountingAccount?->name)
-                                          @else
-                                              {{ $payment_line?->accountingAccount?->name }}
-                                          @endif
+                                                @if (!empty($payment_line?->accountingAccount?->gl_code))
+                                                    ({{ $payment_line?->accountingAccount?->gl_code }})
+                                                    -
+                                                @endif
+                                                @if (Lang::has('accounting::lang.' . $payment_line?->accountingAccount?->name))
+                                                    @lang('accounting::lang.' . $payment_line?->accountingAccount?->name)
+                                                @else
+                                                    {{ $payment_line?->accountingAccount?->name }}
+                                                @endif
                                             </td>
-                                            @else
+                                        @else
                                             --
                                         @endif
 
@@ -454,7 +454,7 @@
                                 <td></td>
                                 <td><span class="display_currency pull-right"
                                         data-currency_symbol="true">{{ $sell->final_total }}</span></td>
-                            </tr> 
+                            </tr>
                             @if ($sell->type != 'sales_order')
                                 <tr>
                                     <th>{{ __('sale.total_paid') }}:</th>

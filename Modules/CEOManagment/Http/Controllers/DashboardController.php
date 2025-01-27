@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\CEOManagment\Http\Controllers;
 
 use App\Utils\RequestUtil;
@@ -20,11 +19,13 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $counts =  $this->requestUtil->getCounts('ceomanagment');
-        $today_requests =   $counts->today_requests;
-        $pending_requests =   $counts->pending_requests;
-        $completed_requests =   $counts->completed_requests;
-        $all_requests =   $counts->all_requests;
+       
+
+        $counts             = $this->requestUtil->getCounts('ceomanagment');
+        $today_requests     = $counts->today_requests;
+        $pending_requests   = $counts->pending_requests;
+        $completed_requests = $counts->completed_requests;
+        $all_requests       = $counts->all_requests;
         return view('ceomanagment::dashboard.ceo_dashboard')
             ->with(compact('today_requests', 'pending_requests', 'completed_requests', 'all_requests'));
     }

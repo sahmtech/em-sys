@@ -678,4 +678,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Penalties::class, 'user_id');
     }
+
+    public function logins()
+    {
+        return $this->hasMany(LoginRecord::class);
+    }
+
 }

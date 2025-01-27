@@ -4,499 +4,522 @@
 @section('content')
 
 
-    <section class="content-header">
-        <h1>
-            <span>{{ $title }}</span>
-        </h1>
-    </section>
+<section class="content-header">
+    <h1>
+        <span>{{ $title }}</span>
+    </h1>
+</section>
 
-    <head>
-        <style>
-            .alert {
-                animation: fadeOut 5s forwards;
-                max-width: 300px;
-                margin: 0 auto;
+<head>
+    <style>
+        .alert {
+            animation: fadeOut 5s forwards;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
             }
+        }
 
-            @keyframes fadeOut {
-                to {
-                    opacity: 0;
-                    visibility: hidden;
-                }
-            }
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
 
-            .modal-header {
-                background-color: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
-            }
+        .modal-title {
+            font-weight: bold;
+            color: #495057;
+        }
 
-            .modal-title {
-                font-weight: bold;
-                color: #495057;
-            }
+        .modal-body {
+            background-color: #ffffff;
+            color: #495057;
+        }
 
-            .modal-body {
-                background-color: #ffffff;
-                color: #495057;
-            }
+        .request-details,
+        .activity {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
 
-            .request-details,
-            .activity {
-                border: 1px solid #dee2e6;
-                padding: 10px;
-                margin-bottom: 10px;
-                border-radius: 4px;
-            }
+        .request-details strong,
+        .activity strong {
+            color: #007bff;
+        }
 
-            .request-details strong,
-            .activity strong {
-                color: #007bff;
-            }
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
 
-            .modal-header {
-                background-color: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
-            }
+        .modal-title {
+            font-weight: bold;
+            color: #495057;
+        }
 
-            .modal-title {
-                font-weight: bold;
-                color: #495057;
-            }
+        .modal-body {
+            background-color: #ffffff;
+            color: #495057;
+        }
 
-            .modal-body {
-                background-color: #ffffff;
-                color: #495057;
-            }
+        .card {
+            border: 1px solid #dee2e6;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            width: 90%;
 
-            .card {
-                border: 1px solid #dee2e6;
-                margin-bottom: 10px;
-                border-radius: 4px;
-                width: 90%;
+        }
 
-            }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 10px;
+            font-weight: bold;
+            color: #495057;
+        }
 
-            .card-header {
-                background-color: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
-                padding: 10px;
-                font-weight: bold;
-                color: #495057;
-            }
+        .card-body {
+            padding: 10px;
+        }
 
-            .card-body {
-                padding: 10px;
-            }
+        .card-body p {
+            margin: 5px 0;
+        }
 
-            .card-body p {
-                margin: 5px 0;
-            }
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #dee2e6;
+            margin: 0 auto;
+        }
 
-            .arrow-down {
-                width: 0;
-                height: 0;
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-                border-top: 10px solid #dee2e6;
-                margin: 0 auto;
-            }
+        .modal-header .close {
+            color: #007bff;
+            opacity: 1;
+        }
 
-            .modal-header .close {
-                color: #007bff;
-                opacity: 1;
-            }
+        .modal-header .close:hover,
+        .modal-header .close:focus {
+            color: #0056b3;
+            text-decoration: none;
+            opacity: 1;
+        }
 
-            .modal-header .close:hover,
-            .modal-header .close:focus {
-                color: #0056b3;
-                text-decoration: none;
-                opacity: 1;
-            }
+        .modal-footer .btn-secondary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
 
-            .modal-footer .btn-secondary {
-                background-color: #007bff;
-                border-color: #007bff;
-                color: #fff;
-            }
+        .modal-footer .btn-secondary:hover,
+        .modal-footer .btn-secondary:focus {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            color: #fff;
+        }
 
-            .modal-footer .btn-secondary:hover,
-            .modal-footer .btn-secondary:focus {
-                background-color: #0056b3;
-                border-color: #0056b3;
-                color: #fff;
-            }
+        .modal-header .close {
+            color: #007bff;
+            opacity: 1;
+        }
 
-            .modal-header .close {
-                color: #007bff;
-                opacity: 1;
-            }
+        .modal-header .close:hover,
+        .modal-header .close:focus {
+            color: #0056b3;
+            text-decoration: none;
+            opacity: 1;
+        }
 
-            .modal-header .close:hover,
-            .modal-header .close:focus {
-                color: #0056b3;
-                text-decoration: none;
-                opacity: 1;
-            }
+        .modal-footer .btn-secondary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
 
-            .modal-footer .btn-secondary {
-                background-color: #007bff;
-                border-color: #007bff;
-                color: #fff;
-            }
+        .modal-footer .btn-secondary:hover,
+        .modal-footer .btn-secondary:focus {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            color: #fff;
+        }
 
-            .modal-footer .btn-secondary:hover,
-            .modal-footer .btn-secondary:focus {
-                background-color: #0056b3;
-                border-color: #0056b3;
-                color: #fff;
-            }
+        .card {
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
 
-            .card {
-                border: 1px solid #dee2e6;
-                border-radius: 0.25rem;
-                margin-bottom: 1rem;
-                padding: 1rem;
-            }
+        .card-header {
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: bold;
+        }
 
-            .card-header {
-                background-color: #f7f7f7;
-                border-bottom: 1px solid #dee2e6;
-                font-weight: bold;
-            }
+        .card-body {
+            padding: 1rem;
+        }
 
-            .card-body {
-                padding: 1rem;
-            }
+        .card-footer {
+            background-color: #f7f7f7;
+            border-top: 1px solid #dee2e6;
+            text-align: right;
+        }
 
-            .card-footer {
-                background-color: #f7f7f7;
-                border-top: 1px solid #dee2e6;
-                text-align: right;
-            }
+        .workflow-rectangle {
+            min-width: 150px;
+            height: 100px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
 
-            .workflow-rectangle {
-                min-width: 150px;
-                height: 100px;
-                border-radius: 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                margin-right: 10px;
-                font-weight: bold;
-                color: #fff;
-                padding: 10px;
-                text-align: center;
-                margin-bottom: 10px;
-            }
+        .workflow-arrow {
+            position: relative;
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin: 0 10px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+        }
 
-            .workflow-arrow {
-                position: relative;
-                display: inline-block;
-                width: 0;
-                height: 0;
-                margin: 0 10px;
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-            }
+        .workflow-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
 
-            .workflow-container {
-                display: flex;
-                align-items: center;
-                margin-bottom: 20px;
-                white-space: nowrap;
-                overflow-x: auto;
-            }
+        .workflow-rectangle.pending {
+            background-color: orange;
+        }
 
-            .workflow-rectangle.pending {
-                background-color: orange;
-            }
+        .workflow-rectangle.approved {
+            background-color: green;
+        }
 
-            .workflow-rectangle.approved {
-                background-color: green;
-            }
+        .workflow-rectangle.rejected {
+            background-color: red;
+        }
 
-            .workflow-rectangle.rejected {
-                background-color: red;
-            }
+        .workflow-rectangle.grey {
+            background-color: grey;
+        }
 
-            .workflow-rectangle.grey {
-                background-color: grey;
-            }
+        .pending-arrow,
+        .approved-arrow,
+        .rejected-arrow,
+        .grey-arrow {
+            color: #000;
+        }
 
-            .pending-arrow,
-            .approved-arrow,
-            .rejected-arrow,
-            .grey-arrow {
-                color: #000;
-            }
+        .department-name {
+            margin-top: 5px;
+            font-weight: bold;
+        }
 
-            .department-name {
-                margin-top: 5px;
-                font-weight: bold;
-            }
+        .updated-by {
+            font-size: 12px;
+            margin-top: 5px;
+        }
 
-            .updated-by {
-                font-size: 12px;
-                margin-top: 5px;
-            }
+        .workflow-rectangle.green {
+            background-color: #4CAF50;
+        }
 
-            .workflow-rectangle.green {
-                background-color: #4CAF50;
-            }
+        .attachment-item {
+            margin-bottom: 10px;
+        }
 
-            .attachment-item {
-                margin-bottom: 10px;
-            }
+        .attachment-link {
+            color: #007bff;
+            text-decoration: none;
+        }
 
-            .attachment-link {
-                color: #007bff;
-                text-decoration: none;
-            }
+        .attachment-link:hover {
+            text-decoration: underline;
+        }
 
-            .attachment-link:hover {
-                text-decoration: underline;
-            }
+        #attachmentForm .attachment-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
 
-            #attachmentForm .attachment-group {
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
-            }
+        #attachmentForm .form-control {
+            width: 100%;
+            max-width: 150px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<!-- Main content -->
+@if ($errors->any())
+<div class="alert alert-danger">
+    {{ $errors->first() }}
+</div>
+@else
+@if (session('success'))
+<div class="alert alert-success">
+    {{ session('success') }}
+</div>
+@endif
+@endif
+<section class="content">
 
-            #attachmentForm .form-control {
-                width: 100%;
-                max-width: 150px;
-                margin-right: 10px;
-            }
-        </style>
-    </head>
-    <!-- Main content -->
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            {{ $errors->first() }}
+    @component('components.filters', ['title' => __('request.filters')])
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="status_filter">@lang('request.status'):</label>
+            {!! Form::select(
+            'status_filter',
+            collect($all_status)->mapWithKeys(fn($status) => [$status => trans("request.$status")]),
+            null,
+            [
+            'class' => 'form-control select2',
+            'style' => 'height:40px',
+            'placeholder' => __('lang_v1.all'),
+            'id' => 'status_filter',
+            ],
+            ) !!}
         </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="type_filter">@lang('request.request_type'):</label>
+            {!! Form::select(
+            'type_filter',
+            collect($allRequestTypes)->mapWithKeys(fn($type) => [$type => trans("request.$type")]),
+            null,
+            [
+            'class' => 'form-control select2',
+            'style' => 'height:40px',
+            'placeholder' => __('lang_v1.all'),
+            'id' => 'type_filter',
+            ],
+            ) !!}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="company_filter">@lang('request.company'):</label>
+            {!! Form::select('company_filter', $companies, null, [
+            'class' => 'form-control select2',
+            'style' => 'height:40px',
+            'placeholder' => __('lang_v1.all'),
+            'id' => 'company_filter',
+            ]) !!}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="project_filter">@lang('request.project'):</label>
+            {!! Form::select('project_filter', $saleProjects, null, [
+            'class' => 'form-control select2',
+            'style' => 'height:40px',
+            'placeholder' => __('lang_v1.all'),
+            'id' => 'project_filter',
+            ]) !!}
+        </div>
+    </div>
+
+    @if(count($departments) > 2)
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="department_filter">@lang('request.department'):</label>
+            {!! Form::select('department_filter', $departments, null, [
+            'class' => 'form-control select2',
+            'style' => 'height:40px',
+            'placeholder' => __('lang_v1.all'),
+            'id' => 'department_filter',
+            ]) !!}
+        </div>
+    </div>
     @else
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="department_filter">@lang('request.department'):</label>
+            {!! Form::select('department_filter', $departments, array($departments), [
+            'class' => 'form-control select2',
+            'style' => 'height:40px',
+            'id' => 'department_filter',
+            ]) !!}
+        </div>
+    </div>
     @endif
-    <section class="content">
-
-        @component('components.filters', ['title' => __('request.filters')])
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="status_filter">@lang('request.status'):</label>
-                    {!! Form::select(
-                        'status_filter',
-                        collect($all_status)->mapWithKeys(fn($status) => [$status => trans("request.$status")]),
-                        null,
-                        [
-                            'class' => 'form-control select2',
-                            'style' => 'height:40px',
-                            'placeholder' => __('lang_v1.all'),
-                            'id' => 'status_filter',
-                        ],
-                    ) !!}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="type_filter">@lang('request.request_type'):</label>
-                    {!! Form::select(
-                        'type_filter',
-                        collect($allRequestTypes)->mapWithKeys(fn($type) => [$type => trans("request.$type")]),
-                        null,
-                        [
-                            'class' => 'form-control select2',
-                            'style' => 'height:40px',
-                            'placeholder' => __('lang_v1.all'),
-                            'id' => 'type_filter',
-                        ],
-                    ) !!}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="company_filter">@lang('request.company'):</label>
-                    {!! Form::select('company_filter', $companies, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'height:40px',
-                        'placeholder' => __('lang_v1.all'),
-                        'id' => 'company_filter',
-                    ]) !!}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="project_filter">@lang('request.project'):</label>
-                    {!! Form::select('project_filter', $saleProjects, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'height:40px',
-                        'placeholder' => __('lang_v1.all'),
-                        'id' => 'project_filter',
-                    ]) !!}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="department_filter">@lang('request.department'):</label>
-                    {!! Form::select('department_filter', $departments, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'height:40px',
-                        'placeholder' => __('lang_v1.all'),
-                        'id' => 'department_filter',
-                    ]) !!}
-                </div>
-            </div>
-        @endcomponent
-
-
-        @component('components.widget', ['class' => 'box-primary'])
-            <div class="table-responsive">
-                <div style="margin-bottom: 10px;">
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('generalmanagement.change_request_status'))
-                        <button type="button" class="btn btn-warning change_status2">
-                            @lang('request.change_status')
-                        </button>
-                    @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('generalmanagement.return_request'))
-                        <button class="btn btn-danger btn-sm btn-return2">
-                            {{ trans('request.return_the_request') }}
-                        </button>
-                    @endif
 
 
 
-                </div>
-                <table class="table table-bordered table-striped" id="requests_table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <input type="checkbox" id="select-all">
-                            </th>
-                            <th>@lang('request.company')</th>
-                            <th>@lang('request.request_number')</th>
-                            <th>@lang('request.request_owner')</th>
-                            <th>@lang('request.project')</th>
-                            <th>@lang('request.eqama_number')</th>
-
-                            <th>@lang('request.request_type')</th>
-                            <th>@lang('request.request_date')</th>
-                            <th>@lang('request.created_by')</th>
-                            <th>@lang('request.status')</th>
-                            <th>@lang('request.note')</th>
-                            <th>@lang('request.action')</th>
 
 
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        @endcomponent
 
-        {{-- return request --}}
-        <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="returnModalLabel">@lang('request.return_the_request')</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="returnModalForm">
-                            <div class="form-group">
-                                <label for="reasonInput">@lang('request.reason')</label>
-                                <input type="text" class="form-control" id="reasonInput" required>
-                            </div>
-                            <input type="hidden" name="request_id" id="request_id">
+    @endcomponent
 
-                            <button type="submit" class="btn btn-primary">@lang('request.update')</button>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('request.close')</button>
-                    </div>
-                </div>
-            </div>
+
+    @component('components.widget', ['class' => 'box-primary'])
+    <div class="table-responsive">
+        <div style="margin-bottom: 10px;">
+            @if (auth()->user()->hasRole('Admin#1') ||
+            auth()->user()->can('generalmanagement.change_request_status'))
+            <button type="button" class="btn btn-warning change_status2">
+                @lang('request.change_status')
+            </button>
+            @endif
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('generalmanagement.return_request'))
+            <button class="btn btn-danger btn-sm btn-return2">
+                {{ trans('request.return_the_request') }}
+            </button>
+            @endif
+
+
+
         </div>
+        <table class="table table-bordered table-striped" id="requests_table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="select-all">
+                    </th>
+                    <th>@lang('request.company')</th>
+                    <th>@lang('request.request_number')</th>
+                    <th>@lang('request.request_owner')</th>
+                    <th>@lang('request.project')</th>
+                    <th>@lang('request.eqama_number')</th>
+
+                    <th>@lang('request.request_type')</th>
+                    <th>@lang('request.request_date')</th>
+                    <th>@lang('request.created_by')</th>
+                    <th>@lang('request.status')</th>
+                    <th>@lang('request.note')</th>
+                    <th>@lang('request.action')</th>
 
 
-        {{-- view request details --}}
+                </tr>
+            </thead>
+        </table>
+    </div>
+    @endcomponent
 
-        <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h4 class="modal-title">@lang('request.view_request')</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="workflow-container" id="workflow-container"></div>
+    {{-- return request --}}
+    <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="returnModalLabel">@lang('request.return_the_request')</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="returnModalForm">
+                        <div class="form-group">
+                            <label for="reasonInput">@lang('request.reason')</label>
+                            <input type="text" class="form-control" id="reasonInput" required>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4>@lang('request.request_owner')</h4>
-                                <ul id="worker-list"></ul>
-                                <h4>@lang('request.attachments')</h4>
-                                <ul id="attachments-list"></ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h4>@lang('request.request_info')</h4>
-                                <ul id="request-info"></ul>
-                            </div>
+                        <input type="hidden" name="request_id" id="request_id">
+
+                        <button type="submit" class="btn btn-primary">@lang('request.update')</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('request.close')</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- view request details --}}
+
+    <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">@lang('request.view_request')</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="workflow-container" id="workflow-container"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>@lang('request.request_owner')</h4>
+                            <ul id="worker-list"></ul>
+                            <h4>@lang('request.attachments')</h4>
+                            <ul id="attachments-list"></ul>
                         </div>
-                        <form id="attachmentForm" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div id="attachmentContainer"></div>
-                            <button type="button" class="btn btn-primary" id="addAttachment">@lang('request.add_attachment')</button>
-                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        </form>
+                        <div class="col-md-6">
+                            <h4>@lang('request.request_info')</h4>
+                            <ul id="request-info"></ul>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
+                    <form id="attachmentForm" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div id="attachmentContainer"></div>
+                        <button type="button" class="btn btn-primary"
+                            id="addAttachment">@lang('request.add_attachment')</button>
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                 </div>
             </div>
         </div>
+    </div>
 
 
-        {{-- view request activities --}}
-        <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog"
-            aria-labelledby="activitiesModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="activitiesModalLabel">@lang('request.activities')</h4>
+    {{-- view request activities --}}
+    <div class="modal fade" id="activitiesModal" tabindex="-1" role="dialog" aria-labelledby="activitiesModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="activitiesModalLabel">@lang('request.activities')</h4>
 
-                    </div>
-                    <div class="modal-body">
-                        <!-- Activities will be injected here -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
+                </div>
+                <div class="modal-body">
+                    <!-- Activities will be injected here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">@lang('messages.close')</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        @include('request.change_request_status')
+    @include('request.change_request_status')
 
-    </section>
-    <!-- /.content -->
+</section>
+<!-- /.content -->
 @endsection
 
 @section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
+<script type="text/javascript">
+    $(document).ready(function() {
 
             var filter = @json($filter);
 
@@ -1066,12 +1089,12 @@
 
 
         });
-    </script>
+</script>
 
 
 
-    <script>
-        $(document).ready(function() {
+<script>
+    $(document).ready(function() {
             var users = @json($users);
             var mainReasonSelect = $('#mainReasonSelect');
             var subReasonContainer = $('#sub_reason_container');
@@ -1383,9 +1406,9 @@
 
 
         });
-    </script>
-    <script>
-        $(document).ready(function() {
+</script>
+<script>
+    $(document).ready(function() {
             $(document).on('change', '.task-checkbox', function() {
                 var taskId = $(this).data('task-id');
 
@@ -1410,7 +1433,7 @@
                 });
             });
         });
-    </script>
+</script>
 
 
 @endsection

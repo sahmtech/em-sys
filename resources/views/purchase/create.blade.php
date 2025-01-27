@@ -95,7 +95,7 @@
                         $search_disable = true;
                     @endphp
                 @endif
-                <div class="col-sm-3">
+                {{-- <div class="col-sm-3">
                     <div class="form-group">
                         {!! Form::label('location_id', __('purchase.business_location') . ':*') !!}
 
@@ -108,7 +108,7 @@
                             $bl_attributes,
                         ) !!}
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Currency Exchange Rate -->
                 <div class="col-sm-3 @if (!$currency_details->purchase_in_diff_currency) hide @endif">

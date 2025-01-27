@@ -153,36 +153,50 @@
             <div class="col-sm-12">
                 <div class="box">
                     <div class="box-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped" id="ledger">
-                                    <thead>
-                                        <tr>
-                                            <th>@lang('accounting::lang.number')</th>
-                                            <th>@lang('messages.date')</th>
-                                            <th>@lang('accounting::lang.transaction')</th>
-                                            <th>@lang('lang_v1.cost_senter')</th>
-                                            <th>@lang('accounting::lang.partner_name')</th>
-                                            <th>@lang('brand.note')</th>
-                                            <th>@lang('lang_v1.added_by')</th>
-                                            <th>@lang('account.debit')</th>
-                                            <th>@lang('account.credit')</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="7"><strong>@lang('accounting::lang.period_total'):</strong></td>
-                                            <td class="footer_total_debit"></td>
-                                            <td class="footer_total_credit"></td>
-                                        </tr>
-                                        <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="7"><strong>@lang('accounting::lang.autoMigration.final_total'):</strong></td>
-                                            <td class="footer_final_total_debit"></td>
-                                            <td class="footer_final_total_credit"></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="ledger">
+                                <thead>
+                                    <tr>
+                                        <th colspan="7"></th>
+                                        <th colspan="2" class="bg-gray   text-center">
+                                            @lang('accounting::lang.transaction_op')</th>
+                                        <th colspan="2" class="bg-gray  text-center">
+                                            @lang('accounting::lang.balance')</th>
+                                    </tr>
+                                    <tr>
+                                        <th>@lang('accounting::lang.number')</th>
+                                        <th>@lang('messages.date')</th>
+                                        <th>@lang('accounting::lang.transaction')</th>
+                                        <th>@lang('lang_v1.cost_senter')</th>
+                                        <th>@lang('accounting::lang.partner_name')</th>
+                                        <th>@lang('brand.note')</th>
+                                        <th>@lang('lang_v1.added_by')</th>
+                                        <th class="  text-center">@lang('account.debit')</th>
+                                        <th class="  text-center">@lang('account.credit')</th>
+                                        <th class="  text-center">@lang('account.debit')</th>
+                                        <th class="  text-center"> @lang('account.credit')</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr class="bg-gray font-17 footer-total text-center">
+                                        <td colspan="7"><strong>@lang('accounting::lang.period_total'):</strong></td>
+                                        <td class="footer_total_debit"></td>
+                                        <td class="footer_total_credit"></td>
+                                        <td class=""></td>
+                                        <td class=""></td>
+                                    </tr>
+                                    <tr class="bg-gray font-17 footer-total text-center">
+                                        <td colspan="7"><strong>@lang('accounting::lang.autoMigration.final_total'):</strong></td>
+                                        <td class="footer_final_total_debit"></td>
+                                        <td class="footer_final_total_credit"></td>
+                                        <td class=""></td>
+                                        <td class=""></td>
+                                    </tr>
+
+                                </tfoot>
+                            </table>
+                            <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -260,12 +274,22 @@
                         name: 'added_by'
                     },
                     {
-                        data: 'debit',
+                        data: 'op_debit',
                         name: 'amount',
                         searchable: false
                     },
                     {
-                        data: 'credit',
+                        data: 'op_credit',
+                        name: 'amount',
+                        searchable: false
+                    },
+                    {
+                        data: 'balance_debit',
+                        name: 'amount',
+                        searchable: false
+                    },
+                    {
+                        data: 'balance_credit',
                         name: 'amount',
                         searchable: false
                     },
