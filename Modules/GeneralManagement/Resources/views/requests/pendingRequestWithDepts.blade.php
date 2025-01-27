@@ -343,7 +343,7 @@
     <div class="col-md-3">
         <div class="form-group">
             <label for="department_filter">@lang('request.department'):</label>
-            {!! Form::select('department_filter', $departments, null, [
+            {!! Form::select('department_filter', $departments_a, null, [
             'class' => 'form-control select2',
             'style' => 'height:40px',
             'placeholder' => __('lang_v1.all'),
