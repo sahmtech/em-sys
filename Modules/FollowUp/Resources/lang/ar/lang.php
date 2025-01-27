@@ -393,6 +393,31 @@ return [
     //''=>''
     'deal_timesheet'                                      => 'اعتماد التايم شيت',
 
+
+    'add_branch'                                          => 'إضافة الي فرع',
+    'asset'                                               => 'العهد',
+    'asset_name'                                          => 'إسم العهدة',
+    'asset_code'                                          => 'كود العهدة',
+    'delivery_date'                                       => 'تاريخ التسليم',
+    'asset_category'                                      => 'فئة العهدة ',
+    'quantity'                                            => 'الكمية',
+    'asset_image'                                         => 'صورة العهدة',
+    'createdBy'                                           => 'بواسطة',
+    'business_id'                                         => 'يتبع لشركة',
+    'penalties_violations'                                => 'الجزاءات والمخالفات',
+    'descrption'                                          => 'وصف المخالفة',
+    'amount'                                              => 'المبلغ',
+    'date'                                                => 'التاريخ',
+    'Implemented'                                         => 'تم التنفيذ',
+    'Not implemented'                                     => 'لم يتم التنفيذ',
+    'implement_status'                                    => 'حالة التنفيذ',
+    'application_date'                                    => 'تاريخ التنفيذ',
+    'leaves_used'                                         => ' الإجازات المستخدمة ',
+    'leave_type'                                          => 'نوع الإيجازة',
+    'residency_Igama'                                     => 'الهوية / الاقامة / رقم الحدود ',
+    'attachment_owner'                                    => 'صاحب المرفق',
+
+
     'add_branch'                                          => 'إضافة الي فرع',
     'asset'                                               => 'العهد',
     'asset_name'                                          => 'إسم العهدة',
