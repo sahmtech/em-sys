@@ -589,37 +589,37 @@ class CoaController extends Controller
         $account = AccountingAccount::where('business_id', $business_id)->where('company_id', $company_id)
             ->with(['account_sub_type', 'detail_type'])
             ->findorFail($account_id);
-            
-            $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
-                ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
-                ->leftjoin('transactions as T', 'accounting_accounts_transactions.transaction_id', '=', 'T.id')
-                ->leftjoin('users AS u', 'accounting_accounts_transactions.created_by', 'u.id')
-                ->leftjoin('users AS employee_partner', function ($join) {
-                    $join->on('accounting_accounts_transactions.partner_id', '=', 'employee_partner.id')
-                        ->where('accounting_accounts_transactions.partner_type', '=', 'employees');
-                })
-                ->leftjoin('contacts AS customer_partner', function ($join) {
-                    $join->on('accounting_accounts_transactions.partner_id', '=', 'customer_partner.id')
-                        ->where('accounting_accounts_transactions.partner_type', '=', 'customers_suppliers');
-                })
-                ->leftjoin('accounting_cost_centers AS cc', 'accounting_accounts_transactions.cost_center_id', 'cc.id')
-                ->select(
-                    'accounting_accounts_transactions.operation_date',
-                    'accounting_accounts_transactions.sub_type',
-                    'accounting_accounts_transactions.type',
-                    'ATM.ref_no as ref_no',
-                    'ATM.id as id',
-                    'cc.ar_name as cost_center_name',
-                    'ATM.note',
-                    'accounting_accounts_transactions.amount',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
-                    'T.invoice_no',
-                    DB::raw("CASE 
+
+        $transactions = AccountingAccountsTransaction::where('accounting_account_id', $account->id)
+            ->leftjoin('accounting_acc_trans_mappings as ATM', 'accounting_accounts_transactions.acc_trans_mapping_id', '=', 'ATM.id')
+            ->leftjoin('transactions as T', 'accounting_accounts_transactions.transaction_id', '=', 'T.id')
+            ->leftjoin('users AS u', 'accounting_accounts_transactions.created_by', 'u.id')
+            ->leftjoin('users AS employee_partner', function ($join) {
+                $join->on('accounting_accounts_transactions.partner_id', '=', 'employee_partner.id')
+                    ->where('accounting_accounts_transactions.partner_type', '=', 'employees');
+            })
+            ->leftjoin('contacts AS customer_partner', function ($join) {
+                $join->on('accounting_accounts_transactions.partner_id', '=', 'customer_partner.id')
+                    ->where('accounting_accounts_transactions.partner_type', '=', 'customers_suppliers');
+            })
+            ->leftjoin('accounting_cost_centers AS cc', 'accounting_accounts_transactions.cost_center_id', 'cc.id')
+            ->select(
+                'accounting_accounts_transactions.operation_date',
+                'accounting_accounts_transactions.sub_type',
+                'accounting_accounts_transactions.type',
+                'ATM.ref_no as ref_no',
+                'ATM.id as id',
+                'cc.ar_name as cost_center_name',
+                'ATM.note',
+                'accounting_accounts_transactions.amount',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
+                'T.invoice_no',
+                DB::raw("CASE 
                         WHEN accounting_accounts_transactions.partner_type = 'employees' THEN CONCAT(COALESCE(employee_partner.first_name, ''), ' ', COALESCE(employee_partner.last_name, ''))
                         WHEN accounting_accounts_transactions.partner_type = 'customers_suppliers' THEN customer_partner.supplier_business_name
                         END as partner_name")
-                )->get();
-        
+            )->get();
+
 
         $current_bal = AccountingAccount::leftjoin(
             'accounting_accounts_transactions as AAT',
@@ -724,6 +724,8 @@ class CoaController extends Controller
                         });
                 });
             }
+            $runningBalance = 0;
+            $runningCreditBalance = 0;
             return DataTables::of($transactions)
                 ->editColumn('operation_date', function ($row) {
                     return $this->accountingUtil->format_date($row->operation_date, true);
@@ -755,17 +757,42 @@ class CoaController extends Controller
                     }
                     return $description;
                 })
-                ->addColumn('debit', function ($row) {
+                ->addColumn('op_debit', function ($row) {
+
                     if ($row->type == 'debit') {
                         return '<span class="debit" data-orig-value="' . $row->amount . '">' . $this->accountingUtil->num_f($row->amount, true) . '</span>';
                     }
                     return '';
                 })
-                ->addColumn('credit', function ($row) {
+                ->addColumn('op_credit', function ($row) {
                     if ($row->type == 'credit') {
                         return '<span class="credit"  data-orig-value="' . $row->amount . '">' . $this->accountingUtil->num_f($row->amount, true) . '</span>';
                     }
                     return '';
+                })
+                ->addColumn('balance_debit', function ($row) use (&$runningBalance) {
+                    if ($row->type == 'debit') {
+                        $runningBalance += $row->amount;
+                    }
+
+                    if ($row->type == 'credit') {
+                        $runningBalance -= $row->amount;
+                    }
+
+                    return '<span class="balance-debit" data-orig-value="' . $runningBalance . '">' . $this->accountingUtil->num_f($runningBalance, true) . '</span>';
+                })
+                ->addColumn('balance_credit', function ($row) use (&$runningCreditBalance, &$runningBalance) {
+                    if ($row->type == 'credit') {
+                        $runningCreditBalance += $row->amount;
+                    }
+
+                    if ($row->type == 'debit') {
+                        $runningCreditBalance -= $row->amount;
+                    }
+
+                    $creditBalance = max(0, $runningCreditBalance);
+
+                    return '<span class="balance-credit" data-orig-value="' . $creditBalance . '">' . $this->accountingUtil->num_f($creditBalance, true) . '</span>';
                 })
                 // ->addColumn('balance', function ($row) use ($bal_before_start_date, $start_date) {
                 //     //TODO:: Need to fix same balance showing for transactions having same operation date
@@ -790,7 +817,7 @@ class CoaController extends Controller
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['ref_no', 'credit', 'debit', 'balance', 'action'])
+                ->rawColumns(['ref_no', 'op_credit', 'op_debit', 'balance_debit', 'balance_credit', 'balance', 'action'])
                 ->make(true);
         }
 
