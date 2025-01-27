@@ -43,7 +43,18 @@ class DashboardController extends Controller
         $completed_requests = $counts->completed_requests;
         $all_requests       = $counts->all_requests;
         return view('generalmanagement::dashboard.generalmanagement_dashboard')
-            ->with(compact('today_requests', 'pending_requests', 'completed_requests', 'pending_requests_personnel_affairs', 'pending_requests_hr_applications', 'pending_requests_sales', 'pending_requests_government_relations', 'pending_requests_legal_affairs', 'all_requests', 'pending_requests_hr', 'pending_requests_ceo', 'pending_requests_housing_transport', 'pending_requests_operations_business', 'pending_requests_international_relations'));
+            ->with(
+                compact('today_requests',
+                    'pending_requests',
+                    'completed_requests',
+                    'pending_requests_personnel_affairs',
+                    'pending_requests_hr_applications',
+                    'pending_requests_sales',
+                    'pending_requests_government_relations',
+                    'pending_requests_legal_affairs', 'all_requests',
+                    'pending_requests_hr', 'pending_requests_ceo',
+                    'pending_requests_housing_transport', 'pending_requests_operations_business',
+                    'pending_requests_international_relations'));
     }
 
     /**

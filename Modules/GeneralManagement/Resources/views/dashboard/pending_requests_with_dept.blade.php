@@ -18,32 +18,116 @@ $pending_requests_government_relations ?? 0],
 ['id' => 35, 'title' => __('request.pending_requests_personnel_affairs'), 'count' => $pending_requests_personnel_affairs
 ?? 0],
 ];
+$icons = [
+37 => 'fa-cogs',
+27 => 'fa-home',
+26 => 'fa-briefcase',
+28 => 'fa-users',
+29 => 'fa-globe',
+30 => 'fa-user-tie',
+31 => 'fa-calendar',
+32 => 'fa-gavel',
+33 => 'fa-calculator',
+34 => 'fa-flag',
+35 => 'fa-handshake'
+];
 @endphp
 
 <div class="row">
     @foreach ($departments as $department)
-    <a
-        href="{{ route('generalmanagement.getFilteredRequests', ['filter' => 'pending_requests', 'departmentId' => $department['id']]) }}">
-        <div class="col-md-3 mt-15">
-            <div class="custom_card custom_card_requests" style="background-color: #374699">
-                <div class="widget widget-one_hybrid widget-engagement">
-                    <div class="widget-heading">
-                        <div class="w-title">
-                            <div>
-                                <p class="w-value"></p>
-                                <h5 class="custom_card_requests_h5" style="color: aliceblue">{{ $department['title'] }}
-                                </h5>
-                            </div>
-                            <div>
-                                <p class="w-value"></p>
-                                <h4 class="custom_card_requests_h5" style="color: aliceblue">{{ $department['count'] }}
-                                </h4>
-                            </div>
-                        </div>
-                    </div>
+    <div class="col-md-3">
+        <a
+            href="{{ route('generalmanagement.getFilteredRequests', ['filter' => 'pending_requests', 'departmentId' => $department['id']]) }}">
+            <div class="card-counter primary">
+                <div class="card-left">
+                    <i class="fa {{ $icons[$department['id']] }}"></i> <!-- Dynamic icon based on department -->
+                </div>
+                <div class="card-center">
+                    <span class="count-name">{{ $department['title'] }}</span> <!-- Title centered -->
+                </div>
+                <div class="card-right">
+                    <span class="count-numbers">{{ $department['count'] }}</span> <!-- Count on the right -->
                 </div>
             </div>
-        </div>
-    </a>
+        </a>
+    </div>
     @endforeach
 </div>
+
+<style>
+    .card-counter {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin: 15px;
+        padding: 20px 15px;
+        background-color: #fff;
+        height: 120px;
+        border-radius: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s ease-in-out;
+        overflow: hidden;
+        border: 1px solid #ddd;
+    }
+
+    .card-counter:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .card-counter.primary {
+        background-color: #1572e8;
+        color: #fff;
+    }
+
+    .card-left {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+    }
+
+    .card-left i {
+        font-size: 2.5em;
+        opacity: 1;
+        /* Ensure the icon is fully visible */
+        color: white;
+        /* Set icon color to white */
+    }
+
+    .card-center {
+        flex-grow: 1;
+        text-align: center;
+        padding-left: 10px;
+    }
+
+    .card-right {
+        font-size: 36px;
+        font-weight: 600;
+        text-align: right;
+        min-width: 60px;
+        color: #fabc17;
+    }
+
+    .card-counter .count-name {
+        font-size: 18px;
+        font-weight: 500;
+        text-transform: capitalize;
+        opacity: 0.85;
+        color: #ffffff;
+
+    }
+
+    .card-counter .count-numbers {
+        font-size: 32px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+</style>
