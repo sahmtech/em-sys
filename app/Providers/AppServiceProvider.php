@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Providers;
 
 use App\System;
@@ -28,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         ini_set('memory_limit', '-1');
         set_time_limit(0);
 
@@ -76,11 +76,11 @@ class AppServiceProvider extends ServiceProvider
         View::composer(
             ['*'],
             function ($view) {
-                $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+                $enabled_modules = ! empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
 
                 $__is_pusher_enabled = isPusherEnabled();
 
-                if (!Auth::check()) {
+                if (! Auth::check()) {
                     $__is_pusher_enabled = false;
                 }
 
@@ -93,33 +93,33 @@ class AppServiceProvider extends ServiceProvider
             ['layouts.*'],
             function ($view) {
                 if (isAppInstalled()) {
-                    $keys = ['additional_js', 'additional_css'];
+                    $keys              = ['additional_js', 'additional_css'];
                     $__system_settings = System::getProperties($keys, true);
 
                     //Get js,css from modules
-                    $moduleUtil = new ModuleUtil;
+                    $moduleUtil               = new ModuleUtil;
                     $module_additional_script = $moduleUtil->getModuleData('get_additional_script');
-                    $additional_views = [];
-                    $additional_html = '';
+                    $additional_views         = [];
+                    $additional_html          = '';
                     foreach ($module_additional_script as $key => $value) {
-                        if (!empty($value['additional_js'])) {
+                        if (! empty($value['additional_js'])) {
                             if (isset($__system_settings['additional_js'])) {
                                 $__system_settings['additional_js'] .= $value['additional_js'];
                             } else {
                                 $__system_settings['additional_js'] = $value['additional_js'];
                             }
                         }
-                        if (!empty($value['additional_css'])) {
+                        if (! empty($value['additional_css'])) {
                             if (isset($__system_settings['additional_css'])) {
                                 $__system_settings['additional_css'] .= $value['additional_css'];
                             } else {
                                 $__system_settings['additional_css'] = $value['additional_css'];
                             }
                         }
-                        if (!empty($value['additional_html'])) {
+                        if (! empty($value['additional_html'])) {
                             $additional_html .= $value['additional_html'];
                         }
-                        if (!empty($value['additional_views'])) {
+                        if (! empty($value['additional_views'])) {
                             $additional_views = array_merge($additional_views, $value['additional_views']);
                         }
                     }
@@ -184,7 +184,7 @@ class AppServiceProvider extends ServiceProvider
         //Blade directive to convert.
         Blade::directive('format_date', function ($date) {
 
-            if (!empty($date)) {
+            if (! empty($date)) {
                 $fixedFormat = 'd-m-Y';
                 return "\Carbon::createFromTimestamp(strtotime($date))->format('$fixedFormat')";
             } else {
@@ -194,7 +194,7 @@ class AppServiceProvider extends ServiceProvider
 
         //Blade directive to convert.
         Blade::directive('format_time', function ($date) {
-            if (!empty($date)) {
+            if (! empty($date)) {
                 $time_format = 'h:i A';
                 if (session('business.time_format') == 24) {
                     $time_format = 'H:i';
@@ -207,7 +207,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('format_datetime', function ($date) {
-            if (!empty($date)) {
+            if (! empty($date)) {
                 $time_format = 'h:i A';
                 $fixedFormat = 'd-m-Y';
                 if (session('business.time_format') == 24) {

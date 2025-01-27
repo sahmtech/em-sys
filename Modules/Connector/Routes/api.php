@@ -140,3 +140,5 @@ Route::post('connector/api/check_update', [Modules\Connector\Http\Controllers\Ap
 
 //  Regiter User
 Route::post('connector/api/register', [Modules\Connector\Http\Controllers\Api\RegiterUserController::class, 'register'])->name('register');
+//destroy
+Route::delete('connector/api/destroy', [Modules\Connector\Http\Controllers\Api\RegiterUserController::class, 'destroy'])->middleware('auth:api')->name('destroy');
