@@ -97,11 +97,17 @@ $icons = [
         /* Set icon color to white */
     }
 
+
+
     .card-center {
         flex-grow: 1;
         text-align: center;
         padding-left: 10px;
     }
+
+
+
+
 
     .card-right {
         font-size: 36px;
@@ -123,6 +129,12 @@ $icons = [
     .card-counter .count-numbers {
         font-size: 32px;
         font-weight: 600;
+        color: #ffffff;
+    }
+
+    .card-counter .count-name {
+        font-size: 20px;
+        font-weight: 700;
         color: #ffffff;
     }
 
