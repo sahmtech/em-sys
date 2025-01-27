@@ -46,10 +46,13 @@ class VersionController extends ApiController
         $version = Version::where('os', $request->os)->first();
         if ($this->compareVersions($request->version, $version->version) >= 0) {
 
-            $this->body['allowed'] = 1;
+            $this->body['allowed']   = 1;
+            $this->body['in_review'] = (bool) $version->in_review;
             return self::apiResponse(200, "allowed", $this->body);
         } else {
-            $this->body['allowed'] = 0;
+            $this->body['allowed']   = 0;
+            $this->body['in_review'] = (bool) $version->in_review;
+
             return self::apiResponse(200, "Not allowed", $this->body);
         }
     }
