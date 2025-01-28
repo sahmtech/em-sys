@@ -1,11 +1,10 @@
 <?php
-
 namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Business;
 use App\Notification;
-use App\User;
 use App\Request as UserRequest;
+use App\User;
 use App\UserDevice;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
@@ -19,7 +18,6 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\ToDo;
-
 
 /**
  * @group Taxonomy management
@@ -56,12 +54,11 @@ class HomeController extends ApiController
     public function home()
     {
 
-
         try {
-            $user = Auth::user();
+            $user        = Auth::user();
             $business_id = $user->business_id;
-            $business = Business::where('id', $business_id)->first();
-            $shift = EssentialsUserShift::where('user_id', $user->id)->first()?->shift ?? null;
+            $business    = Business::where('id', $business_id)->first();
+            $shift       = EssentialsUserShift::where('user_id', $user->id)->first()?->shift ?? null;
 
             $lastRequest = UserRequest::select([
                 'request_no',
@@ -75,7 +72,6 @@ class HomeController extends ApiController
                 'wk_procedures.department_id as department_id',
                 'users.id_proof_number',
 
-
             ])
                 ->leftjoin('requests_types', 'requests_types.id', '=', 'requests.request_type_id')
                 ->leftjoin('request_processes', 'request_processes.request_id', '=', 'requests.id')
@@ -85,7 +81,7 @@ class HomeController extends ApiController
 
                 ->first();
             if ($lastRequest) {
-                $lastRequest['type'] = __('api.' . $lastRequest['type']);
+                $lastRequest['type']   = __('api.' . $lastRequest['type']);
                 $lastRequest['status'] = __('api.' . $lastRequest['status']);
             }
 
@@ -101,53 +97,57 @@ class HomeController extends ApiController
             $lastTask = null;
             if ($todo) {
                 $lastTask = [
-                    'id' => $todo->id,
-                    'business_id' => $todo->business_id,
-                    'task' => $todo->task,
-                    'date' => $todo->date,
-                    'end_date' => $todo->end_date,
-                    'task_id' => $todo->task_id,
-                    'description' => $todo->description,
-                    'status' => $todo->status,
+                    'id'              => $todo->id,
+                    'business_id'     => $todo->business_id,
+                    'task'            => $todo->task,
+                    'date'            => $todo->date,
+                    'end_date'        => $todo->end_date,
+                    'task_id'         => $todo->task_id,
+                    'description'     => $todo->description,
+                    'status'          => $todo->status,
                     'estimated_hours' => $todo->estimated_hours,
-                    'priority' => $todo->priority,
-                    'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
+                    'priority'        => $todo->priority,
+                    'assigned_by'     => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
                 ];
             }
 
-
             $user = User::where('id', $user->id)->first();
-            $fullName = $user->first_name . ' ' . $user->last_name;
-            $image =  $user->profile_image ? 'uploads/' . $user->profile_image : null;
+
+            $fullName = ($user->first_name || $user->last_name)
+            ? trim("{$user->first_name} {$user->last_name}")
+            : $user->username;
+
+            $image                        = $user->profile_image ? 'uploads/' . $user->profile_image : null;
             $essentialsEmployeeAppointmet = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->first();
 
             $professions = EssentialsProfession::all()->pluck('name', 'id')->toArray();
-            $work = null;
+            $work        = null;
             if ($essentialsEmployeeAppointmet) {
                 $work = $professions[$essentialsEmployeeAppointmet->profession_id];
             }
 
-
             $attendanceList = EssentialsAttendance::where('user_id', $user->id)->whereDate('clock_in_time', Carbon::now()->toDateString())->latest()->first();
-            $signed_in = $attendanceList ? ($attendanceList?->clock_out_time  ? false : true) : false;
-            $signed_out = $signed_in ? ($attendanceList->clock_out_time ? true : false) : false;
-
+            $signed_in      = $attendanceList ? ($attendanceList?->clock_out_time ? false : true) : false;
+            $signed_out     = $signed_in ? ($attendanceList->clock_out_time ? true : false) : false;
 
             $res = [
                 'new_notifications' => 0,
-                'work_day_start' => $shift ? Carbon::parse($shift->start_time)->format('h:i A') : '',
-                'work_day_end' => $shift ? Carbon::parse($shift->end_time)->format('h:i A') : '',
-                'business_name' => $business->name,
-                'request' => $lastRequest,
-                'task' => $lastTask,
-                'full_name' => $fullName,
-                'image' => $image,
-                'work' => $work,
-                'user_type' => $user->user_type == "worker" ? "worker" : "employee",
-                'signed_in' => $signed_in,
-                'signed_out' => $signed_out,
+                'work_day_start'    => $shift && $shift->start_time
+                ? Carbon::parse($shift->start_time)->format('h:i A')
+                : '9:00 AM',
+                'work_day_end'      => $shift && $shift->end_time
+                ? Carbon::parse($shift->end_time)->format('h:i A')
+                : '5:00 PM',
+                'business_name'     => $business->name ?? 'employee',
+                'request'           => $lastRequest,
+                'task'              => $lastTask,
+                'full_name'         => $fullName,
+                'image'             => $image,
+                'work'              => $work,
+                'user_type'         => $user->user_type == "worker" ? "worker" : "employee",
+                'signed_in'         => $signed_in,
+                'signed_out'        => $signed_out,
             ];
-
 
             return new CommonResource($res);
         } catch (\Exception $e) {
@@ -169,7 +169,7 @@ class HomeController extends ApiController
 
     public function removeNotification($id)
     {
-        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+        if (! $this->moduleUtil->isModuleInstalled('Essentials')) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -187,7 +187,7 @@ class HomeController extends ApiController
 
     public function readAllNotifications()
     {
-        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+        if (! $this->moduleUtil->isModuleInstalled('Essentials')) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -213,16 +213,14 @@ class HomeController extends ApiController
         }
     }
 
-
     public function terms_privacy()
     {
         try {
             $res = [
-                'terms_of_use' => 'terms and conditions of use place holder',
+                'terms_of_use'   => 'terms and conditions of use place holder',
                 'privacy_policy' => 'privacy policy plave holder',
-                'support_phone' => '999999999999',
+                'support_phone'  => '999999999999',
             ];
-
 
             return new CommonResource($res);
         } catch (\Exception $e) {
@@ -230,23 +228,21 @@ class HomeController extends ApiController
         }
     }
 
-
-
     public function checkDevice()
     {
         try {
             $result = false;
-            $user = Auth::user();
-            $user = User::where('id', $user->id)->with('userDevice')->first();
+            $user   = Auth::user();
+            $user   = User::where('id', $user->id)->with('userDevice')->first();
             if ($user->userDevice) {
                 $result = $user->userDevice->device_number == request()->dev_number;
             } else {
                 $result = true;
                 UserDevice::create([
-                    'user_id' => $user->id,
-                    'device_name' => request()->dev_name,
+                    'user_id'       => $user->id,
+                    'device_name'   => request()->dev_name,
                     'device_number' => request()->dev_number,
-                    'created_by' => $user->id,
+                    'created_by'    => $user->id,
                 ]);
             }
             $res = [
