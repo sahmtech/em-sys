@@ -1,5 +1,4 @@
 <?php
-
 namespace App;
 
 use App\Contact;
@@ -23,6 +22,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\EssentialsWorkCard;
 use Modules\Essentials\Entities\Penalties;
@@ -143,16 +143,16 @@ class User extends Authenticatable
     public static function create_user($details)
     {
         $user = User::create([
-            'surname' => $details['surname'],
-            'first_name' => $details['first_name'],
-            'last_name' => $details['last_name'],
-            'user_type' => $details['user_type'],
+            'surname'     => $details['surname'],
+            'first_name'  => $details['first_name'],
+            'last_name'   => $details['last_name'],
+            'user_type'   => $details['user_type'],
             'allow_login' => 1,
-            'username' => $details['username'],
-            'email' => $details['email'],
-            'password' => Hash::make($details['password']),
-            'created_by' => auth()->user()->id,
-            'language' => !empty($details['language']) ? $details['language'] : 'en',
+            'username'    => $details['username'],
+            'email'       => $details['email'],
+            'password'    => Hash::make($details['password']),
+            'created_by'  => auth()->user()->id,
+            'language'    => ! empty($details['language']) ? $details['language'] : 'en',
         ]);
 
         return $user;
@@ -172,7 +172,7 @@ class User extends Authenticatable
         if ($user->can('access_all_locations')) {
             return 'all';
         } else {
-            $business_id = !is_null($business_id) ? $business_id : null;
+            $business_id = ! is_null($business_id) ? $business_id : null;
             if (empty($business_id) && auth()->check()) {
                 $business_id = auth()->user()->business_id;
             }
@@ -181,8 +181,8 @@ class User extends Authenticatable
             }
 
             $permitted_locations = [];
-            $all_locations = BusinessLocation::where('business_id', $business_id)->get();
-            $permissions = $user->permissions->pluck('name')->all();
+            $all_locations       = BusinessLocation::where('business_id', $business_id)->get();
+            $permissions         = $user->permissions->pluck('name')->all();
             foreach ($all_locations as $location) {
                 if (in_array('location.' . $location->id, $permissions)) {
                     $permitted_locations[] = $location->id;
@@ -213,10 +213,10 @@ class User extends Authenticatable
 
     public function scopeOnlyPermittedLocations($query)
     {
-        $user = auth()->user();
+        $user                = auth()->user();
         $permitted_locations = $user->permitted_locations();
-        $is_admin = $user->hasAnyPermission('Admin#' . $user->business_id);
-        if ($permitted_locations != 'all' && !$user->can('superadmin') && !$is_admin) {
+        $is_admin            = $user->hasAnyPermission('Admin#' . $user->business_id);
+        if ($permitted_locations != 'all' && ! $user->can('superadmin') && ! $is_admin) {
             $permissions = ['access_all_locations'];
             foreach ($permitted_locations as $location_id) {
                 $permissions[] = 'location.' . $location_id;
@@ -281,7 +281,7 @@ class User extends Authenticatable
     {
         $query = User::where('business_id', $business_id);
 
-        if (!$include_commission_agents) {
+        if (! $include_commission_agents) {
             $query->where('is_cmmsn_agnt', 0);
         }
 
@@ -407,7 +407,7 @@ class User extends Authenticatable
     public function getRoleNameAttribute()
     {
         $role_name_array = $this->getRoleNames();
-        $role_name = !empty($role_name_array[0]) ? explode('#', $role_name_array[0])[0] : '';
+        $role_name       = ! empty($role_name_array[0]) ? explode('#', $role_name_array[0])[0] : '';
 
         return $role_name;
     }
@@ -533,6 +533,11 @@ class User extends Authenticatable
     public function essentials_qualification()
     {
         return $this->hasOne(EssentialsEmployeesQualification::class, 'employee_id');
+    }
+
+    public function essentialsSpecialization()
+    {
+        return $this->hasOne(EssentialsEmployeesQualification::class, 'sub_specialization');
     }
 
     public function essentialsEmployeeAppointmets()
