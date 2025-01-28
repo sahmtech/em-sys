@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Connector\Http\Controllers\Api;
 
 use App\User;
@@ -35,53 +34,53 @@ class UserController extends ApiController
      * @queryParam service_staff boolean Filter service staffs from users list (0, 1)
      *
      * @response {
-            "data": [
-                {
-                    "id": 1,
-                    "user_type": "user",
-                    "surname": "Mr",
-                    "first_name": "Admin",
-                    "last_name": null,
-                    "username": "admin",
-                    "email": "admin@example.com",
-                    "language": "en",
-                    "contact_no": null,
-                    "address": null,
-                    "business_id": 1,
-                    "max_sales_discount_percent": null,
-                    "allow_login": 1,
-                    "essentials_department_id": null,
-                    "essentials_designation_id": null,
-                    "status": "active",
-                    "crm_contact_id": null,
-                    "is_cmmsn_agnt": 0,
-                    "cmmsn_percent": "0.00",
-                    "selected_contacts": 0,
-                    "dob": null,
-                    "gender": null,
-                    "marital_status": null,
-                    "blood_group": null,
-                    "contact_number": null,
-                    "fb_link": null,
-                    "twitter_link": null,
-                    "social_media_1": null,
-                    "social_media_2": null,
-                    "permanent_address": null,
-                    "current_address": null,
-                    "guardian_name": null,
-                    "custom_field_1": null,
-                    "custom_field_2": null,
-                    "custom_field_3": null,
-                    "custom_field_4": null,
-                    "bank_details": null,
-                    "id_proof_name": null,
-                    "id_proof_number": null,
-                    "deleted_at": null,
-                    "created_at": "2018-01-04 02:15:19",
-                    "updated_at": "2018-01-04 02:15:19"
-                }
-            ]
-        }
+    "data": [
+    {
+    "id": 1,
+    "user_type": "user",
+    "surname": "Mr",
+    "first_name": "Admin",
+    "last_name": null,
+    "username": "admin",
+    "email": "admin@example.com",
+    "language": "en",
+    "contact_no": null,
+    "address": null,
+    "business_id": 1,
+    "max_sales_discount_percent": null,
+    "allow_login": 1,
+    "essentials_department_id": null,
+    "essentials_designation_id": null,
+    "status": "active",
+    "crm_contact_id": null,
+    "is_cmmsn_agnt": 0,
+    "cmmsn_percent": "0.00",
+    "selected_contacts": 0,
+    "dob": null,
+    "gender": null,
+    "marital_status": null,
+    "blood_group": null,
+    "contact_number": null,
+    "fb_link": null,
+    "twitter_link": null,
+    "social_media_1": null,
+    "social_media_2": null,
+    "permanent_address": null,
+    "current_address": null,
+    "guardian_name": null,
+    "custom_field_1": null,
+    "custom_field_2": null,
+    "custom_field_3": null,
+    "custom_field_4": null,
+    "bank_details": null,
+    "id_proof_name": null,
+    "id_proof_number": null,
+    "deleted_at": null,
+    "created_at": "2018-01-04 02:15:19",
+    "updated_at": "2018-01-04 02:15:19"
+    }
+    ]
+    }
      */
     public function index()
     {
@@ -93,7 +92,7 @@ class UserController extends ApiController
             $users = $this->commonUtil->getServiceStaff($business_id);
         } else {
             $users = User::where('business_id', $business_id)
-                        ->get();
+                ->get();
         }
 
         return CommonResource::collection($users);
@@ -103,53 +102,53 @@ class UserController extends ApiController
      * Get the specified user
      *
      * @response {
-            "data": [
-                {
-                    "id": 1,
-                    "user_type": "user",
-                    "surname": "Mr",
-                    "first_name": "Admin",
-                    "last_name": null,
-                    "username": "admin",
-                    "email": "admin@example.com",
-                    "language": "en",
-                    "contact_no": null,
-                    "address": null,
-                    "business_id": 1,
-                    "max_sales_discount_percent": null,
-                    "allow_login": 1,
-                    "essentials_department_id": null,
-                    "essentials_designation_id": null,
-                    "status": "active",
-                    "crm_contact_id": null,
-                    "is_cmmsn_agnt": 0,
-                    "cmmsn_percent": "0.00",
-                    "selected_contacts": 0,
-                    "dob": null,
-                    "gender": null,
-                    "marital_status": null,
-                    "blood_group": null,
-                    "contact_number": null,
-                    "fb_link": null,
-                    "twitter_link": null,
-                    "social_media_1": null,
-                    "social_media_2": null,
-                    "permanent_address": null,
-                    "current_address": null,
-                    "guardian_name": null,
-                    "custom_field_1": null,
-                    "custom_field_2": null,
-                    "custom_field_3": null,
-                    "custom_field_4": null,
-                    "bank_details": null,
-                    "id_proof_name": null,
-                    "id_proof_number": null,
-                    "deleted_at": null,
-                    "created_at": "2018-01-04 02:15:19",
-                    "updated_at": "2018-01-04 02:15:19"
-                }
-            ]
-        }
+    "data": [
+    {
+    "id": 1,
+    "user_type": "user",
+    "surname": "Mr",
+    "first_name": "Admin",
+    "last_name": null,
+    "username": "admin",
+    "email": "admin@example.com",
+    "language": "en",
+    "contact_no": null,
+    "address": null,
+    "business_id": 1,
+    "max_sales_discount_percent": null,
+    "allow_login": 1,
+    "essentials_department_id": null,
+    "essentials_designation_id": null,
+    "status": "active",
+    "crm_contact_id": null,
+    "is_cmmsn_agnt": 0,
+    "cmmsn_percent": "0.00",
+    "selected_contacts": 0,
+    "dob": null,
+    "gender": null,
+    "marital_status": null,
+    "blood_group": null,
+    "contact_number": null,
+    "fb_link": null,
+    "twitter_link": null,
+    "social_media_1": null,
+    "social_media_2": null,
+    "permanent_address": null,
+    "current_address": null,
+    "guardian_name": null,
+    "custom_field_1": null,
+    "custom_field_2": null,
+    "custom_field_3": null,
+    "custom_field_4": null,
+    "bank_details": null,
+    "id_proof_name": null,
+    "id_proof_number": null,
+    "deleted_at": null,
+    "created_at": "2018-01-04 02:15:19",
+    "updated_at": "2018-01-04 02:15:19"
+    }
+    ]
+    }
      * @urlParam user required comma separated ids of the required users Example: 1
      */
     public function show($user_ids)
@@ -157,11 +156,11 @@ class UserController extends ApiController
         $user = Auth::user();
 
         $business_id = $user->business_id;
-        $user_ids = explode(',', $user_ids);
+        $user_ids    = explode(',', $user_ids);
 
         $users = User::where('business_id', $business_id)
-                    ->whereIn('id', $user_ids)
-                    ->get();
+            ->whereIn('id', $user_ids)
+            ->get();
 
         return CommonResource::collection($users);
     }
@@ -170,55 +169,56 @@ class UserController extends ApiController
      * Get the loggedin user details.
      *
      * @response {
-            "data":{
-                "id": 1,
-                "user_type": "user",
-                "surname": "Mr",
-                "first_name": "Admin",
-                "last_name": null,
-                "username": "admin",
-                "email": "admin@example.com",
-                "language": "en",
-                "contact_no": null,
-                "address": null,
-                "business_id": 1,
-                "max_sales_discount_percent": null,
-                "allow_login": 1,
-                "essentials_department_id": null,
-                "essentials_designation_id": null,
-                "status": "active",
-                "crm_contact_id": null,
-                "is_cmmsn_agnt": 0,
-                "cmmsn_percent": "0.00",
-                "selected_contacts": 0,
-                "dob": null,
-                "gender": null,
-                "marital_status": null,
-                "blood_group": null,
-                "contact_number": null,
-                "fb_link": null,
-                "twitter_link": null,
-                "social_media_1": null,
-                "social_media_2": null,
-                "permanent_address": null,
-                "current_address": null,
-                "guardian_name": null,
-                "custom_field_1": null,
-                "custom_field_2": null,
-                "custom_field_3": null,
-                "custom_field_4": null,
-                "bank_details": null,
-                "id_proof_name": null,
-                "id_proof_number": null,
-                "deleted_at": null,
-                "created_at": "2018-01-04 02:15:19",
-                "updated_at": "2018-01-04 02:15:19"
-            }
-        }
+    "data":{
+    "id": 1,
+    "user_type": "user",
+    "surname": "Mr",
+    "first_name": "Admin",
+    "last_name": null,
+    "username": "admin",
+    "email": "admin@example.com",
+    "language": "en",
+    "contact_no": null,
+    "address": null,
+    "business_id": 1,
+    "max_sales_discount_percent": null,
+    "allow_login": 1,
+    "essentials_department_id": null,
+    "essentials_designation_id": null,
+    "status": "active",
+    "crm_contact_id": null,
+    "is_cmmsn_agnt": 0,
+    "cmmsn_percent": "0.00",
+    "selected_contacts": 0,
+    "dob": null,
+    "gender": null,
+    "marital_status": null,
+    "blood_group": null,
+    "contact_number": null,
+    "fb_link": null,
+    "twitter_link": null,
+    "social_media_1": null,
+    "social_media_2": null,
+    "permanent_address": null,
+    "current_address": null,
+    "guardian_name": null,
+    "custom_field_1": null,
+    "custom_field_2": null,
+    "custom_field_3": null,
+    "custom_field_4": null,
+    "bank_details": null,
+    "id_proof_name": null,
+    "id_proof_number": null,
+    "deleted_at": null,
+    "created_at": "2018-01-04 02:15:19",
+    "updated_at": "2018-01-04 02:15:19"
+    }
+    }
      */
     public function loggedin()
     {
-        $user = Auth::user();
+        
+        $user           = Auth::user();
         $user->is_admin = $this->commonUtil->is_admin($user);
 
         if (! $user->is_admin) {
@@ -237,9 +237,9 @@ class UserController extends ApiController
      * @bodyParam new_password string required New password of the user
      *
      * @response {
-            "success":1,
-            "msg":"Password updated successfully"
-        }
+    "success":1,
+    "msg":"Password updated successfully"
+    }
      */
     public function updatePassword(Request $request)
     {
@@ -251,23 +251,23 @@ class UserController extends ApiController
                     $user->password = Hash::make($request->input('new_password'));
                     $user->save();
                     $output = ['success' => 1,
-                        'msg' => __('lang_v1.password_updated_successfully'),
+                        'msg'                => __('lang_v1.password_updated_successfully'),
                     ];
                 } else {
                     $output = ['success' => 0,
-                        'msg' => __('lang_v1.u_have_entered_wrong_password'),
+                        'msg'                => __('lang_v1.u_have_entered_wrong_password'),
                     ];
                 }
             } else {
                 $output = ['success' => 0,
-                    'msg' => __('messages.something_went_wrong'),
+                    'msg'                => __('messages.something_went_wrong'),
                 ];
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = ['success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'                => __('messages.something_went_wrong'),
             ];
         }
 
@@ -326,54 +326,54 @@ class UserController extends ApiController
      * @bodyParam bank_details.*.tax_payer_id string
      *
      * @response {
-        "success": 1,
-        "msg": "User added successfully",
-        "user": {
-            "surname": "Mr",
-            "first_name": "Test",
-            "last_name": "kumar",
-            "email": "test@example.com",
-            "user_type": "user_customer",
-            "crm_contact_id": "2",
-            "allow_login": 1,
-            "username": "0017",
-            "cmmsn_percent": "25",
-            "max_sales_discount_percent": "52",
-            "dob": "1997-10-12",
-            "gender": "male",
-            "marital_status": "unmarried",
-            "blood_group": "0+",
-            "contact_number": "4578451245",
-            "alt_number": "7474747474",
-            "family_number": "7474147414",
-            "fb_link": "fb.com/username",
-            "twitter_link": "twitter.com/username",
-            "social_media_1": "test",
-            "social_media_2": "test",
-            "custom_field_1": "test",
-            "custom_field_2": "test",
-            "custom_field_3": "test",
-            "custom_field_4": "test",
-            "guardian_name": "test",
-            "id_proof_name": "uid",
-            "id_proof_number": "747845120124",
-            "permanent_address": "test permanent adrress",
-            "current_address": "test current address",
-            "bank_details": "{\"account_holder_name\":\"test\",\"account_number\":\"test\",\"bank_name\":\"test\",\"bank_code\":\"test\",\"branch\":\"test\",\"tax_payer_id\":\"test\"}",
-            "selected_contacts": "1",
-            "status": "active",
-            "business_id": 1,
-            "updated_at": "2021-08-12 18:03:58",
-            "created_at": "2021-08-12 18:03:58",
-            "id": 140
-        }
+    "success": 1,
+    "msg": "User added successfully",
+    "user": {
+    "surname": "Mr",
+    "first_name": "Test",
+    "last_name": "kumar",
+    "email": "test@example.com",
+    "user_type": "user_customer",
+    "crm_contact_id": "2",
+    "allow_login": 1,
+    "username": "0017",
+    "cmmsn_percent": "25",
+    "max_sales_discount_percent": "52",
+    "dob": "1997-10-12",
+    "gender": "male",
+    "marital_status": "unmarried",
+    "blood_group": "0+",
+    "contact_number": "4578451245",
+    "alt_number": "7474747474",
+    "family_number": "7474147414",
+    "fb_link": "fb.com/username",
+    "twitter_link": "twitter.com/username",
+    "social_media_1": "test",
+    "social_media_2": "test",
+    "custom_field_1": "test",
+    "custom_field_2": "test",
+    "custom_field_3": "test",
+    "custom_field_4": "test",
+    "guardian_name": "test",
+    "id_proof_name": "uid",
+    "id_proof_number": "747845120124",
+    "permanent_address": "test permanent adrress",
+    "current_address": "test current address",
+    "bank_details": "{\"account_holder_name\":\"test\",\"account_number\":\"test\",\"bank_name\":\"test\",\"bank_code\":\"test\",\"branch\":\"test\",\"tax_payer_id\":\"test\"}",
+    "selected_contacts": "1",
+    "status": "active",
+    "business_id": 1,
+    "updated_at": "2021-08-12 18:03:58",
+    "created_at": "2021-08-12 18:03:58",
+    "id": 140
+    }
     }
      */
     public function registerUser(Request $request)
     {
         $request->validate([
-            'username' => 'unique:users',
-            'email' => 'required|unique:users',
+            'username'  => 'unique:users',
+            'email'     => 'required|unique:users',
             'user_type' => 'required',
         ]);
 
@@ -382,15 +382,15 @@ class UserController extends ApiController
 
             $output = [
                 'success' => 1,
-                'msg' => __('user.user_added'),
-                'user' => $user,
+                'msg'     => __('user.user_added'),
+                'user'    => $user,
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -403,9 +403,9 @@ class UserController extends ApiController
 
     public function generateRandomString($length = 6)
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#@_$&%*(){}[]!^?><=';
+        $characters       = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#@_$&%*(){}[]!^?><=';
         $charactersLength = strlen($characters);
-        $randomString = '';
+        $randomString     = '';
         for ($i = 0; $i < $length; $i++) {
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
@@ -419,9 +419,9 @@ class UserController extends ApiController
      * @bodyParam email string required Users email id
      *
      * @response {
-            "success":1,
-            "msg":"New password sent to user@example.com successfully"
-        }
+    "success":1,
+    "msg":"New password sent to user@example.com successfully"
+    }
      */
     public function forgetPassword(Request $request)
     {
@@ -430,32 +430,32 @@ class UserController extends ApiController
 
             if (! empty($request->input('email'))) {
                 $forgotten_user = User::where('business_id', $user->business_id)
-                                    ->where('email', $request->input('email'))
-                                    ->first();
+                    ->where('email', $request->input('email'))
+                    ->first();
                 if (! empty($forgotten_user)) {
-                    $new_password = $this->generateRandomString();
+                    $new_password             = $this->generateRandomString();
                     $forgotten_user->password = Hash::make($new_password);
                     $forgotten_user->save();
 
                     $forgotten_user->notify(new NewPassword($new_password));
                     $output = ['success' => 1,
-                        'msg' => "New password sent to {$forgotten_user->email} successfully",
+                        'msg'                => "New password sent to {$forgotten_user->email} successfully",
                     ];
                 } else {
                     $output = ['success' => 0,
-                        'msg' => 'User not found',
+                        'msg'                => 'User not found',
                     ];
                 }
             } else {
                 $output = ['success' => 0,
-                    'msg' => 'Email Required',
+                    'msg'                => 'Email Required',
                 ];
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = ['success' => 0,
-                'msg' => $e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage(),
+                'msg'                => $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage(),
             ];
         }
 

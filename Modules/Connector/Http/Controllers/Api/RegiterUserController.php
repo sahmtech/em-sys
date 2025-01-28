@@ -34,7 +34,7 @@ class RegiterUserController extends ApiController
             $user = new User();
 
             $user->password    = Hash::make($request->input('password'));
-            $user->user_type   = 'admin';
+            $user->user_type   = 'employee';
             $user->first_name  = $request->username;
             $user->username    = $request->username;
             $user->allow_login = true;
