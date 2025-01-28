@@ -71,7 +71,6 @@ $icons = [
         border: 1px solid #ddd;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-weight: 400;
-        /* Default font weight for card content */
     }
 
     .card-counter:hover {
@@ -93,10 +92,8 @@ $icons = [
     }
 
     .card-left i {
-        font-size: 2.5em;
-        /* Default icon size */
+        font-size: clamp(1em, 2vw, 1.5em);
         font-weight: bold;
-        /* Bold icon for emphasis */
         color: white;
     }
 
@@ -105,24 +102,19 @@ $icons = [
         text-align: center;
         padding-left: 10px;
         font-weight: bold;
-        /* Bold title for better visibility */
     }
 
     .card-right {
-        font-size: 36px;
-        /* Default text size for count */
+        font-size: clamp(18px, 3vw, 20px);
         font-weight: 700;
-        /* Semi-bold for count */
         text-align: right;
         min-width: 60px;
         color: #fabc17;
     }
 
     .card-counter .count-name {
-        font-size: 16px;
-        /* Default size for titles */
+        font-size: clamp(12px, 3vw, 16px);
         font-weight: bold;
-        /* Bold title for strong emphasis */
         text-transform: capitalize;
         opacity: 0.85;
         color: #ffffff;
@@ -130,9 +122,7 @@ $icons = [
 
     .card-counter .count-numbers {
         font-size: 24px;
-        /* Default size for count */
         font-weight: 700;
-        /* Semi-bold for stronger emphasis */
         color: #ffffff;
     }
 
@@ -140,57 +130,47 @@ $icons = [
     @media (max-width: 1200px) {
         .card-left i {
             font-size: 2.2em;
-            /* Smaller icon for large tablets */
         }
 
         .card-right {
             font-size: 30px;
-            /* Smaller count text */
         }
 
         .card-counter .count-name {
             font-size: 14px;
-            /* Adjusted title size */
         }
 
         .card-counter .count-numbers {
             font-size: 20px;
-            /* Adjusted count size */
         }
     }
 
     @media (max-width: 768px) {
         .card-counter {
             height: 90px;
-            /* Reduced height for smaller screens */
             padding: 15px;
         }
 
         .card-left i {
             font-size: 1.8em;
-            /* Smaller icon for tablets */
         }
 
         .card-right {
             font-size: 24px;
-            /* Adjusted count text */
         }
 
         .card-counter .count-name {
             font-size: 12px;
-            /* Smaller title size */
         }
 
         .card-counter .count-numbers {
             font-size: 18px;
-            /* Smaller count size */
         }
     }
 
     @media (max-width: 576px) {
         .card-counter {
             flex-direction: column;
-            /* Stack content vertically */
             text-align: center;
             height: auto;
             padding: 10px;
@@ -202,30 +182,27 @@ $icons = [
 
         .card-left i {
             font-size: 1.5em;
-            /* Smaller icon for mobile */
         }
 
         .card-right {
             font-size: 20px;
-            /* Adjusted count text for mobile */
         }
 
         .card-counter .count-name {
             font-size: 10px;
-            /* Smaller title size for mobile */
         }
 
         .card-counter .count-numbers {
             font-size: 16px;
-            /* Smaller count size for mobile */
         }
     }
 
+    /* Main Card Styling for Counter */
     .card-counter-main {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 20px;
+        padding: clamp(10px, 2vw, 20px);
         background-color: #fbbc16;
         color: #070505;
         border-radius: 8px;
@@ -234,7 +211,7 @@ $icons = [
         text-decoration: none;
     }
 
-    .card-counter:hover {
+    .card-counter-main:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
@@ -243,11 +220,11 @@ $icons = [
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
+        width: clamp(30px, 6vw, 40px);
     }
 
     .card-left-main i {
-        font-size: 2rem;
+        font-size: clamp(1.2rem, 2vw, 2rem);
         color: #070505;
     }
 
@@ -256,29 +233,39 @@ $icons = [
         text-align: center;
         font-weight: bold;
         color: #070505;
-
+        font-size: clamp(16px, 2.5vw, 22px);
     }
 
     .card-right-main {
         text-align: right;
-
     }
 
     .card-right-main .count-numbers {
-        font-size: 22px;
+        font-size: clamp(16px, 3vw, 20px);
         font-weight: 600;
         color: #070505;
     }
 
     .card-center-main .count-name {
-        font-size: 22px;
+        font-size: clamp(16px, 2.5vw, 20px);
         font-weight: 600;
         color: #070505;
     }
 
+    /* Optional Responsive Adjustments */
+    @media (max-width: 768px) {
+        .card-counter-main {
+            flex-direction: column;
+            text-align: center;
+            padding: 15px;
+        }
 
-    .card-link {
-        text-decoration: none;
-        color: inherit;
+        .card-left-main {
+            margin-bottom: 10px;
+        }
+
+        .card-right-main {
+            text-align: center;
+        }
     }
 </style>
