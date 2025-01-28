@@ -78,7 +78,7 @@ $icons = [
     }
 
     .card-counter.primary {
-        background-color: #1572e8;
+        background-color: #102bc2;
         color: #fff;
     }
 
@@ -127,7 +127,7 @@ $icons = [
     }
 
     .card-counter .count-numbers {
-        font-size: 32px;
+        font-size: 26px;
         font-weight: 600;
         color: #ffffff;
     }
