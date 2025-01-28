@@ -5,94 +5,43 @@
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
         <div class="row widget-statistic">
 
-            <a href="{{ route('generalmanagement.getFilteredRequests', ['filter' => 'today_requests']) }}">
-                <div class="col-md-3">
-                    <div class="custom_card custom_card_requests">
-
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 class="custom_card_requests_h5">{{ __('request.today_requests') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 class="custom_card_requests_h5">{{ $today_requests ?? 0 }}</h4>
-                                    </div>
-                                </div>
+            <div class="row">
+                @foreach ([
+                ['route' => 'generalmanagement.getFilteredRequests', 'params' => ['filter' => 'today_requests'], 'title'
+                => __('request.today_requests'), 'count' => $today_requests ?? 0, 'icon' => 'fa-calendar-day'],
+                ['route' => 'generalmanagement.getFilteredRequests', 'params' => ['filter' => 'pending_requests'],
+                'title' => __('request.pending_requests'), 'count' => $pending_requests ?? 0, 'icon' =>
+                'fa-hourglass-half'],
+                ['route' => 'generalmanagement.getFilteredRequests', 'params' => ['filter' => 'completed_requests'],
+                'title' => __('request.completed_requests'), 'count' => $completed_requests ?? 0, 'icon' =>
+                'fa-check-circle'],
+                ['route' => 'generalmanagement.getFilteredRequests', 'params' => ['filter' => 'all'], 'title' =>
+                __('request.all_requests'), 'count' => $all_requests ?? 0, 'icon' => 'fa-list']
+                ] as $request)
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <a href="{{ route($request['route'], $request['params']) }}">
+                        <div class="card-counter primary"
+                            style="background-color: #fbbc16; color: rgb(7, 5, 5); border-radius: 8px; padding: 20px;">
+                            <div class="card-left">
+                                <i class="fa {{ $request['icon'] }}" style="font-size: 2rem; color: rgb(7, 5, 5);"></i>
+                                <!-- Unique icon -->
                             </div>
-
-                        </div>
-                    </div>
-                </div>
-            </a>
-
-            <a href="{{ route('generalmanagement.getFilteredRequests', ['filter' => 'pending_requests']) }}">
-                <div class="col-md-3">
-                    <div class="custom_card custom_card_requests">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 class="custom_card_requests_h5">{{ __('request.pending_requests') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 class="custom_card_requests_h5">{{ $pending_requests ?? 0 }}</h4>
-                                    </div>
-                                </div>
+                            <div class="card-center-main" style="text-align: center;">
+                                <span class="count-name" style="font-weight: bold; color: rgb(7, 5, 5);">{{
+                                    $request['title'] }}</span>
+                                <!-- Title -->
                             </div>
-
-                        </div>
-                    </div>
-                </div>
-            </a>
-
-            <a href="{{ route('generalmanagement.getFilteredRequests', ['filter' => 'completed_requests']) }}">
-                <div class="col-md-3">
-                    <div class="custom_card custom_card_requests">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 class="custom_card_requests_h5">{{ __('request.completed_requests') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 class="custom_card_requests_h5">{{ $completed_requests ?? 0 }}</h4>
-                                    </div>
-                                </div>
+                            <div class="card-right-main" style="text-align: right;">
+                                <span class="count-numbers" style=" font-size: 22px;
+                                 font-weight: 600;  color: rgb(7, 5, 5);">{{
+                                    $request['count'] }}</span>
+                                <!-- Count -->
                             </div>
-
                         </div>
-                    </div>
+                    </a>
                 </div>
-            </a>
-
-            <a href="{{ route('generalmanagement.getFilteredRequests', ['filter' => 'all']) }}">
-                <div class="col-md-3">
-                    <div class="custom_card custom_card_requests">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 class="custom_card_requests_h5">{{ __('request.all_requests') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 class="custom_card_requests_h5">{{ $all_requests ?? 0 }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </a>
+                @endforeach
+            </div>
 
 
             @include('generalmanagement::dashboard.pending_requests_with_dept')

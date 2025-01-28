@@ -60,7 +60,7 @@ $icons = [
         margin: 15px;
         padding: 20px 15px;
         background-color: #fff;
-        height: 120px;
+        height: 100px;
         border-radius: 15px;
         display: flex;
         justify-content: space-between;
@@ -92,9 +92,7 @@ $icons = [
     .card-left i {
         font-size: 2.5em;
         opacity: 1;
-        /* Ensure the icon is fully visible */
         color: white;
-        /* Set icon color to white */
     }
 
 
@@ -118,7 +116,7 @@ $icons = [
     }
 
     .card-counter .count-name {
-        font-size: 18px;
+        font-size: 16x;
         font-weight: 500;
         text-transform: capitalize;
         opacity: 0.85;
@@ -127,14 +125,14 @@ $icons = [
     }
 
     .card-counter .count-numbers {
-        font-size: 26px;
+        font-size: 24px;
         font-weight: 600;
         color: #ffffff;
     }
 
     .card-counter .count-name {
         font-size: 20px;
-        font-weight: 700;
+        font-weight: 600;
         color: #ffffff;
     }
 
