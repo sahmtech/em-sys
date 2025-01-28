@@ -1,12 +1,11 @@
 <?php
-
 namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
 class EssentialsEmployeesQualification extends Model
 {
-   
+
     protected $guarded = ['id'];
 
     public static function forDropdown()
@@ -14,5 +13,7 @@ class EssentialsEmployeesQualification extends Model
         $qualificationType = EssentialsEmployeesQualification::all()->pluck('id');
 
         return $qualificationType;
+
     }
+
 }
