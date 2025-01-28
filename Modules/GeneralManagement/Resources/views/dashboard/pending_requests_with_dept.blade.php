@@ -69,6 +69,9 @@ $icons = [
         transition: all 0.3s ease-in-out;
         overflow: hidden;
         border: 1px solid #ddd;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 400;
+        /* Default font weight for card content */
     }
 
     .card-counter:hover {
@@ -91,53 +94,191 @@ $icons = [
 
     .card-left i {
         font-size: 2.5em;
-        opacity: 1;
+        /* Default icon size */
+        font-weight: bold;
+        /* Bold icon for emphasis */
         color: white;
     }
-
-
 
     .card-center {
         flex-grow: 1;
         text-align: center;
         padding-left: 10px;
+        font-weight: bold;
+        /* Bold title for better visibility */
     }
-
-
-
-
 
     .card-right {
         font-size: 36px;
-        font-weight: 600;
+        /* Default text size for count */
+        font-weight: 700;
+        /* Semi-bold for count */
         text-align: right;
         min-width: 60px;
         color: #fabc17;
     }
 
     .card-counter .count-name {
-        font-size: 16x;
-        font-weight: 500;
+        font-size: 16px;
+        /* Default size for titles */
+        font-weight: bold;
+        /* Bold title for strong emphasis */
         text-transform: capitalize;
         opacity: 0.85;
         color: #ffffff;
-
     }
 
     .card-counter .count-numbers {
         font-size: 24px;
-        font-weight: 600;
+        /* Default size for count */
+        font-weight: 700;
+        /* Semi-bold for stronger emphasis */
         color: #ffffff;
     }
 
-    .card-counter .count-name {
-        font-size: 20px;
-        font-weight: 600;
-        color: #ffffff;
+    /* Responsive Styles */
+    @media (max-width: 1200px) {
+        .card-left i {
+            font-size: 2.2em;
+            /* Smaller icon for large tablets */
+        }
+
+        .card-right {
+            font-size: 30px;
+            /* Smaller count text */
+        }
+
+        .card-counter .count-name {
+            font-size: 14px;
+            /* Adjusted title size */
+        }
+
+        .card-counter .count-numbers {
+            font-size: 20px;
+            /* Adjusted count size */
+        }
     }
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #333;
+    @media (max-width: 768px) {
+        .card-counter {
+            height: 90px;
+            /* Reduced height for smaller screens */
+            padding: 15px;
+        }
+
+        .card-left i {
+            font-size: 1.8em;
+            /* Smaller icon for tablets */
+        }
+
+        .card-right {
+            font-size: 24px;
+            /* Adjusted count text */
+        }
+
+        .card-counter .count-name {
+            font-size: 12px;
+            /* Smaller title size */
+        }
+
+        .card-counter .count-numbers {
+            font-size: 18px;
+            /* Smaller count size */
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-counter {
+            flex-direction: column;
+            /* Stack content vertically */
+            text-align: center;
+            height: auto;
+            padding: 10px;
+        }
+
+        .card-left {
+            margin-bottom: 10px;
+        }
+
+        .card-left i {
+            font-size: 1.5em;
+            /* Smaller icon for mobile */
+        }
+
+        .card-right {
+            font-size: 20px;
+            /* Adjusted count text for mobile */
+        }
+
+        .card-counter .count-name {
+            font-size: 10px;
+            /* Smaller title size for mobile */
+        }
+
+        .card-counter .count-numbers {
+            font-size: 16px;
+            /* Smaller count size for mobile */
+        }
+    }
+
+    .card-counter-main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        background-color: #fbbc16;
+        color: #070505;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-decoration: none;
+    }
+
+    .card-counter:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-left-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+    }
+
+    .card-left-main i {
+        font-size: 2rem;
+        color: #070505;
+    }
+
+    .card-center-main {
+        flex-grow: 1;
+        text-align: center;
+        font-weight: bold;
+        color: #070505;
+
+    }
+
+    .card-right-main {
+        text-align: right;
+
+    }
+
+    .card-right-main .count-numbers {
+        font-size: 22px;
+        font-weight: 600;
+        color: #070505;
+    }
+
+    .card-center-main .count-name {
+        font-size: 22px;
+        font-weight: 600;
+        color: #070505;
+    }
+
+
+    .card-link {
+        text-decoration: none;
+        color: inherit;
     }
 </style>

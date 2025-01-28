@@ -4,7 +4,6 @@
 <section class="content-header">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
         <div class="row widget-statistic">
-
             <div class="row">
                 @foreach ([
                 ['route' => 'generalmanagement.getFilteredRequests', 'params' => ['filter' => 'today_requests'], 'title'
@@ -19,23 +18,16 @@
                 __('request.all_requests'), 'count' => $all_requests ?? 0, 'icon' => 'fa-list']
                 ] as $request)
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <a href="{{ route($request['route'], $request['params']) }}">
-                        <div class="card-counter primary"
-                            style="background-color: #fbbc16; color: rgb(7, 5, 5); border-radius: 8px; padding: 20px;">
-                            <div class="card-left">
-                                <i class="fa {{ $request['icon'] }}" style="font-size: 2rem; color: rgb(7, 5, 5);"></i>
-                                <!-- Unique icon -->
+                    <a href="{{ route($request['route'], $request['params']) }}" class="card-link">
+                        <div class="card-counter primary" style="background-color:#fbbc16;">
+                            <div class="card-left-main">
+                                <i class="fa {{ $request['icon'] }}"></i>
                             </div>
-                            <div class="card-center-main" style="text-align: center;">
-                                <span class="count-name" style="font-weight: bold; color: rgb(7, 5, 5);">{{
-                                    $request['title'] }}</span>
-                                <!-- Title -->
+                            <div class="card-center-main">
+                                <span class="count-name">{{ $request['title'] }}</span>
                             </div>
-                            <div class="card-right-main" style="text-align: right;">
-                                <span class="count-numbers" style=" font-size: 22px;
-                                 font-weight: 600;  color: rgb(7, 5, 5);">{{
-                                    $request['count'] }}</span>
-                                <!-- Count -->
+                            <div class="card-right-main">
+                                <span class="count-numbers">{{ $request['count'] }}</span>
                             </div>
                         </div>
                     </a>
@@ -43,14 +35,11 @@
                 @endforeach
             </div>
 
-
             @include('generalmanagement::dashboard.pending_requests_with_dept')
-
-
         </div>
         <br>
-
     </div>
+
 </section>
 
 <!-- Main content -->
