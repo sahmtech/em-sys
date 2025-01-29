@@ -80,7 +80,7 @@ $icons = [
     }
 
     .card-counter.primary {
-        background-color: #0a22a8;
+        background-color: #37479a;
         color: #fff;
     }
 
