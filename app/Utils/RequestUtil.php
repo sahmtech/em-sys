@@ -1375,6 +1375,7 @@ class RequestUtil extends Util
     // store request  //
     public function storeRequest($request, $departmentIds)
     {
+        // dd($request->all());
         DB::beginTransaction();
         try {
 
@@ -1383,6 +1384,8 @@ class RequestUtil extends Util
             $end_date       = $request->end_date ?? $request->return_date;
             $today          = Carbon::today();
             $type           = RequestsType::where('id', $request->type)->first()->type;
+
+            // dd($type);
 
             if ($startDate && $type != 'escapeRequest') {
                 $startDateCarbon = Carbon::parse($startDate);
@@ -1409,21 +1412,30 @@ class RequestUtil extends Util
                 return redirect()->back()->withErrors([$output['msg']]);
             }
 
-            $requestTypeFor       = RequestsType::findOrFail($request->type)->for;
+            $requestTypeFor = RequestsType::findOrFail($request->type)->for;
+
             $createdByUser        = auth()->user();
             $createdBy_type       = $createdByUser->user_type;
             $createdBy_department = $createdByUser->essentials_department_id;
 
             $success = 1;
 
+
+
             foreach ($request->user_id as $userId) {
                 error_log($userId);
                 $count_of_users = count($request->user_id);
+
                 if ($userId === null) {
                     continue;
                 }
 
+
+
                 $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
+                
+
+                
                 if ($isExists && count($request->user_id) == 1) {
                     $output = [
                         'success' => 0,
@@ -1752,6 +1764,8 @@ class RequestUtil extends Util
                 }
             }
 
+           
+
             if ($success) {
                 $this->makeToDo($Request, $business_id);
                 $output = [
@@ -1769,7 +1783,9 @@ class RequestUtil extends Util
                 return redirect()->back()->withErrors([$output['msg']]);
             }
         } catch (\Exception $e) {
+            
             DB::rollBack();
+            return $e->getMessage();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [

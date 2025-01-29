@@ -6,6 +6,8 @@ use App\Contact;
 use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
+use App\Request as UserRequest;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -993,15 +995,19 @@ class NewArrivalUtil extends Util
         }
         $users = User::whereIn('id', $userIds)->whereNotNull('proposal_worker_id')
             ->where('status', '!=', 'inactive')->whereNotIn('users.id', function ($query) {
-            $query->select('related_to')->from('new_workers_ad_salary_requests');
+            $query->select('related_to')->from('requests');
         })->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
-        $requests = NewWorkersAdSalaryRequest::leftJoin('users', 'users.id', '=', 'new_workers_ad_salary_requests.related_to')
-            ->whereIn('new_workers_ad_salary_requests.related_to', $userIds)->whereNotNull('proposal_worker_id')->where('users.status', '!=', 'inactive')
+
+
+  
+
+        $requests = UserRequest::leftJoin('users', 'users.id', '=', 'requests.related_to')
+            ->whereIn('requests.related_to', $userIds)->whereNotNull('proposal_worker_id')->where('users.status', '!=', 'inactive')
             ->select([
-                'new_workers_ad_salary_requests.request_no', 'new_workers_ad_salary_requests.related_to',
-                'new_workers_ad_salary_requests.advSalaryAmount', 'new_workers_ad_salary_requests.monthlyInstallment',
-                'new_workers_ad_salary_requests.installmentsNumber', 'new_workers_ad_salary_requests.status',
-                'new_workers_ad_salary_requests.note', 'new_workers_ad_salary_requests.created_at',
+                'requests.request_no', 'requests.related_to',
+                'requests.advSalaryAmount', 'requests.monthlyInstallment',
+                'requests.installmentsNumber', 'requests.status',
+                'requests.note', 'requests.created_at',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.border_no',
                 'users.company_id',
             ]);
@@ -1012,7 +1018,7 @@ class NewArrivalUtil extends Util
 
             return DataTables::of($requests ?? [])
                 ->editColumn('created_at', function ($row) {
-                    return Carbon::parse($row->created_at);
+                    return $row->created_at->format('Y-m-d');
                 })
 
                 ->editColumn('status', function ($row) use ($is_admin) {
@@ -1038,6 +1044,7 @@ class NewArrivalUtil extends Util
     }
     public function newWorkersAdvSalaryStore(Request $request)
     {
+        
 
         $path = '';
         if ($request->hasFile('attachment')) {
