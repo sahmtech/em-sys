@@ -166,7 +166,6 @@ class ReportController extends Controller
                 // Redirect to the 'chart-of-accounts' route with a flash message
                 return redirect()->route('chart-of-accounts.index')
                     ->with('message', 'Please create a tree account for the chart of accounts.');
-
             }
             $levels = strlen(max($lengths));
 
@@ -186,7 +185,8 @@ class ReportController extends Controller
                 $end_date = $fy['end'];
             }
 
-            if (!$with_zero_balances) {
+            if ($with_zero_balances == 0) {
+                // Fetch accounts that have non-zero balances
                 $accounts = AccountingAccount::join(
                     'accounting_accounts_transactions as AAT',
                     'AAT.accounting_account_id',
@@ -205,7 +205,8 @@ class ReportController extends Controller
                                     ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
                             });
                     });
-            } else {
+            } elseif ($with_zero_balances == 1) {
+                // Fetch all accounts, including zero balance ones
                 $accounts = AccountingAccount::leftJoin(
                     'accounting_accounts_transactions as AAT',
                     function ($join) use ($start_date, $end_date) {
@@ -221,7 +222,38 @@ class ReportController extends Controller
                             });
                     }
                 );
+            } elseif ($with_zero_balances == 2) {
+                // Fetch only accounts with zero balances
+                $accounts = AccountingAccount::leftJoin(
+                    'accounting_accounts_transactions as AAT',
+                    function ($join) use ($start_date, $end_date) {
+                        $join->on('AAT.accounting_account_id', '=', 'accounting_accounts.id')
+                            ->where(function ($query) use ($start_date, $end_date) {
+                                $query->where('AAT.sub_type', '!=', 'opening_balance')
+                                    ->whereBetween('AAT.operation_date', [$start_date, $end_date]);
+                            })
+                            ->orWhere(function ($query) use ($start_date, $end_date) {
+                                $query->where('AAT.sub_type', 'opening_balance')
+                                    ->whereYear('AAT.operation_date', '>=', date('Y', strtotime($start_date)))
+                                    ->whereYear('AAT.operation_date', '<=', date('Y', strtotime($end_date)));
+                            });
+                    }
+                )
+                    ->havingRaw("SUM(IF(AAT.type = 'credit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) = 0")
+                    ->havingRaw("SUM(IF(AAT.type = 'debit' AND AAT.sub_type != 'opening_balance', AAT.amount, 0)) = 0")
+                    ->havingRaw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
+                    WHERE AAT.accounting_account_id = accounting_accounts.id
+                    AND AAT.sub_type = 'opening_balance'
+                    AND AAT.type = 'credit'
+                    ORDER BY AAT.operation_date ASC
+                    LIMIT 1), 0) = 0")
+                    ->havingRaw("IFNULL((SELECT AAT.amount FROM accounting_accounts_transactions as AAT
+                    WHERE AAT.accounting_account_id = accounting_accounts.id
+                    AND AAT.sub_type = 'opening_balance'
+                    AND AAT.type = 'debit'
+                    ORDER BY AAT.operation_date ASC LIMIT 1), 0) = 0");
             }
+
 
             $accounts->when($choose_accounts_select, function ($query, $choose_accounts_select) {
                 return $query->where(function ($query) use ($choose_accounts_select) {
@@ -369,7 +401,6 @@ class ReportController extends Controller
             Log::error('Error in trialBalance method: ' . $e->getMessage());
             return redirect()->route('chart-of-accounts.index')
                 ->with('message', 'Please create a tree account for the chart of accounts.');
-
         }
     }
 
