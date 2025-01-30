@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\HousingMovements\Http\Controllers;
 
 use App\Transaction;
@@ -42,12 +41,12 @@ class TravelersController extends Controller
         NewArrivalUtil $newArrivalUtil
 
     ) {
-        $this->commonUtil = $commonUtil;
-        $this->contactUtil = $contactUtil;
-        $this->moduleUtil = $moduleUtil;
-        $this->transactionUtil = $transactionUtil;
+        $this->commonUtil       = $commonUtil;
+        $this->contactUtil      = $contactUtil;
+        $this->moduleUtil       = $moduleUtil;
+        $this->transactionUtil  = $transactionUtil;
         $this->notificationUtil = $notificationUtil;
-        $this->newArrivalUtil = $newArrivalUtil;
+        $this->newArrivalUtil   = $newArrivalUtil;
     }
     /**
      * Display a listing of the resource.
@@ -83,9 +82,9 @@ class TravelersController extends Controller
 
     public function getRoomNumberOnStatus(Request $request)
     {
-        $input = $request->input('option');
+        $input          = $request->input('option');
         $input_building = $request->input('htr_building');
-        $roomNumbers = [];
+        $roomNumbers    = [];
         if ($input == "busy") {
 
             $rooms = DB::table('htr_rooms')
@@ -95,8 +94,8 @@ class TravelersController extends Controller
 
             foreach ($rooms as $room) {
                 $roomNumbers[] = [
-                    'id' => $room->id,
-                    'text' => $room->room_number,
+                    'id'         => $room->id,
+                    'text'       => $room->room_number,
                     'beds_count' => $room->beds_count,
                 ];
             }
@@ -108,8 +107,8 @@ class TravelersController extends Controller
 
             foreach ($rooms as $room) {
                 $roomNumbers[] = [
-                    'id' => $room->id,
-                    'text' => $room->room_number,
+                    'id'         => $room->id,
+                    'text'       => $room->room_number,
                     'beds_count' => $room->beds_count,
                 ];
             }
@@ -128,14 +127,14 @@ class TravelersController extends Controller
             if (empty($selectedRowsData)) {
                 return [
                     'success' => false,
-                    'msg' => __('housingmovements::lang.please_select_rows'),
+                    'msg'     => __('housingmovements::lang.please_select_rows'),
                 ];
             }
             $room = HtrRoom::where('id', $request->room)->first();
             if (count($selectedRowsData) > $room->beds_count) {
                 return [
                     'success' => false,
-                    'msg' => __('housingmovements::lang.the number of users is more the number of available beds in this room'),
+                    'msg'     => __('housingmovements::lang.the number of users is more the number of available beds in this room'),
                 ];
             }
 
@@ -151,15 +150,15 @@ class TravelersController extends Controller
                 } else {
                     return [
                         'success' => false,
-                        'msg' => __('housingmovements::lang.this user does not exist'),
+                        'msg'     => __('housingmovements::lang.this user does not exist'),
                     ];
                 }
 
-                $newRoom = new HtrRoomsWorkersHistory();
-                $newRoom->worker_id = $userId;
-                $newRoom->room_id = $request->room;
+                $newRoom               = new HtrRoomsWorkersHistory();
+                $newRoom->worker_id    = $userId;
+                $newRoom->room_id      = $request->room;
                 $newRoom->still_housed = 1;
-                $newRoom->housed_date = $carbon_now;
+                $newRoom->housed_date  = $carbon_now;
                 $newRoom->save();
 
                 $user = User::find($userId);
@@ -176,7 +175,7 @@ class TravelersController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.updated_success'),
+                'msg'     => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
             error_log($e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -184,7 +183,7 @@ class TravelersController extends Controller
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -310,10 +309,10 @@ class TravelersController extends Controller
 
             foreach ($requestData['worker_id'] as $index => $workerId) {
                 $jsonObject = [
-                    'worker_id' => $workerId,
-                    'worker_name' => $requestData['worker_name'][$index],
+                    'worker_id'       => $workerId,
+                    'worker_name'     => $requestData['worker_name'][$index],
                     'passport_number' => $requestData['passport_number'][$index],
-                    'border_no' => $requestData['border_no'][$index],
+                    'border_no'       => $requestData['border_no'][$index],
                 ];
 
                 $jsonData[] = $jsonObject;
@@ -321,8 +320,8 @@ class TravelersController extends Controller
 
             $jsonData = json_encode($jsonData);
 
-            if (!empty($jsonData)) {
-                $business_id = $request->session()->get('user.business_id');
+            if (! empty($jsonData)) {
+                $business_id  = $request->session()->get('user.business_id');
                 $selectedData = json_decode($jsonData, true);
 
                 foreach ($selectedData as $data) {
@@ -337,36 +336,37 @@ class TravelersController extends Controller
                         } else {
 
                             $user = User::create([
-                                'first_name' => $worker->first_name,
-                                'mid_name' => $worker->mid_name,
-                                'last_name' => $worker->last_name,
-                                'age' => $worker->age,
-                                'gender' => $worker->gender,
-                                'email' => $worker->email,
-                                'profile_image' => $worker->profile_image,
-                                'dob' => $worker->dob,
-                                'marital_status' => $worker->marital_status,
-                                'blood_group' => $worker->blood_group,
-                                'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract->project->id,
-                                'contact_number' => $worker->contact_number,
-                                'permanent_address' => $worker->permanent_address,
-                                'current_address' => $worker->current_address,
-                                'passport_number' => $worker->passport_number,
-                                'nationality_id' => $worker->transactionSellLine?->service?->nationality?->id ?? null,
-                                'business_id' => $business_id,
-                                'user_type' => 'worker',
-                                'border_no' => $data['border_no'],
+                                'first_name'         => $worker->first_name,
+                                'mid_name'           => $worker->mid_name,
+                                'last_name'          => $worker->last_name,
+                                'age'                => $worker->age,
+                                'gender'             => $worker->gender,
+                                'email'              => $worker->email,
+                                'profile_image'      => $worker->profile_image,
+                                'dob'                => $worker->dob,
+                                'marital_status'     => $worker->marital_status,
+                                'blood_group'        => $worker->blood_group,
+                                'assigned_to'        => $worker->transactionSellLine?->transaction?->salesContract->project->id,
+                                'contact_number'     => $worker->contact_number,
+                                'permanent_address'  => $worker->permanent_address,
+                                'current_address'    => $worker->current_address,
+                                'passport_number'    => $worker->passport_number,
+                                'nationality_id'     => $worker->transactionSellLine?->service?->nationality?->id ?? null,
+                                'company_id'         => $worker->company_id ?? '',
+                                'business_id'        => $business_id,
+                                'user_type'          => 'worker',
+                                'border_no'          => $data['border_no'],
                                 'proposal_worker_id' => $data['worker_id'],
-                                'created_by' => Auth::user()->id,
+                                'created_by'         => Auth::user()->id,
 
                             ]);
 
-                            $admission = new EssentialsAdmissionToWork();
-                            $admission->employee_id = $user->id;
-                            $admission->admissions_type = 'first_time';
+                            $admission                    = new EssentialsAdmissionToWork();
+                            $admission->employee_id       = $user->id;
+                            $admission->admissions_type   = 'first_time';
                             $admission->admissions_status = 'on_date';
-                            $admission->admissions_date = $worker->arrival_date;
-                            $admission->created_by = Auth::user()->id;
+                            $admission->admissions_date   = $worker->arrival_date;
+                            $admission->created_by        = Auth::user()->id;
                             $admission->save();
 
                             // $worker->update(['arrival_status' => 1]);
@@ -391,7 +391,7 @@ class TravelersController extends Controller
                         }
                     }
                     if ($worker->transaction_sell_line_id) {
-                        $proposalWorkersCount = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)->count();
+                        $proposalWorkersCount                   = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)->count();
                         $proposalWorkersWithArrivalStatus1Count = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)
                             ->where('arrival_status', 1)
                             ->count();

@@ -1031,7 +1031,7 @@ class NewArrivalUtil extends Util
                 
 
                 ->editColumn('company_id', function ($row) {
-                    return Company::find($row->company_id)?->name ?? '';
+                    return Company::find($row->company_id)?->name ?? 'no';
                 })
                 
 
