@@ -32,7 +32,7 @@
                 @component('components.widget', ['class' => 'box-primary'])
                     {!! Form::open([
                         'url' => action([
-                            \Modules\HousingMovements\Http\Controllers\HousingMovementsController::class,
+                            \Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class,
                             'postImportWorkersNewArrival',
                         ]),
                         'method' => 'post',
