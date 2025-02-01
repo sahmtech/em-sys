@@ -187,67 +187,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     //////////////////////
-                    [
-                        'value' => 'housingmovements.new_arrival_for_workers',
-                        'label' => __('housingmovements::lang.new_arrival_for_workers'),
-                        'default' => false,
-                    ],
-                    //TODO::import_new_arrival_workers
-                    [
-                        'value' => 'housingmovements.import_new_arrival_workers',
-                        'label' => __('housingmovements::lang.import_new_arrival_workers'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.housed',
-                        'label' => __('housingmovements::lang.housed'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.advanceSalaryRequest',
-                        'label' => __('housingmovements::lang.advanceSalaryRequest'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.medicalExamination',
-                        'label' => __('housingmovements::lang.medicalExamination'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.medicalInsurance',
-                        'label' => __('housingmovements::lang.medicalInsurance'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.workCardIssuing',
-                        'label' => __('housingmovements::lang.workCardIssuing'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.SIMCard',
-                        'label' => __('housingmovements::lang.SIMCard'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.bankAccount',
-                        'label' => __('housingmovements::lang.bankAccount'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.contract',
-                        'label' => __('housingmovements::lang.contract'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.residencyAdd&Print',
-                        'label' => __('housingmovements::lang.residencyAdd&Print'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'housingmovements.residencyDelivery',
-                        'label' => __('housingmovements::lang.residencyDelivery'),
-                        'default' => false,
-                    ],
+                    
                     // [
                     //     'value' => 'housingmovements.',
                     //     'label' => __('housingmovements::lang.'),

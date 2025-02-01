@@ -2170,12 +2170,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    //TODO::import_new_arrival_workers
-                    [
-                        'value' => 'housingmovements.import_new_arrival_workers',
-                        'label' => __('housingmovements::lang.import_new_arrival_workers'),
-                        'default' => false,
-                    ],
+                   
 
                 ],
 
