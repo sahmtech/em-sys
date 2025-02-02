@@ -83,8 +83,10 @@
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.owner_id')</th>
                                     <th>@lang('essentials::lang.national_id_number')</th>
+                                    {{-- <th>@lang('essentials::lang.company')</th> --}}
                                     <th>@lang('essentials::lang.department')</th>
-                                    <th>@lang('essentials::lang.location')</th>
+                                    <th>@lang('essentials::lang.appointment_date_start_from')</th>
+                                    <th>@lang('essentials::lang.appointment_date_end_at')</th>
                                     <th>@lang('essentials::lang.job_title')</th>
                                     <th>@lang('essentials::lang.is_active')</th>
                                     <th>@lang('messages.action')</th>
@@ -247,17 +249,23 @@
                         data: 'user'
                     },
                     {
-                        data: 'employee_id',
+                        data: 'employee_id'
 
                     },
                     {
                         data: 'id_proof_number'
                     },
+                    // {
+                    //     data:'business_location_id'
+                    // },
                     {
                         data: 'department_id'
                     },
                     {
-                        data: 'business_location_id'
+                        data: 'start_from'
+                    },
+                    {
+                        data: 'end_at'
                     },
 
                     {

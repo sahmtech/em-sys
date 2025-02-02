@@ -2054,5 +2054,9 @@ return [
     'sponsor_required' => ' الكفيل  مطلوب في السطر رقم',
     'arrival_date_required' => 'تاريخ الوصول مطلوب في السطر في رقم',
     'createdBy' => ' بواسطة',
+    'appointment_date_start_from' => 'تاريخ بداية التعيين',
+    'appointment_date_end_at' => 'تاريخ نهاية التعيين',
+    
+
 
 ];

@@ -98,11 +98,14 @@ class EssentialsEmployeeAppointmentController extends Controller
                 'essentials_employee_appointmets.business_location_id',
                 'essentials_employee_appointmets.department_id',
                 'essentials_employee_appointmets.profession_id',
+                'essentials_employee_appointmets.start_from',
+                'essentials_employee_appointmets.end_at',
                 'essentials_employee_appointmets.is_active',
                 'u.status as status',
 
 
             ])->orderby('id', 'desc');
+
 
 
         if (request()->ajax()) {
@@ -122,6 +125,13 @@ class EssentialsEmployeeAppointmentController extends Controller
 
             return Datatables::of($employeeAppointments)
 
+
+            ->editColumn('business_location_id', function ($row) use ($business_locations) {
+                $item = $business_locations[$row->business_location_id] ?? '';
+
+                return $item;
+            })
+
                 ->editColumn('department_id', function ($row) use ($departments) {
                     $item = $departments[$row->department_id] ?? '';
 
@@ -133,8 +143,14 @@ class EssentialsEmployeeAppointmentController extends Controller
                     return $item;
                 })
 
-                ->editColumn('business_location_id', function ($row) use ($business_locations) {
-                    $item = $business_locations[$row->business_location_id] ?? '';
+                ->editColumn('start_from', function ($row) use ($employeeAppointments) {
+                    $item = $row->start_from?? '';
+
+                    return $item;
+                })
+
+                ->editColumn('end_at', function ($row) use ($employeeAppointments) {
+                    $item = $row->end_at?? '';
 
                     return $item;
                 })
@@ -173,7 +189,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 })
 
                 ->removeColumn('id')
-                ->rawColumns(['action', 'status'])
+                ->rawColumns(['action', 'status','start_from','end_at'])
                 ->make(true);
         }
         $query = User::whereIn('id', $userIds);
