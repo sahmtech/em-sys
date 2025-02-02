@@ -1,357 +1,350 @@
 @extends('layouts.app')
 @section('title', __('ceomanagment::lang.requests_types'))
 @section('content')
-<section class="content-header">
-    <h1>@lang('ceomanagment::lang.requests_types')</h1>
-</section>
+    <section class="content-header">
+        <h1>@lang('ceomanagment::lang.requests_types')</h1>
+    </section>
 
-<section class="content">
-
-
-    <div class="row">
-        <div class="col-md-12">
-            @component('components.widget', ['class' => 'box-solid'])
-            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('generalmanagement.add_requests_type'))
-            @slot('tool')
-            <div class="box-tools">
-
-                <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                    data-target="#addRequestTypeModal">
-                    <i class="fa fa-plus"></i> @lang('ceomanagment::lang.add_requests_type')
-                </button>
-            </div>
-            @endslot
-            @endif
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered table-striped" id="requests_types">
-                    <thead>
-                        <tr>
-                            <th>@lang('ceomanagment::lang.request_type')</th>
-                            <th>@lang('ceomanagment::lang.request_prefix')</th>
-                            <th>@lang('ceomanagment::lang.request_for')</th>
-                            <th>@lang('ceomanagment::lang.selfish_service')</th>
-                            <th>@lang('ceomanagment::lang.tasks')</th>
-                            <th>@lang('ceomanagment::lang.action')</th>
+    <section class="content">
 
 
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            @endcomponent
-        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @component('components.widget', ['class' => 'box-solid'])
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('generalmanagement.add_requests_type'))
+                        @slot('tool')
+                            <div class="box-tools">
 
-        <div class="modal fade" id="addRequestTypeModal" tabindex="-1" role="dialog"
-            aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                                <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                                    data-target="#addRequestTypeModal">
+                                    <i class="fa fa-plus"></i> @lang('ceomanagment::lang.add_requests_type')
+                                </button>
+                            </div>
+                        @endslot
+                    @endif
 
-                    {!! Form::open(['route' => 'storeRequestType', 'enctype' => 'multipart/form-data']) !!}
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('ceomanagment::lang.add_requests_type')</h4>
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped" id="requests_types">
+                            <thead>
+                                <tr>
+                                    <th>@lang('ceomanagment::lang.request_type')</th>
+                                    <th>@lang('ceomanagment::lang.request_prefix')</th>
+                                    <th>@lang('ceomanagment::lang.request_for')</th>
+                                    <th>@lang('ceomanagment::lang.selfish_service')</th>
+                                    <th>@lang('ceomanagment::lang.tasks')</th>
+                                    <th>@lang('ceomanagment::lang.action')</th>
+
+
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
+                @endcomponent
+            </div>
 
-                    <div class="modal-body">
+            <div class="modal fade" id="addRequestTypeModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
 
-                        <div class="row">
+                        {!! Form::open(['route' => 'storeRequestType', 'enctype' => 'multipart/form-data']) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('ceomanagment::lang.add_requests_type')</h4>
+                        </div>
 
-                            <div class="form-group col-md-4">
-                                {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
-                                {!! Form::select(
-                                'type',
-                                array_combine($missingTypes, array_map(fn($type) => trans("ceomanagment::lang.$type"),
-                                $missingTypes)),
-                                null,
-                                [
-                                'class' => 'form-control',
-                                'id' => 'type_select',
-                                'placeholder' => __('ceomanagment::lang.request_type'),
-                                'required',
-                                'style' => 'height:37px',
-                                ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-4">
-                                {!! Form::label('for', __('ceomanagment::lang.request_for') . ':*') !!}
-                                {!! Form::select(
-                                'for',
-                                [
-                                'worker' => __('ceomanagment::lang.worker'),
-                                'employee' => __('ceomanagment::lang.employee'),
-                                'both' => __('ceomanagment::lang.both'),
-                                ],
-                                null,
-                                [
-                                'class' => 'form-control',
-                                'placeholder' => __('ceomanagment::lang.select_type'),
-                                'required',
-                                'style' => 'height:37px',
-                                ],
-                                ) !!}
-                            </div>
+                        <div class="modal-body">
 
-                            <div class="form-group col-md-12 task-select-container">
-                                {!! Form::label('task', __('ceomanagment::lang.task') . ':') !!}
-                                <div class="input-group">
-                                    <div class="col-md-6">
-                                        {!! Form::text('tasks[]', null, [
-                                        'class' => 'form-control task',
-                                        'placeholder' => __('ceomanagment::lang.task'),
-                                        'style' => 'width:100%; height:40px',
-                                        ]) !!}
-                                    </div>
-                                    <div class="col-md-6">
-                                        {!! Form::text('task_links[]', null, [
-                                        'class' => 'form-control task-link',
-                                        'placeholder' => __('ceomanagment::lang.task_link'),
-                                        'style' => 'width:100%; height:40px',
-                                        ]) !!}
-                                    </div>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default add-task-btn" type="button">
-                                            @lang('ceomanagment::lang.add_task')
-                                        </button>
-                                        <button class="btn btn-danger remove-task-btn" type="button"
-                                            style="display: none;">
-                                            @lang('ceomanagment::lang.remove')
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-12">
+                            <div class="row">
 
-                                <div class="form-group col-md-6" class="checkbox">
-                                    {!! Form::label('user_type', __('ceomanagment::lang.user_type') . ':*') !!}
+                                <div class="form-group col-md-4">
+                                    {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
                                     {!! Form::select(
-                                    'user_type',
-                                    [
-                                    'resident' => __('ceomanagment::lang.resident'),
-                                    'citizen' => __('ceomanagment::lang.citizen'),
-                                    'both' => __('ceomanagment::lang.both'),
-                                    ],
-                                    null,
-                                    [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('ceomanagment::lang.select_type'),
-                                    'required',
-                                    'style' => 'height:37px',
-                                    ],
+                                        'type',
+                                        array_combine($missingTypes, array_map(fn($type) => trans("ceomanagment::lang.$type"), $missingTypes)),
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'type_select',
+                                            'placeholder' => __('ceomanagment::lang.request_type'),
+                                            'required',
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+                                <div class="form-group col-md-4">
+                                    {!! Form::label('for', __('ceomanagment::lang.request_for') . ':*') !!}
+                                    {!! Form::select(
+                                        'for',
+                                        [
+                                            'worker' => __('ceomanagment::lang.worker'),
+                                            'employee' => __('ceomanagment::lang.employee'),
+                                            'both' => __('ceomanagment::lang.both'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'placeholder' => __('ceomanagment::lang.select_type'),
+                                            'required',
+                                            'style' => 'height:37px',
+                                        ],
                                     ) !!}
                                 </div>
 
+                                <div class="form-group col-md-12 task-select-container">
+                                    {!! Form::label('task', __('ceomanagment::lang.task') . ':') !!}
+                                    <div class="input-group">
+                                        <div class="col-md-6">
+                                            {!! Form::text('tasks[]', null, [
+                                                'class' => 'form-control task',
+                                                'placeholder' => __('ceomanagment::lang.task'),
+                                                'style' => 'width:100%; height:40px',
+                                            ]) !!}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {!! Form::text('task_links[]', null, [
+                                                'class' => 'form-control task-link',
+                                                'placeholder' => __('ceomanagment::lang.task_link'),
+                                                'style' => 'width:100%; height:40px',
+                                            ]) !!}
+                                        </div>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default add-task-btn" type="button">
+                                                @lang('ceomanagment::lang.add_task')
+                                            </button>
+                                            <button class="btn btn-danger remove-task-btn" type="button"
+                                                style="display: none;">
+                                                @lang('ceomanagment::lang.remove')
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+
+                                    <div class="form-group col-md-6" class="checkbox">
+                                        {!! Form::label('user_type', __('ceomanagment::lang.user_type') . ':*') !!}
+                                        {!! Form::select(
+                                            'user_type',
+                                            [
+                                                'resident' => __('ceomanagment::lang.resident'),
+                                                'citizen' => __('ceomanagment::lang.citizen'),
+                                                'both' => __('ceomanagment::lang.both'),
+                                            ],
+                                            null,
+                                            [
+                                                'class' => 'form-control',
+                                                'placeholder' => __('ceomanagment::lang.select_type'),
+                                                'required',
+                                                'style' => 'height:37px',
+                                            ],
+                                        ) !!}
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group col-md-6">
+                                    <div class="checkbox">
+                                        <label for="selfish_service_select" class="d-flex align-items-center"
+                                            style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                            {!! Form::checkbox('selfish_service', '1', old('selfish_service', $selfishServiceValue ?? false), [
+                                                'id' => 'selfish_service_select',
+                                                'class' => 'custom-checkbox',
+                                                'aria-checked' => old('selfish_service', $selfishServiceValue ?? false) ? 'true' : 'false',
+                                            ]) !!}
+                                            <span class="ml-2">@lang('ceomanagment::lang.selfish_service')</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+
                             </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
 
 
-                            <div class="form-group col-md-6">
-                                <div class="checkbox">
-                                    <label for="selfish_service_select" class="d-flex align-items-center"
-                                        style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                        {!! Form::checkbox('selfish_service', '1', old('selfish_service',
-                                        $selfishServiceValue ?? false), [
-                                        'id' => 'selfish_service_select',
-                                        'class' => 'custom-checkbox',
-                                        'aria-checked' => old('selfish_service', $selfishServiceValue ?? false) ? 'true'
-                                        : 'false',
-                                        ]) !!}
-                                        <span class="ml-2">@lang('ceomanagment::lang.selfish_service')</span>
+            <div class="modal fade" id="editRequestTypeBtnModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        {!! Form::open([
+                            'route' => ['updateType', ':id'],
+                            'method' => 'POST',
+                            'id' => 'editRequestTypeFormBtn',
+                            'enctype' => 'multipart/form-data',
+                        ]) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">@lang('ceomanagment::lang.edit_requests_type')</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <input type="hidden" name="requestTypeId" id="requestTypeId">
+
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
+                                    {!! Form::select(
+                                        'type',
+                                        [
+                                            'exitRequest' => __('ceomanagment::lang.exitRequest'),
+                                            'returnRequest' => __('ceomanagment::lang.returnRequest'),
+                                            'escapeRequest' => __('ceomanagment::lang.escapeRequest'),
+                                            'advanceSalary' => __('ceomanagment::lang.advanceSalary'),
+                                            'leavesAndDepartures' => __('ceomanagment::lang.leavesAndDepartures'),
+                                            'atmCard' => __('ceomanagment::lang.atmCard'),
+                                            'residenceRenewal' => __('ceomanagment::lang.residenceRenewal'),
+                                            'residenceIssue' => __('ceomanagment::lang.residenceIssue'),
+                                            'workerTransfer' => __('ceomanagment::lang.workerTransfer'),
+                                            'residenceCard' => __('ceomanagment::lang.residenceCard'),
+                                            'workInjuriesRequest' => __('ceomanagment::lang.workInjuriesRequest'),
+                                            'residenceEditRequest' => __('ceomanagment::lang.residenceEditRequest'),
+                                            'baladyCardRequest' => __('ceomanagment::lang.baladyCardRequest'),
+                                            'mofaRequest' => __('ceomanagment::lang.mofaRequest'),
+                                            'insuranceUpgradeRequest' => __('ceomanagment::lang.insuranceUpgradeRequest'),
+                                            'chamberRequest' => __('ceomanagment::lang.chamberRequest'),
+                                            'cancleContractRequest' => __('ceomanagment::lang.cancleContractRequest'),
+                                            'WarningRequest' => __('ceomanagment::lang.WarningRequest'),
+                                            'assetRequest' => __('ceomanagment::lang.assetRequest'),
+                                            'passportRenewal' => __('ceomanagment::lang.passportRenewal'),
+                                            'AjirAsked' => __('ceomanagment::lang.AjirAsked'),
+                                            'AlternativeWorker' => __('ceomanagment::lang.AlternativeWorker'),
+                                            'TransferringGuaranteeFromExternalClient' => __('ceomanagment::lang.TransferringGuaranteeFromExternalClient'),
+                                            'Permit' => __('ceomanagment::lang.Permit'),
+                                            'FamilyInsurace' => __('ceomanagment::lang.FamilyInsurace'),
+                                            'Ajir_link' => __('ceomanagment::lang.Ajir_link'),
+                                            'authorizationRequest' => __('ceomanagment::lang.authorizationRequest'),
+                                            'ticketReservationRequest' => __('ceomanagment::lang.ticketReservationRequest'),
+                                            'interviewsRequest' => __('ceomanagment::lang.interviewsRequest'),
+                                            'salaryInquiryRequest' => __('ceomanagment::lang.salaryInquiryRequest'),
+                                            'moqimPrint' => __('ceomanagment::lang.moqimPrint'),
+                                            'salaryIntroLetter' => __('ceomanagment::lang.salaryIntroLetter'),
+                                            'QiwaContract' => __('ceomanagment::lang.QiwaContract'),
+                                            'ExitWithoutReturnReport' => __('ceomanagment::lang.ExitWithoutReturnReport'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'type_select',
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    {!! Form::label('for', __('ceomanagment::lang.request_for') . ':*') !!}
+                                    {!! Form::select(
+                                        'for',
+                                        [
+                                            'worker' => __('ceomanagment::lang.worker'),
+                                            'employee' => __('ceomanagment::lang.employee'),
+                                            'both' => __('ceomanagment::lang.both'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'for_select',
+                                            'placeholder' => __('ceomanagment::lang.select_type'),
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('user_type', __('ceomanagment::lang.user_type') . ':*') !!}
+                                    {!! Form::select(
+                                        'user_type',
+                                        [
+                                            'resident' => __('ceomanagment::lang.resident'),
+                                            'citizen' => __('ceomanagment::lang.citizen'),
+                                            'both' => __('ceomanagment::lang.both'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'user_type_select',
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>
+                                        {!! Form::checkbox('selfish_service', '1', false, ['id' => 'selfish_service_select']) !!}
+                                        @lang('ceomanagment::lang.selfish_service')
                                     </label>
                                 </div>
                             </div>
-
-
                         </div>
-                    </div>
 
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default"
-                            data-dismiss="modal">@lang('messages.close')</button>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
                     </div>
-                    {!! Form::close() !!}
                 </div>
             </div>
-        </div>
 
 
-        <div class="modal fade" id="editRequestTypeBtnModal" tabindex="-1" role="dialog"
-            aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {!! Form::open([
-                    'route' => ['updateRequestType', ':id'],
-                    'method' => 'POST',
-                    'id' => 'editRequestTypeFormBtn',
-                    'enctype' => 'multipart/form-data',
-                    ]) !!}
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h4 class="modal-title">@lang('ceomanagment::lang.edit_requests_type')</h4>
-                    </div>
+            <div class="modal fade" id="editRequestTypeModal" tabindex="-1" role="dialog"
+                aria-labelledby="editRequestTypeModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        {!! Form::open(['id' => 'editRequestTypeForm', 'method' => 'POST']) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('ceomanagment::lang.edit_request_tasks')</h4>
+                        </div>
 
-                    <div class="modal-body">
-                        <input type="hidden" name="requestTypeId" id="requestTypeId">
+                        <div class="modal-body">
+                            {!! Form::hidden('request_type_id', '', ['id' => 'requestTypeId']) !!}
+                            <div class="row">
 
-                        <div class="row">
-                            <div class="form-group col-md-3">
-                                {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
-                                {!! Form::select(
-                                'type',
-                                [
-                                'exitRequest' => __('ceomanagment::lang.exitRequest'),
-                                'returnRequest' => __('ceomanagment::lang.returnRequest'),
-                                'escapeRequest' => __('ceomanagment::lang.escapeRequest'),
-                                'advanceSalary' => __('ceomanagment::lang.advanceSalary'),
-                                'leavesAndDepartures' => __('ceomanagment::lang.leavesAndDepartures'),
-                                'atmCard' => __('ceomanagment::lang.atmCard'),
-                                'residenceRenewal' => __('ceomanagment::lang.residenceRenewal'),
-                                'residenceIssue' => __('ceomanagment::lang.residenceIssue'),
-                                'workerTransfer' => __('ceomanagment::lang.workerTransfer'),
-                                'residenceCard' => __('ceomanagment::lang.residenceCard'),
-                                'workInjuriesRequest' => __('ceomanagment::lang.workInjuriesRequest'),
-                                'residenceEditRequest' => __('ceomanagment::lang.residenceEditRequest'),
-                                'baladyCardRequest' => __('ceomanagment::lang.baladyCardRequest'),
-                                'mofaRequest' => __('ceomanagment::lang.mofaRequest'),
-                                'insuranceUpgradeRequest' => __('ceomanagment::lang.insuranceUpgradeRequest'),
-                                'chamberRequest' => __('ceomanagment::lang.chamberRequest'),
-                                'cancleContractRequest' => __('ceomanagment::lang.cancleContractRequest'),
-                                'WarningRequest' => __('ceomanagment::lang.WarningRequest'),
-                                'assetRequest' => __('ceomanagment::lang.assetRequest'),
-                                'passportRenewal' => __('ceomanagment::lang.passportRenewal'),
-                                'AjirAsked' => __('ceomanagment::lang.AjirAsked'),
-                                'AlternativeWorker' => __('ceomanagment::lang.AlternativeWorker'),
-                                'TransferringGuaranteeFromExternalClient' =>
-                                __('ceomanagment::lang.TransferringGuaranteeFromExternalClient'),
-                                'Permit' => __('ceomanagment::lang.Permit'),
-                                'FamilyInsurace' => __('ceomanagment::lang.FamilyInsurace'),
-                                'Ajir_link' => __('ceomanagment::lang.Ajir_link'),
-                                'authorizationRequest' => __('ceomanagment::lang.authorizationRequest'),
-                                'ticketReservationRequest' => __('ceomanagment::lang.ticketReservationRequest'),
-                                'interviewsRequest' => __('ceomanagment::lang.interviewsRequest'),
-                                'salaryInquiryRequest' => __('ceomanagment::lang.salaryInquiryRequest'),
-                                'moqimPrint' => __('ceomanagment::lang.moqimPrint'),
-                                'salaryIntroLetter' => __('ceomanagment::lang.salaryIntroLetter'),
-                                'QiwaContract' => __('ceomanagment::lang.QiwaContract'),
-                                'ExitWithoutReturnReport' => __('ceomanagment::lang.ExitWithoutReturnReport'),
-                                ],
-                                null,
-                                [
-                                'class' => 'form-control',
-                                'id' => 'type_select',
-                                'style' => 'height:37px',
-                                ],
-                                ) !!}
-                            </div>
+                                <div class="form-group col-md-12" id="tasks-container-modal">
 
-                            <div class="form-group col-md-3">
-                                {!! Form::label('for', __('ceomanagment::lang.request_for') . ':*') !!}
-                                {!! Form::select(
-                                'for',
-                                [
-                                'worker' => __('ceomanagment::lang.worker'),
-                                'employee' => __('ceomanagment::lang.employee'),
-                                'both' => __('ceomanagment::lang.both'),
-                                ],
-                                null,
-                                [
-                                'class' => 'form-control',
-                                'id' => 'for_select',
-                                'placeholder' => __('ceomanagment::lang.select_type'),
-                                'style' => 'height:37px',
-                                ],
-                                ) !!}
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('user_type', __('ceomanagment::lang.user_type') . ':*') !!}
-                                {!! Form::select(
-                                'user_type',
-                                [
-                                'resident' => __('ceomanagment::lang.resident'),
-                                'citizen' => __('ceomanagment::lang.citizen'),
-                                'both' => __('ceomanagment::lang.both'),
-                                ],
-                                null,
-                                [
-                                'class' => 'form-control',
-                                'id' => 'user_type_select',
-                                'style' => 'height:37px',
-                                ],
-                                ) !!}
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label>
-                                    {!! Form::checkbox('selfish_service', '1', false, ['id' =>
-                                    'selfish_service_select']) !!}
-                                    @lang('ceomanagment::lang.selfish_service')
-                                </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default"
-                            data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
-
-
-        <div class="modal fade" id="editRequestTypeModal" tabindex="-1" role="dialog"
-            aria-labelledby="editRequestTypeModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {!! Form::open(['id' => 'editRequestTypeForm', 'method' => 'POST']) !!}
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('ceomanagment::lang.edit_request_tasks')</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        {!! Form::hidden('request_type_id', '', ['id' => 'requestTypeId']) !!}
-                        <div class="row">
-
-                            <div class="form-group col-md-12" id="tasks-container-modal">
-
-                            </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default"
+                                data-dismiss="modal">@lang('messages.close')</button>
                         </div>
+                        {!! Form::close() !!}
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default"
-                            data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                    {!! Form::close() !!}
                 </div>
             </div>
+
+
         </div>
-
-
-    </div>
-</section>
+    </section>
 @endsection
 @section('javascript')
-<script>
-    var translations = {
+    <script>
+        var translations = {
             task: "{{ __('ceomanagment::lang.task') }}",
             task_link: "{{ __('ceomanagment::lang.task_link') }}",
             add_task: "{{ __('ceomanagment::lang.add_task') }}",
             remove: "{{ __('ceomanagment::lang.remove') }}"
         };
-</script>
-<script type="text/javascript">
-    $(document).ready(function() {
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
 
             var typeTranslations = {
                 @foreach ($missingTypes as $type)
@@ -691,42 +684,7 @@
                 });
             });
 
-            // $(document).on('click', '.edit-request-type-btn', function(e) {
-            //     e.preventDefault();
-
-            //     var url = $(this).data('url');
-            //     var requestTypeId = $(this).data('id');
-
-            //     // Fetch data and populate modal
-            //     $.ajax({
-            //         url: url,
-            //         type: 'GET',
-            //         success: function(response) {
-            //             if (response.status === 'success') {
-            //                 var tasksContainer = $('#tasks-container-modal');
-            //                 tasksContainer.empty();
-
-            //                 // Populate modal fields
-            //                 $('#editRequestTypeForm #requestTypeId').val(requestTypeId);
-            //                 $('#editRequestTypeForm #type_select').val(response.requestType
-            //                     .type);
-            //                 $('#editRequestTypeForm #for_select').val(response.requestType.for);
-            //                 $('#editRequestTypeForm #user_type_select').val(response.requestType
-            //                     .user_type);
-            //                 $('#editRequestTypeForm #selfish_service_select').prop('checked',
-            //                     response.requestType.selfish_service == 1);
-
-            //                 // Show modal
-            //                 $('#editRequestTypeBtnModal').modal('show');
-            //             } else {
-            //                 console.error('Failed to fetch data');
-            //             }
-            //         },
-            //         error: function() {
-            //             console.error('Error fetching request type data');
-            //         }
-            //     });
-            // });
+            
             $(document).on('click', '.edit-request-type-btn', function(e) {
                 e.preventDefault();
 
@@ -765,67 +723,35 @@
             });
 
 
-            $(document).on('click', '.edit-request-type', function(e) {
-                e.preventDefault(); // Prevent the default anchor click behavior.
-
-                var url = $(this).data('url'); // URL from the data attribute
-                var requestTypeId = $(this).data('id'); // ID from the data attribute
-
-                // Fetch request type data via AJAX
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            // Populate modal fields
-                            $('#editRequestTypeFormBtn').attr('action', url);
-                            $('#requestTypeId').val(requestTypeId);
-                            $('#type_select').val(response.data.type);
-                            $('#for_select').val(response.data.for);
-                            $('#user_type_select').val(response.data.user_type);
-                            $('#selfish_service_select').prop('checked', response.data
-                                .selfish_service === 1);
-
-                            // Show modal
-                            $('#editRequestTypeBtnModal').modal('show');
-                        } else {
-                            alert(response.message || 'Failed to fetch data.');
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText);
-                        alert('Error fetching request type data.');
-                    },
-                });
-            });
+            
 
 
 
             // Form Submission
-            $('#editRequestTypeForm').on('submit', function(e) {
-                e.preventDefault();
+            // $('#editRequestTypeForm').on('submit', function(e) {
+            //     e.preventDefault();
 
-                var formAction = $(this).attr('action');
-                var formData = $(this).serialize();
+            //     var formAction = $(this).attr('action');
+            //     var formData = $(this).serialize();
 
-                $.ajax({
-                    url: formAction,
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
-                            toastr.success(response.msg);
-                            $('#editRequestTypeBtnModal').modal('hide');
-                            location.reload();
-                        } else {
-                            toastr.error(response.msg);
-                        }
-                    },
-                    error: function() {
-                        toastr.error('An error occurred while saving data.');
-                    }
-                });
-            });
+            //     $.ajax({
+            //         url: formAction,
+            //         type: 'POST',
+            //         data: formData,
+            //         success: function(response) {
+            //             if (response.success) {
+            //                 toastr.success(response.msg);
+            //                 $('#editRequestTypeBtnModal').modal('hide');
+            //                 location.reload();
+            //             } else {
+            //                 toastr.error(response.msg);
+            //             }
+            //         },
+            //         error: function() {
+            //             toastr.error('An error occurred while saving data.');
+            //         }
+            //     });
+            // });
 
 
 
@@ -837,6 +763,6 @@
 
 
         });
-</script>
+    </script>
 
 @endsection
