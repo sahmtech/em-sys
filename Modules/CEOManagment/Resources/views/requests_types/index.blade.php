@@ -48,7 +48,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
 
-                        {!! Form::open(['route' => 'updateRequestType', 'enctype' => 'multipart/form-data']) !!}
+                        {!! Form::open(['route' => 'storeRequestType', 'enctype' => 'multipart/form-data']) !!}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                     aria-hidden="true">&times;</span></button>
@@ -178,7 +178,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         {!! Form::open([
-                            'route' => ['updateRequestType', ':id'],
+                            'route' => ['updateType', ':id'],
                             'method' => 'POST',
                             'id' => 'editRequestTypeFormBtn',
                             'enctype' => 'multipart/form-data',
@@ -684,42 +684,7 @@
                 });
             });
 
-            // $(document).on('click', '.edit-request-type-btn', function(e) {
-            //     e.preventDefault();
-
-            //     var url = $(this).data('url');
-            //     var requestTypeId = $(this).data('id');
-
-            //     // Fetch data and populate modal
-            //     $.ajax({
-            //         url: url,
-            //         type: 'GET',
-            //         success: function(response) {
-            //             if (response.status === 'success') {
-            //                 var tasksContainer = $('#tasks-container-modal');
-            //                 tasksContainer.empty();
-
-            //                 // Populate modal fields
-            //                 $('#editRequestTypeForm #requestTypeId').val(requestTypeId);
-            //                 $('#editRequestTypeForm #type_select').val(response.requestType
-            //                     .type);
-            //                 $('#editRequestTypeForm #for_select').val(response.requestType.for);
-            //                 $('#editRequestTypeForm #user_type_select').val(response.requestType
-            //                     .user_type);
-            //                 $('#editRequestTypeForm #selfish_service_select').prop('checked',
-            //                     response.requestType.selfish_service == 1);
-
-            //                 // Show modal
-            //                 $('#editRequestTypeBtnModal').modal('show');
-            //             } else {
-            //                 console.error('Failed to fetch data');
-            //             }
-            //         },
-            //         error: function() {
-            //             console.error('Error fetching request type data');
-            //         }
-            //     });
-            // });
+            
             $(document).on('click', '.edit-request-type-btn', function(e) {
                 e.preventDefault();
 
@@ -758,67 +723,35 @@
             });
 
 
-            $(document).on('click', '.edit-request-type', function(e) {
-                e.preventDefault(); // Prevent the default anchor click behavior.
-
-                var url = $(this).data('url'); // URL from the data attribute
-                var requestTypeId = $(this).data('id'); // ID from the data attribute
-
-                // Fetch request type data via AJAX
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            // Populate modal fields
-                            $('#editRequestTypeFormBtn').attr('action', url);
-                            $('#requestTypeId').val(requestTypeId);
-                            $('#type_select').val(response.data.type);
-                            $('#for_select').val(response.data.for);
-                            $('#user_type_select').val(response.data.user_type);
-                            $('#selfish_service_select').prop('checked', response.data
-                                .selfish_service === 1);
-
-                            // Show modal
-                            $('#editRequestTypeBtnModal').modal('show');
-                        } else {
-                            alert(response.message || 'Failed to fetch data.');
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText);
-                        alert('Error fetching request type data.');
-                    },
-                });
-            });
+            
 
 
 
             // Form Submission
-            $('#editRequestTypeForm').on('submit', function(e) {
-                e.preventDefault();
+            // $('#editRequestTypeForm').on('submit', function(e) {
+            //     e.preventDefault();
 
-                var formAction = $(this).attr('action');
-                var formData = $(this).serialize();
+            //     var formAction = $(this).attr('action');
+            //     var formData = $(this).serialize();
 
-                $.ajax({
-                    url: formAction,
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
-                            toastr.success(response.msg);
-                            $('#editRequestTypeBtnModal').modal('hide');
-                            location.reload();
-                        } else {
-                            toastr.error(response.msg);
-                        }
-                    },
-                    error: function() {
-                        toastr.error('An error occurred while saving data.');
-                    }
-                });
-            });
+            //     $.ajax({
+            //         url: formAction,
+            //         type: 'POST',
+            //         data: formData,
+            //         success: function(response) {
+            //             if (response.success) {
+            //                 toastr.success(response.msg);
+            //                 $('#editRequestTypeBtnModal').modal('hide');
+            //                 location.reload();
+            //             } else {
+            //                 toastr.error(response.msg);
+            //             }
+            //         },
+            //         error: function() {
+            //             toastr.error('An error occurred while saving data.');
+            //         }
+            //     });
+            // });
 
 
 

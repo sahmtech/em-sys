@@ -1,14 +1,13 @@
 <?php
-
 namespace Modules\InternationalRelations\Entities;
 
 use App\Contact;
 use App\TransactionSellLine;
 use App\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Modules\InternationalRelations\Entities\IrVisaCard;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Sales\Entities\SalesUnSupportedWorker;
 
 class IrProposedLabor extends Model
@@ -30,22 +29,23 @@ class IrProposedLabor extends Model
         return $this->belongsTo(User::class, 'proposal_worker_id');
     }
 
-
     public function agency()
     {
         return $this->belongsTo(Contact::class);
     }
-
-
 
     public function visa()
     {
         return $this->belongsTo(IrVisaCard::class, 'visa_id');
     }
 
-
     public function worker_documents()
     {
         return $this->hasMany(IrWorkersDocument::class, 'worker_id');
     }
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
 }

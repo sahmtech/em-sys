@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\InternationalRelations\Http\Controllers;
 
 use App\Contact;
@@ -34,19 +33,19 @@ class WorkerController extends Controller
     public function __construct(ModuleUtil $moduleUtil, NewArrivalUtil $newArrivalUtil)
     {
 
-        $this->moduleUtil = $moduleUtil;
+        $this->moduleUtil     = $moduleUtil;
         $this->newArrivalUtil = $newArrivalUtil;
-        $this->statuses = [
-            'acceptable' => [
-                'name' => __('internationalrelations::lang.acceptable'),
+        $this->statuses       = [
+            'acceptable'   => [
+                'name'  => __('internationalrelations::lang.acceptable'),
                 'class' => 'bg-green',
             ],
             'unacceptable' => [
-                'name' => __('internationalrelations::lang.unacceptable'),
+                'name'  => __('internationalrelations::lang.unacceptable'),
                 'class' => 'bg-red',
             ],
-            'not_attend' => [
-                'name' => __('internationalrelations::lang.not_attend'),
+            'not_attend'   => [
+                'name'  => __('internationalrelations::lang.not_attend'),
                 'class' => 'bg-yellow',
             ],
         ];
@@ -78,7 +77,7 @@ class WorkerController extends Controller
                     $operation_details['operation_order_no'] = 'UOP1111';
                 }
 
-                $operation_details['orderQuantity'] = $request->input('quantity');
+                $operation_details['orderQuantity']    = $request->input('quantity');
                 $operation_details['workers_order_id'] = $request->input('order_id');
 
                 SalesUnSupportedOperationOrder::create($operation_details);
@@ -99,14 +98,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => 1,
-                'msg' => __('sales::lang.operationOrder_added_success'),
+                'msg'     => __('sales::lang.operationOrder_added_success'),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -117,18 +116,18 @@ class WorkerController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_admin                = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_Unsupported_workers = auth()->user()->can('internationalrelations.Unsupported_workers');
-        if (!($is_admin || $can_Unsupported_workers)) {
+        if (! ($is_admin || $can_Unsupported_workers)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
-                'msg' => __('message.unauthorized'),
+                'msg'     => __('message.unauthorized'),
             ]);
         }
 
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $professions     = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         if (request()->ajax()) {
 
             $unSupportedWorker = SalesUnSupportedWorker::all();
@@ -164,16 +163,16 @@ class WorkerController extends Controller
         try {
             $input = $request->only(['nationlity', 'quantity', 'date', 'attachment', 'profession', 'salary', 'specialization', 'note']);
 
-            $input2['nationality_id'] = $input['nationlity'];
-            $input2['date'] = $input['date'];
-            $input2['note'] = $input['note'];
-            $input2['total_quantity'] = $input['quantity'];
-            $input2['remaining_quantity_for_operation'] = $input['quantity'];
+            $input2['nationality_id']                    = $input['nationlity'];
+            $input2['date']                              = $input['date'];
+            $input2['note']                              = $input['note'];
+            $input2['total_quantity']                    = $input['quantity'];
+            $input2['remaining_quantity_for_operation']  = $input['quantity'];
             $input2['remaining_quantity_for_delegation'] = $input['quantity'];
-            $input2['profession_id'] = $input['profession'];
-            $input2['salary'] = $input['salary'];
-            $input2['specialization_id'] = $input['specialization'];
-            $latestRecord = SalesUnSupportedWorker::orderBy('order_no', 'desc')->first();
+            $input2['profession_id']                     = $input['profession'];
+            $input2['salary']                            = $input['salary'];
+            $input2['specialization_id']                 = $input['specialization'];
+            $latestRecord                                = SalesUnSupportedWorker::orderBy('order_no', 'desc')->first();
 
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->order_no;
@@ -184,8 +183,8 @@ class WorkerController extends Controller
                 $input2['order_no'] = 'USW1111';
             }
 
-            if (isset($request->attachment) && !empty($request->attachment)) {
-                $attachmentPath = $request->attachment->store('/unsupportedWorkersRequests');
+            if (isset($request->attachment) && ! empty($request->attachment)) {
+                $attachmentPath       = $request->attachment->store('/unsupportedWorkersRequests');
                 $input2['attachment'] = $attachmentPath;
             }
 
@@ -193,14 +192,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.added_success'),
+                'msg'     => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -209,19 +208,19 @@ class WorkerController extends Controller
     public function proposed_laborIndex(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id             = request()->session()->get('user.business_id');
+        $is_admin                = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
 
-        if (!($is_admin)) {
+        if (! ($is_admin)) {
         }
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency', 'unSupportedworker_order')->where('interviewStatus', null)->select([
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $business_id     = request()->session()->get('user.business_id');
+        $agencys         = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+        $workers         = IrProposedLabor::with('transactionSellLine.service', 'agency', 'unSupportedworker_order')->where('interviewStatus', null)->select([
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             'age',
@@ -240,7 +239,7 @@ class WorkerController extends Controller
             'unSupportedworker_order_id',
         ]);
 
-        if (!empty($request->input('specialization'))) {
+        if (! empty($request->input('specialization'))) {
             $workers->where(function ($query) use ($request) {
                 $query->whereHas('transactionSellLine.service', function ($subQuery) use ($request) {
                     $subQuery->where('specialization_id', $request->input('specialization'));
@@ -250,7 +249,7 @@ class WorkerController extends Controller
                     });
             });
         }
-        if (!empty($request->input('profession'))) {
+        if (! empty($request->input('profession'))) {
             $workers->where(function ($query) use ($request) {
                 $query->whereHas('transactionSellLine.service', function ($subQuery) use ($request) {
                     $subQuery->where('profession_id', $request->input('profession'));
@@ -261,7 +260,7 @@ class WorkerController extends Controller
             });
         }
 
-        if (!empty($request->input('agency'))) {
+        if (! empty($request->input('agency'))) {
             $workers->where('agency_id', $request->input('agency'));
         }
 
@@ -313,10 +312,10 @@ class WorkerController extends Controller
     public function showWorker($id)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id          = request()->session()->get('user.business_id');
+        $is_admin             = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_worker_info = auth()->user()->can('internationalrelations.view_worker_info');
-        if (!($is_admin || $can_view_worker_info)) {
+        if (! ($is_admin || $can_view_worker_info)) {
         }
 
         $user = IrProposedLabor::select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
@@ -329,19 +328,19 @@ class WorkerController extends Controller
     public function accepted_workers(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id               = request()->session()->get('user.business_id');
+        $is_admin                  = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_accepted_workers = auth()->user()->can('internationalrelations.view_accepted_workers');
-        if (!($is_admin || $can_view_accepted_workers)) {
+        if (! ($is_admin || $can_view_accepted_workers)) {
         }
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $business_id     = request()->session()->get('user.business_id');
+        $agencys         = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+        $workers         = IrProposedLabor::with('transactionSellLine.service', 'agency')
             ->where('interviewStatus', 'acceptable')->where('arrival_status', '!=', 1)->select([
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
@@ -361,19 +360,19 @@ class WorkerController extends Controller
             'transaction_sell_line_id',
         ]);
 
-        if (!empty($request->input('specialization'))) {
+        if (! empty($request->input('specialization'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('specialization_id', $request->input('specialization'));
             });
         }
 
-        if (!empty($request->input('profession'))) {
+        if (! empty($request->input('profession'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('profession_id', $request->input('profession'));
             });
         }
 
-        if (!empty($request->input('agency'))) {
+        if (! empty($request->input('agency'))) {
             $workers->where('agency_id', $request->input('agency'));
         }
 
@@ -442,20 +441,20 @@ class WorkerController extends Controller
     public function unaccepted_workers(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id                 = request()->session()->get('user.business_id');
+        $is_admin                    = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_unaccepted_workers = auth()->user()->can('internationalrelations.view_unaccepted_workers');
-        if (!($is_admin || $can_view_unaccepted_workers)) {
+        if (! ($is_admin || $can_view_unaccepted_workers)) {
         }
 
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')->whereIn('interviewStatus', ['unacceptable', 'not_attend'])->select([
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $business_id     = request()->session()->get('user.business_id');
+        $agencys         = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+        $workers         = IrProposedLabor::with('transactionSellLine.service', 'agency')->whereIn('interviewStatus', ['unacceptable', 'not_attend'])->select([
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             'age',
@@ -473,20 +472,20 @@ class WorkerController extends Controller
             'transaction_sell_line_id',
         ]);
 
-        if (!empty($request->input('specialization'))) {
+        if (! empty($request->input('specialization'))) {
 
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('specialization_id', $request->input('specialization'));
             });
         }
 
-        if (!empty($request->input('profession'))) {
+        if (! empty($request->input('profession'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('profession_id', $request->input('profession'));
             });
         }
 
-        if (!empty($request->input('agency'))) {
+        if (! empty($request->input('agency'))) {
             $workers->where('agency_id', $request->input('agency'));
         }
 
@@ -558,19 +557,19 @@ class WorkerController extends Controller
     public function workers_under_trialPeriod(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id              = request()->session()->get('user.business_id');
+        $is_admin                 = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_proposed_labors = auth()->user()->can('internationalrelations.view_proposed_labors');
-        if (!($is_admin || $can_view_proposed_labors)) {
+        if (! ($is_admin || $can_view_proposed_labors)) {
         }
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
-        $currentDate = now();
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency')->where('interviewStatus', 'acceptable')
+        $currentDate             = now();
+        $nationalities           = EssentialsCountry::nationalityForDropdown();
+        $specializations         = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions             = EssentialsProfession::all()->pluck('name', 'id');
+        $business_id             = request()->session()->get('user.business_id');
+        $agencys                 = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+        $workers                 = IrProposedLabor::with('transactionSellLine.service', 'agency')->where('interviewStatus', 'acceptable')
             ->where('arrival_status', 1)
             ->whereDate('arrival_date', '>', $currentDate->subMonths(3))->select([
             'id',
@@ -590,19 +589,19 @@ class WorkerController extends Controller
             'transaction_sell_line_id',
         ]);
 
-        if (!empty($request->input('specialization'))) {
+        if (! empty($request->input('specialization'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('specialization_id', $request->input('specialization'));
             });
         }
 
-        if (!empty($request->input('profession'))) {
+        if (! empty($request->input('profession'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('profession_id', $request->input('profession'));
             });
         }
 
-        if (!empty($request->input('agency'))) {
+        if (! empty($request->input('agency'))) {
             $workers->where('agency_id', $request->input('agency'));
         }
 
@@ -685,13 +684,13 @@ class WorkerController extends Controller
     {
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
-            $currentDate = now();
+            $currentDate      = now();
 
             foreach ($selectedRowsData as $row) {
 
                 IrProposedLabor::where('id', $row->id)->update([
                     'is_price_offer_sent' => 1,
-                    'date_of_offer' => $currentDate,
+                    'date_of_offer'       => $currentDate,
                 ]);
 
                 if ($request->hasFile('file')) {
@@ -699,12 +698,12 @@ class WorkerController extends Controller
 
                     $path = $file->store('/workers_documents');
 
-                    $uploadedFile = new IrWorkersDocument();
-                    $uploadedFile->worker_id = $row->id;
-                    $uploadedFile->type = 'offer_price';
+                    $uploadedFile              = new IrWorkersDocument();
+                    $uploadedFile->worker_id   = $row->id;
+                    $uploadedFile->type        = 'offer_price';
                     $uploadedFile->uploaded_by = auth()->user()->id;
                     $uploadedFile->uploaded_at = $currentDate;
-                    $uploadedFile->attachment = $path;
+                    $uploadedFile->attachment  = $path;
 
                     $uploadedFile->save();
                 }
@@ -712,14 +711,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.send_success'),
+                'msg'     => __('lang_v1.send_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -733,31 +732,31 @@ class WorkerController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $can_passport_stamped = auth()->user()->can('internationalrelations.passport_stamped');
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            if (!($is_admin || $can_passport_stamped)) {
+            $is_admin             = auth()->user()->hasRole('Admin#1') ? true : false;
+            if (! ($is_admin || $can_passport_stamped)) {
             }
 
             $selectedRowsData = json_decode($request->input('selectedRowsData2'));
-            $currentDate = now();
+            $currentDate      = now();
 
             foreach ($selectedRowsData as $row) {
 
                 IrProposedLabor::where('id', $row->id)->update([
-                    'has_single_visa' => 1,
+                    'has_single_visa'     => 1,
                     'is_passport_stamped' => 1,
-                    'arrival_date' => $request->arrival_date,
+                    'arrival_date'        => $request->arrival_date,
                 ]);
 
                 if ($request->hasFile('file')) {
 
-                    $file = $request->file('file');
-                    $path = $file->store('/workers_documents');
-                    $uploadedFile = new IrWorkersDocument();
-                    $uploadedFile->worker_id = $row->id;
-                    $uploadedFile->type = 'visa';
+                    $file                      = $request->file('file');
+                    $path                      = $file->store('/workers_documents');
+                    $uploadedFile              = new IrWorkersDocument();
+                    $uploadedFile->worker_id   = $row->id;
+                    $uploadedFile->type        = 'visa';
                     $uploadedFile->uploaded_by = auth()->user()->id;
                     $uploadedFile->uploaded_at = $currentDate;
-                    $uploadedFile->attachment = $path;
+                    $uploadedFile->attachment  = $path;
 
                     $uploadedFile->save();
                 }
@@ -765,14 +764,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.send_success'),
+                'msg'     => __('lang_v1.send_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -782,10 +781,10 @@ class WorkerController extends Controller
     public function fingerprinting(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id        = request()->session()->get('user.business_id');
+        $is_admin           = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_fingerprinting = auth()->user()->can('internationalrelations.fingerprinting');
-        if (!($is_admin || $can_fingerprinting)) {
+        if (! ($is_admin || $can_fingerprinting)) {
         }
         try {
             $selectedRows = $request->input('selectedRows');
@@ -794,14 +793,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.send_success'),
+                'msg'     => __('lang_v1.send_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -810,10 +809,10 @@ class WorkerController extends Controller
     public function medical_examination(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id             = request()->session()->get('user.business_id');
+        $is_admin                = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_medical_examination = auth()->user()->can('internationalrelations.medical_examination');
-        if (!($is_admin || $can_medical_examination)) {
+        if (! ($is_admin || $can_medical_examination)) {
         }
         try {
             $selectedRows = $request->input('selectedRows');
@@ -822,14 +821,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.send_success'),
+                'msg'     => __('lang_v1.send_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -839,15 +838,15 @@ class WorkerController extends Controller
     public function accepted_by_worker(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id            = request()->session()->get('user.business_id');
+        $is_admin               = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_accepted_by_worker = auth()->user()->can('internationalrelations.accepted_by_worker');
-        if (!($is_admin || $can_accepted_by_worker)) {
+        if (! ($is_admin || $can_accepted_by_worker)) {
         }
 
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
-            $currentDate = now();
+            $currentDate      = now();
 
             foreach ($selectedRowsData as $row) {
 
@@ -860,12 +859,12 @@ class WorkerController extends Controller
 
                     $path = $file->store('/workers_documents');
 
-                    $uploadedFile = new IrWorkersDocument();
-                    $uploadedFile->worker_id = $row->id;
-                    $uploadedFile->type = 'acceptance_offer';
+                    $uploadedFile              = new IrWorkersDocument();
+                    $uploadedFile->worker_id   = $row->id;
+                    $uploadedFile->type        = 'acceptance_offer';
                     $uploadedFile->uploaded_by = auth()->user()->id;
                     $uploadedFile->uploaded_at = $currentDate;
-                    $uploadedFile->attachment = $path;
+                    $uploadedFile->attachment  = $path;
 
                     $uploadedFile->save();
                 }
@@ -873,14 +872,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.send_success'),
+                'msg'     => __('lang_v1.send_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -890,14 +889,13 @@ class WorkerController extends Controller
     public function storeVisaWorker(Request $request)
     {
 
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_admin              = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_visa_worker = auth()->user()->can('internationalrelations.store_visa_worker');
-        $visa_id = $request->visaId;
+        $visa_id               = $request->visaId;
         // if (!($is_admin || $can_store_visa_worker)) {
         // }
         try {
 
-            error_log("888888888888888");
             $selectedWorkersCount = count($request->worker_id);
             error_log($selectedWorkersCount);
 
@@ -906,27 +904,24 @@ class WorkerController extends Controller
                 ->first();
             error_log($visaCard);
             if ($visaCard->operationOrder) {
-                error_log("11111111111111");
                 $orderQuantity = $visaCard->operationOrder->orderQuantity;
             }
             if ($visaCard->unSupported_operation) {
-                error_log("2222222222");
                 $orderQuantity = $visaCard->unSupported_operation->orderQuantity;
                 error_log($orderQuantity);
             }
 
-            $proposed_workers_number = $visaCard->proposed_workers_number;
+            $proposed_workers_number          = $visaCard->proposed_workers_number;
             $delegation_agency_targeted_count = null;
 
             if ($selectedWorkersCount > $orderQuantity) {
                 $output = [
                     'success' => false,
-                    'msg' => __('internationalrelations::lang.number_of_added_workers_more_than_target'),
+                    'msg'     => __('internationalrelations::lang.number_of_added_workers_more_than_target'),
                 ];
             } else {
                 $exceededAgencies = [];
 
-                error_log("33333333333");
                 $groupedWorkers = collect($request->worker_id)->groupBy(function ($workerId) {
                     return IrProposedLabor::where('id', $workerId)->first()->agency_id;
                 });
@@ -935,7 +930,6 @@ class WorkerController extends Controller
                     error_log($visaCard->unSupporteddelegation);
                     if ($visaCard->delegation) {
                         if ($visaCard->delegation->agency()->whereIn('id', [$agencyId])->exists()) {
-                            error_log("4444444444444");
 
                             $delegation_agency_targeted_count = $visaCard->delegation->where('agency_id', [$agencyId])->first()->targeted_quantity;
                             error_log($delegation_agency_targeted_count);
@@ -949,7 +943,6 @@ class WorkerController extends Controller
                     }
                     if ($visaCard->unSupporteddelegation) {
                         if ($visaCard->unSupporteddelegation->agency()->whereIn('id', [$agencyId])->exists()) {
-                            error_log("4444444444444");
 
                             $delegation_agency_targeted_count = $visaCard->unSupporteddelegation->where('agency_id', [$agencyId])->first()->targeted_quantity;
                             error_log($delegation_agency_targeted_count);
@@ -964,15 +957,13 @@ class WorkerController extends Controller
                 }
             }
 
-            error_log("4444444444444");
 
-            if (!empty($exceededAgencies)) {
+            if (! empty($exceededAgencies)) {
                 $output = [
                     'success' => false,
-                    'msg' => __('internationalrelations::lang.workers_exceed_target_number'),
+                    'msg'     => __('internationalrelations::lang.workers_exceed_target_number'),
                 ];
             } else if ($proposed_workers_number + $selectedWorkersCount <= $orderQuantity) {
-                error_log("5555555555555");
                 foreach ($request->worker_id as $workerId) {
                     if ($workerId !== null) {
                         IrProposedLabor::where('id', $workerId)
@@ -987,13 +978,13 @@ class WorkerController extends Controller
 
                 $output = [
                     'success' => true,
-                    'msg' => __('lang_v1.added_success'),
+                    'msg'     => __('lang_v1.added_success'),
 
                 ];
             } else {
                 $output = [
                     'success' => false,
-                    'msg' => __('internationalrelations::lang.can_not_add_more_workers'),
+                    'msg'     => __('internationalrelations::lang.can_not_add_more_workers'),
 
                 ];
             }
@@ -1002,7 +993,7 @@ class WorkerController extends Controller
             error_log($e->getMessage());
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1011,10 +1002,10 @@ class WorkerController extends Controller
 
     public function cancelVisaWorker(Request $request)
     {
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_admin                   = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_cancel_proposal_worker = auth()->user()->can('internationalrelations.cancel_proposal_worker');
-        $visa_id = $request->visaId;
-        if (!($is_admin || $can_cancel_proposal_worker)) {
+        $visa_id                    = $request->visaId;
+        if (! ($is_admin || $can_cancel_proposal_worker)) {
         }
 
         try {
@@ -1034,23 +1025,23 @@ class WorkerController extends Controller
                 if ($hasArrivalStatusZero) {
                     $output = [
                         'success' => false,
-                        'msg' => __('internationalrelations::lang.cancel_visaworker_arrival_status_zero'),
+                        'msg'     => __('internationalrelations::lang.cancel_visaworker_arrival_status_zero'),
                     ];
                 } else {
                     $output = [
                         'success' => false,
-                        'msg' => __('internationalrelations::lang.cancel_visaworker_incomplete'),
+                        'msg'     => __('internationalrelations::lang.cancel_visaworker_incomplete'),
                     ];
                 }
             } else {
 
                 IrProposedLabor::whereIn('id', $selectedRows)
                     ->update([
-                        'visa_id' => null,
+                        'visa_id'             => null,
                         'medical_examination' => 0,
-                        'fingerprinting' => 0,
+                        'fingerprinting'      => 0,
                         'is_passport_stamped' => 0,
-                        'arrival_date' => null,
+                        'arrival_date'        => null,
                     ]);
 
                 foreach ($selectedRows as $workerId) {
@@ -1060,7 +1051,7 @@ class WorkerController extends Controller
 
                 $output = [
                     'success' => true,
-                    'msg' => __('internationalrelations::lang.worker_canceled'),
+                    'msg'     => __('internationalrelations::lang.worker_canceled'),
                 ];
             }
         } catch (\Exception $e) {
@@ -1068,7 +1059,7 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1078,27 +1069,27 @@ class WorkerController extends Controller
     public function createProposed_labor($delegation_id, $agency_id, $transaction_sell_line_id)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id              = request()->session()->get('user.business_id');
+        $is_admin                 = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
 
-        if (!($is_admin || $can_store_proposed_labor)) {
+        if (! ($is_admin || $can_store_proposed_labor)) {
         }
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $contacts        = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
 
         $blood_types = [
-            'A+' => 'A positive (A+).',
-            'A-' => 'A negative (A-).',
-            'B+' => 'B positive (B+)',
-            'B-' => 'B negative (B-).',
+            'A+'  => 'A positive (A+).',
+            'A-'  => 'A negative (A-).',
+            'B+'  => 'B positive (B+)',
+            'B-'  => 'B negative (B-).',
             'AB+' => 'AB positive (AB+).',
             'AB-' => 'AB negative (AB-).',
-            'O+' => 'O positive (O+).',
-            'O-' => 'O positive (O-).',
+            'O+'  => 'O positive (O+).',
+            'O-'  => 'O positive (O-).',
         ];
         $irDelegations = IrDelegation::query()
             ->where(function ($query) {
@@ -1112,7 +1103,7 @@ class WorkerController extends Controller
         $worker_gender = $irDelegations->transactionSellLine->service->gender;
 
         $resident_doc = null;
-        $user = null;
+        $user         = null;
         return view('internationalrelations::worker.proposed_laborCreate')
             ->with(compact(
                 'nationalities',
@@ -1132,31 +1123,31 @@ class WorkerController extends Controller
     public function createProposed_labor_unSupported($delegation_id, $agency_id, $unSupportedworker_order_id)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id              = request()->session()->get('user.business_id');
+        $is_admin                 = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
 
-        if (!($is_admin || $can_store_proposed_labor)) {
+        if (! ($is_admin || $can_store_proposed_labor)) {
         }
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $contacts        = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
 
         $blood_types = [
-            'A+' => 'A positive (A+).',
-            'A-' => 'A negative (A-).',
-            'B+' => 'B positive (B+)',
-            'B-' => 'B negative (B-).',
+            'A+'  => 'A positive (A+).',
+            'A-'  => 'A negative (A-).',
+            'B+'  => 'B positive (B+)',
+            'B-'  => 'B negative (B-).',
             'AB+' => 'AB positive (AB+).',
             'AB-' => 'AB negative (AB-).',
-            'O+' => 'O positive (O+).',
-            'O-' => 'O positive (O-).',
+            'O+'  => 'O positive (O+).',
+            'O-'  => 'O positive (O-).',
         ];
 
         $resident_doc = null;
-        $user = null;
+        $user         = null;
         return view('internationalrelations::worker.un_supported_proposed_laborCreate')
             ->with(compact(
                 'nationalities',
@@ -1173,30 +1164,30 @@ class WorkerController extends Controller
     }
     public function create_worker_without_project()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id              = request()->session()->get('user.business_id');
+        $is_admin                 = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
-        if (!($is_admin || $can_store_proposed_labor)) {
+        if (! ($is_admin || $can_store_proposed_labor)) {
         }
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $contacts        = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
 
         $blood_types = [
-            'A+' => 'A positive (A+).',
-            'A-' => 'A negative (A-).',
-            'B+' => 'B positive (B+)',
-            'B-' => 'B negative (B-).',
+            'A+'  => 'A positive (A+).',
+            'A-'  => 'A negative (A-).',
+            'B+'  => 'B positive (B+)',
+            'B-'  => 'B negative (B-).',
             'AB+' => 'AB positive (AB+).',
             'AB-' => 'AB negative (AB-).',
-            'O+' => 'O positive (O+).',
-            'O-' => 'O positive (O-).',
+            'O+'  => 'O positive (O+).',
+            'O-'  => 'O positive (O-).',
         ];
 
         $resident_doc = null;
-        $user = null;
+        $user         = null;
         return view('internationalrelations::worker.create_worker_without_project')
             ->with(compact(
                 'nationalities',
@@ -1247,19 +1238,19 @@ class WorkerController extends Controller
             if ($passport_number) {
                 $output = [
                     'success' => false,
-                    'msg' => __('lang_v1.the_passport_number_already_exists'),
+                    'msg'     => __('lang_v1.the_passport_number_already_exists'),
                 ];
                 if ($request->input('transaction_sell_line_id')) {
                     return redirect()->route('createProposed_labor', [
-                        'delegation_id' => $request->input('delegation_id'),
-                        'agency_id' => $request->input('agency_id'),
+                        'delegation_id'            => $request->input('delegation_id'),
+                        'agency_id'                => $request->input('agency_id'),
                         'transaction_sell_line_id' => $request->input('transaction_sell_line_id'),
                     ])->with('status', $output);
                 }
                 if ($request->input('unSupportedworker_order_id')) {
                     return redirect()->route('createProposed_labor', [
-                        'delegation_id' => $request->input('delegation_id'),
-                        'agency_id' => $request->input('agency_id'),
+                        'delegation_id'              => $request->input('delegation_id'),
+                        'agency_id'                  => $request->input('agency_id'),
                         'unSupportedworker_order_id' => $request->input('unSupportedworker_order_id'),
                     ])->with('status', $output);
                 }
@@ -1274,14 +1265,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.added_success'),
+                'msg'     => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1314,7 +1305,7 @@ class WorkerController extends Controller
             if ($passport_number) {
                 $output = [
                     'success' => false,
-                    'msg' => __('lang_v1.the_passport_number_already_exists'),
+                    'msg'     => __('lang_v1.the_passport_number_already_exists'),
                 ];
                 return redirect()->route('create_worker_without_project')->with('status', $output);
             }
@@ -1326,14 +1317,14 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.added_success'),
+                'msg'     => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log(print_r('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1341,11 +1332,11 @@ class WorkerController extends Controller
     }
     public function changeStatus(Request $request)
     {
-        $user = auth()->user();
+        $user     = auth()->user();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $canChangeWorkerStatus = $user->can('internationalrelations.change_worker_status');
-        if (!($is_admin || $canChangeWorkerStatus)) {
+        if (! ($is_admin || $canChangeWorkerStatus)) {
         }
 
         try {
@@ -1354,27 +1345,27 @@ class WorkerController extends Controller
             foreach ($selectedRowsData as $row) {
                 $worker = IrProposedLabor::find($row->id);
 
-                if (!$worker) {
+                if (! $worker) {
 
                     continue;
                 }
 
                 $worker->interviewStatus = $request->status;
-                $worker->interviewNotes = $request->note ?? null;
-                $worker->updated_by = $user->id;
+                $worker->interviewNotes  = $request->note ?? null;
+                $worker->updated_by      = $user->id;
                 $worker->save();
             }
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.updated_success'),
+                'msg'     => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -1399,9 +1390,9 @@ class WorkerController extends Controller
     // new Arrival
     public function postImportWorkersNewArrival(Request $request)
     {
-        $delegation_id = $request->input('delegation_id');
-        $agency_id = $request->input('agency_id');
-        $transaction_sell_line_id = $request->input('transaction_sell_line_id');
+        $delegation_id              = $request->input('delegation_id');
+        $agency_id                  = $request->input('agency_id');
+        $transaction_sell_line_id   = $request->input('transaction_sell_line_id');
         $unSupportedworker_order_id = $request->input('unSupportedworker_order_id');
 
         try {
@@ -1410,16 +1401,16 @@ class WorkerController extends Controller
                 'workers_csv' => 'required|file|mimes:xlsx,xls,csv',
             ]);
 
-            if (!$request->hasFile('workers_csv')) {
+            if (! $request->hasFile('workers_csv')) {
                 return back()->withErrors(['workers_csv' => 'File not uploaded. Please try again.']);
             }
 
             $file = $request->file('workers_csv');
 
-            $parsed_array = Excel::toArray([], $file);
-            $imported_data = array_splice($parsed_array[0], 1); // Skip header row
+            $parsed_array     = Excel::toArray([], $file);
+            $imported_data    = array_splice($parsed_array[0], 1); // Skip header row
             $passport_numbers = [];
-            $formated_data = [];
+            $formated_data    = [];
 
             DB::beginTransaction();
 
@@ -1433,28 +1424,28 @@ class WorkerController extends Controller
 
                 $worker_array = [];
 
-                if (!empty($value[0])) {
+                if (! empty($value[0])) {
                     $worker_array['first_name'] = $value[0];
                 } else {
                     throw new \Exception(__('essentials::lang.first_name_required') . " at row $row_no");
                 }
 
-                $worker_array['mid_name'] = $value[1];
+                $worker_array['mid_name']        = $value[1];
                 $worker_array['interviewStatus'] = 'acceptable';
 
-                if (!empty($value[2])) {
+                if (! empty($value[2])) {
                     $worker_array['last_name'] = $value[2];
                 } else {
                     throw new \Exception(__('essentials::lang.last_name_required') . " at row $row_no");
                 }
 
-                if (!empty($value[3])) {
+                if (! empty($value[3])) {
                     $worker_array['nationality'] = $value[3];
                 } else {
                     throw new \Exception(__('essentials::lang.nationality_required') . " at row $row_no");
                 }
 
-                if (!empty($value[4])) {
+                if (! empty($value[4])) {
                     $worker_array['passport_number'] = $value[4];
                 } else {
                     throw new \Exception(__('essentials::lang.passport_number_required') . " at row $row_no");
@@ -1470,16 +1461,17 @@ class WorkerController extends Controller
                 }
                 $passport_numbers[] = $worker_array['passport_number'];
 
-                if (!empty($value[5])) {
-                    $worker_array['sponsor'] = $value[5];
+                if (! empty($value[5])) {
+                    $worker_array['company_id'] = $worker_array['sponsor'];
+
                 } else {
                     throw new \Exception(__('essentials::lang.sponsor_required') . " at row $row_no");
                 }
 
                 $worker_array['project'] = $value[6];
-                $worker_array['gender'] = $value[7];
+                $worker_array['gender']  = $value[7];
 
-                if (!empty($value[8])) {
+                if (! empty($value[8])) {
                     if (is_numeric($value[8])) {
                         // Convert Excel numeric date
                         $worker_array['dob'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[8])->format('Y-m-d');
@@ -1494,7 +1486,7 @@ class WorkerController extends Controller
                     }
                 }
 
-                if (!empty($value[9])) {
+                if (! empty($value[9])) {
                     if (is_numeric($value[9])) {
                         // Convert Excel numeric date
                         $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[9])->format('Y-m-d');
@@ -1510,7 +1502,7 @@ class WorkerController extends Controller
                 } else {
                     throw new \Exception(__('essentials::lang.arrival_date_required') . " at row $row_no");
                 }
-
+                unset($worker_array['sponsor']);
                 $formated_data[] = $worker_array;
             }
 
@@ -1522,7 +1514,7 @@ class WorkerController extends Controller
 
             return redirect()->route('proposed_laborIndex')->with('notification', [
                 'success' => 1,
-                'msg' => __('product.file_imported_successfully'),
+                'msg'     => __('product.file_imported_successfully'),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1533,15 +1525,15 @@ class WorkerController extends Controller
 
             return redirect()->route('importWorkers_newArrival')->with('notification', [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg'     => $e->getMessage(),
             ]);
         }
     }
     public function postImportWorkers(Request $request)
     {
-        $delegation_id = $request->input('delegation_id');
-        $agency_id = $request->input('agency_id');
-        $transaction_sell_line_id = $request->input('transaction_sell_line_id');
+        $delegation_id              = $request->input('delegation_id');
+        $agency_id                  = $request->input('agency_id');
+        $transaction_sell_line_id   = $request->input('transaction_sell_line_id');
         $unSupportedworker_order_id = $request->input('unSupportedworker_order_id');
 
         try {
@@ -1550,66 +1542,66 @@ class WorkerController extends Controller
 
                 $file = $request->file('workers_csv');
 
-                $parsed_array = Excel::toArray([], $file);
-                $imported_data = array_splice($parsed_array[0], 1);
+                $parsed_array     = Excel::toArray([], $file);
+                $imported_data    = array_splice($parsed_array[0], 1);
                 $passport_numbers = [];
-                $formated_data = [];
-                $is_valid = true;
-                $error_msg = '';
+                $formated_data    = [];
+                $is_valid         = true;
+                $error_msg        = '';
 
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
-                    $row_no = $key + 1;
+                    $row_no       = $key + 1;
                     $worker_array = [];
 
-                    if (!empty($value[0])) {
+                    if (! empty($value[0])) {
                         $worker_array['first_name'] = $value[0];
                     } else {
-                        $is_valid = false;
+                        $is_valid  = false;
                         $error_msg = __('essentials::lang.first_name_required') . $row_no;
                         break;
                     }
 
-                    $worker_array['mid_name'] = $value[1];
+                    $worker_array['mid_name']        = $value[1];
                     $worker_array['interviewStatus'] = 'acceptable';
 
-                    if (!empty($value[2])) {
+                    if (! empty($value[2])) {
                         $worker_array['last_name'] = $value[2];
                     } else {
-                        $is_valid = false;
+                        $is_valid  = false;
                         $error_msg = __('essentials::lang.last_name_required') . $row_no;
                         break;
                     }
 
-                    if (!empty($value[3])) {
+                    if (! empty($value[3])) {
                         $worker_array['age'] = $value[3];
                     } else {
-                        $is_valid = false;
+                        $is_valid  = false;
                         $error_msg = __('essentials::lang.age_required') . $row_no;
                         break;
                     }
 
-                    if (!empty($value[4])) {
+                    if (! empty($value[4])) {
                         $worker_array['gender'] = $value[4];
                     } else {
-                        $is_valid = false;
+                        $is_valid  = false;
                         $error_msg = __('essentials::lang.gender_required') . $row_no;
                         break;
                     }
                     $worker_array['email'] = $value[5];
 
-                    if (!empty($value[6])) {
+                    if (! empty($value[6])) {
                         if (is_numeric($value[6])) {
 
-                            $excelDateValue = (float) $value[6];
-                            $unixTimestamp = ($excelDateValue - 25569) * 86400;
-                            $date = date('Y-m-d', $unixTimestamp);
+                            $excelDateValue      = (float) $value[6];
+                            $unixTimestamp       = ($excelDateValue - 25569) * 86400;
+                            $date                = date('Y-m-d', $unixTimestamp);
                             $worker_array['dob'] = $date;
                         } else {
 
                             $date = DateTime::createFromFormat('d/m/Y', $value[6]);
                             if ($date) {
-                                $dob = $date->format('Y-m-d');
+                                $dob                 = $date->format('Y-m-d');
                                 $worker_array['dob'] = $dob;
                             }
                         }
@@ -1618,19 +1610,19 @@ class WorkerController extends Controller
                     }
 
                     $worker_array['marital_status'] = $value[7];
-                    $worker_array['blood_group'] = $value[8];
+                    $worker_array['blood_group']    = $value[8];
 
-                    if (!empty(trim($value[9]))) {
+                    if (! empty(trim($value[9]))) {
                         $worker_array['contact_number'] = $value[9];
                     }
 
-                    $worker_array['current_address'] = $value[10];
+                    $worker_array['current_address']   = $value[10];
                     $worker_array['permanent_address'] = $value[11];
 
                     $worker_array['passport_number'] = $value[12];
 
                     if (in_array($worker_array['passport_number'], $passport_numbers)) {
-                        $is_valid = false;
+                        $is_valid  = false;
                         $error_msg = __('lang_v1.the_passport_number_already_exists') . $row_no;
                         break;
                     }
@@ -1638,7 +1630,7 @@ class WorkerController extends Controller
                     $passport_number = IrProposedLabor::where('passport_number', $worker_array['passport_number'])
                         ->first();
                     if ($passport_number) {
-                        $is_valid = false;
+                        $is_valid  = false;
                         $error_msg = __('lang_v1.the_passport_number_already_exists') . $row_no;
                         break;
                     }
@@ -1649,9 +1641,9 @@ class WorkerController extends Controller
                     if ($worker_array['agency_id'] !== null) {
 
                         $business = Contact::find($worker_array['agency_id']);
-                        if (!$business) {
+                        if (! $business) {
 
-                            $is_valid = false;
+                            $is_valid  = false;
                             $error_msg = __('essentials::lang.contact_not_found') . $row_no;
                             break;
                         }
@@ -1664,14 +1656,14 @@ class WorkerController extends Controller
                         if ($worker_array['transaction_sell_line_id'] !== null) {
 
                             $business = TransactionSellLine::find($worker_array['transaction_sell_line_id']);
-                            if (!$business) {
+                            if (! $business) {
 
-                                $is_valid = false;
+                                $is_valid  = false;
                                 $error_msg = __('essentials::lang.contact_not_found') . $row_no;
                                 break;
                             }
                         } else {
-                            $is_valid = false;
+                            $is_valid  = false;
                             $error_msg = __('essentials::lang.contact_not_found') . $row_no;
                             break;
                         }
@@ -1682,14 +1674,14 @@ class WorkerController extends Controller
                         if ($worker_array['unSupportedworker_order_id'] !== null) {
 
                             $business = SalesUnSupportedWorker::find($worker_array['unSupportedworker_order_id']);
-                            if (!$business) {
+                            if (! $business) {
 
-                                $is_valid = false;
+                                $is_valid  = false;
                                 $error_msg = __('essentials::lang.contact_not_found') . $row_no;
                                 break;
                             }
                         } else {
-                            $is_valid = false;
+                            $is_valid  = false;
                             $error_msg = __('essentials::lang.contact_not_found') . $row_no;
                             break;
                         }
@@ -1697,11 +1689,11 @@ class WorkerController extends Controller
                     $formated_data[] = $worker_array;
                 }
 
-                if (!$is_valid) {
+                if (! $is_valid) {
                     throw new \Exception($error_msg);
                 }
 
-                if (!empty($formated_data)) {
+                if (! empty($formated_data)) {
 
                     foreach ($formated_data as $worker_data) {
 
@@ -1712,14 +1704,14 @@ class WorkerController extends Controller
 
                 $output = [
                     'success' => 1,
-                    'msg' => __('product.file_imported_successfully'),
+                    'msg'     => __('product.file_imported_successfully'),
                 ];
 
                 DB::commit();
             } else {
                 $output = [
                     'success' => 0,
-                    'msg' => 'no file',
+                    'msg'     => 'no file',
                 ];
             }
         } catch (\Exception $e) {
@@ -1729,7 +1721,7 @@ class WorkerController extends Controller
 
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
 
             return redirect()->route('importWorkers', ['delegation_id' => $delegation_id, 'agency_id' => $agency_id, 'transaction_sell_line_id' => $transaction_sell_line_id])->with('notification', $output);
