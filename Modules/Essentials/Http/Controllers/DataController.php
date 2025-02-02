@@ -866,6 +866,59 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    //TODO::import_new_arrival_workers
+
+                    [
+                        'value'   => 'essentials_hrm.housed',
+                        'label'   => __('housingmovements::lang.housed'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.advanceSalaryRequest',
+                        'label'   => __('housingmovements::lang.advanceSalaryRequest'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.medicalExamination',
+                        'label'   => __('housingmovements::lang.medicalExamination'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.medicalInsurance',
+                        'label'   => __('housingmovements::lang.medicalInsurance'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.workCardIssuing',
+                        'label'   => __('housingmovements::lang.workCardIssuing'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.SIMCard',
+                        'label'   => __('housingmovements::lang.SIMCard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.bankAccount',
+                        'label'   => __('housingmovements::lang.bankAccount'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.contract',
+                        'label'   => __('housingmovements::lang.contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.residencyAdd&Print',
+                        'label'   => __('housingmovements::lang.residencyAdd&Print'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials_hrm.residencyDelivery',
+                        'label'   => __('housingmovements::lang.residencyDelivery'),
+                        'default' => false,
+                    ],
+
                 ],
 
             ],
@@ -2034,6 +2087,65 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    [
+                        'value'   => 'housingmovements.new_arrival_for_workers',
+                        'label'   => __('housingmovements::lang.new_arrival_for_workers'),
+                        'default' => false,
+                    ],
+
+                    //TODO::import_new_arrival_workers
+
+                    [
+                        'value'   => 'government_relations.housed',
+                        'label'   => __('housingmovements::lang.housed'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.advanceSalaryRequest',
+                        'label'   => __('housingmovements::lang.advanceSalaryRequest'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.medicalExamination',
+                        'label'   => __('housingmovements::lang.medicalExamination'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.medicalInsurance',
+                        'label'   => __('housingmovements::lang.medicalInsurance'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.workCardIssuing',
+                        'label'   => __('housingmovements::lang.workCardIssuing'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.SIMCard',
+                        'label'   => __('housingmovements::lang.SIMCard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.bankAccount',
+                        'label'   => __('housingmovements::lang.bankAccount'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.contract',
+                        'label'   => __('housingmovements::lang.contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.residencyAdd&Print',
+                        'label'   => __('housingmovements::lang.residencyAdd&Print'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'government_relations.residencyDelivery',
+                        'label'   => __('housingmovements::lang.residencyDelivery'),
+                        'default' => false,
+                    ],
+
                 ],
 
             ],
@@ -2166,13 +2278,6 @@ class DataController extends Controller
                     [
                         'value'   => 'essentials.carMaintenancesReport',
                         'label'   => __('housingmovements::lang.carMaintenancesReport'),
-                        'default' => false,
-                    ],
-
-                    //TODO::import_new_arrival_workers
-                    [
-                        'value'   => 'housingmovements.import_new_arrival_workers',
-                        'label'   => __('housingmovements::lang.import_new_arrival_workers'),
                         'default' => false,
                     ],
 

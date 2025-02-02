@@ -1091,6 +1091,75 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
             );
 
+
+
+             //
+ if (
+                    $is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')
+                    || auth()->user()->can('housingmovements.housed')
+                    || auth()->user()->can('housingmovements.advanceSalaryRequest')
+                    || auth()->user()->can('housingmovements.medicalExamination')
+                    || auth()->user()->can('housingmovements.medicalInsurance')
+                    || auth()->user()->can('housingmovements.workCardIssuing')
+                    || auth()->user()->can('housingmovements.SIMCard')
+                    || auth()->user()->can('housingmovements.bankAccount')
+                    || auth()->user()->can('housingmovements.contract')
+                    || auth()->user()->can('housingmovements.residencyAdd&Print')
+                    || auth()->user()->can('housingmovements.residencyDelivery')
+
+                ) {
+
+                    $menu->url(
+                        ($is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\TravelersController::class,
+                            'index',
+                        ]) : ((auth()->user()->can('housingmovements.housed')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\TravelersController::class,
+                            'housed_workers_index',
+                        ]) : ((auth()->user()->can('housingmovements.advanceSalaryRequest')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'advanceSalaryRequest',
+                        ]) : ((auth()->user()->can('housingmovements.medicalExamination')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'medicalExamination',
+                        ]) : ((auth()->user()->can('housingmovements.medicalInsurance')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'medicalInsurance',
+                        ]) : ((auth()->user()->can('housingmovements.workCardIssuing')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'workCardIssuing',
+                        ]) : ((auth()->user()->can('housingmovements.SIMCard')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'SIMCard',
+                        ]) : ((auth()->user()->can('housingmovements.bankAccount')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'bankAccounts',
+                        ]) : ((auth()->user()->can('housingmovements.contract')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'QiwaContracts',
+                        ]) : ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
+                            \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                            'residencyPrint',
+                        ]) : action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])))))))))),
+    
+                        __('housingmovements::lang.travelers'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && (request()->segment(2) == 'travelers'
+                            || request()->segment(2) == 'housed-workers'
+                            || request()->segment(2) == 'advanceSalaryRequest'
+                            || request()->segment(2) == 'medicalExamination'
+                            || request()->segment(2) == 'medicalInsurance'
+                            || request()->segment(2) == 'workCardIssuing'
+                            || request()->segment(2) == 'SIMCard'
+                            || request()->segment(2) == 'bankAccountsForLabors'
+                            || request()->segment(2) == 'QiwaContract'
+                            || request()->segment(2) == 'residencyPrint'
+                            || request()->segment(2) == 'residencyDelivery'
+    
+                        )],
+                    );
+                }
+            //
+
             // if ($is_admin || auth()->user()->can('essentials.movement_management')) {
             //     $menu->dropdown(
             //         __('housingmovements::lang.movement_management'),
@@ -1571,49 +1640,49 @@ class CustomAdminSidebarMenu
 
             //
  if (
-                    $is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')
-                    || auth()->user()->can('housingmovements.housed')
-                    || auth()->user()->can('housingmovements.advanceSalaryRequest')
-                    || auth()->user()->can('housingmovements.medicalExamination')
-                    || auth()->user()->can('housingmovements.medicalInsurance')
-                    || auth()->user()->can('housingmovements.workCardIssuing')
-                    || auth()->user()->can('housingmovements.SIMCard')
-                    || auth()->user()->can('housingmovements.bankAccount')
-                    || auth()->user()->can('housingmovements.contract')
-                    || auth()->user()->can('housingmovements.residencyAdd&Print')
-                    || auth()->user()->can('housingmovements.residencyDelivery')
+                    $is_admin || auth()->user()->can('government_relations.new_arrival_for_workers')
+                    || auth()->user()->can('government_relations.housed')
+                    || auth()->user()->can('government_relations.advanceSalaryRequest')
+                    || auth()->user()->can('government_relations.medicalExamination')
+                    || auth()->user()->can('government_relations.medicalInsurance')
+                    || auth()->user()->can('government_relations.workCardIssuing')
+                    || auth()->user()->can('government_relations.SIMCard')
+                    || auth()->user()->can('government_relations.bankAccount')
+                    || auth()->user()->can('government_relations.contract')
+                    || auth()->user()->can('government_relations.residencyAdd&Print')
+                    || auth()->user()->can('government_relations.residencyDelivery')
 
                 ) {
 
                     $menu->url(
-                        ($is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')) ? action([
+                        ($is_admin || auth()->user()->can('government_relations.new_arrival_for_workers')) ? action([
                             \Modules\HousingMovements\Http\Controllers\TravelersController::class,
                             'index',
-                        ]) : ((auth()->user()->can('housingmovements.housed')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.housed')) ? action([
                             \Modules\HousingMovements\Http\Controllers\TravelersController::class,
                             'housed_workers_index',
-                        ]) : ((auth()->user()->can('housingmovements.advanceSalaryRequest')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.advanceSalaryRequest')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'advanceSalaryRequest',
-                        ]) : ((auth()->user()->can('housingmovements.medicalExamination')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.medicalExamination')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'medicalExamination',
-                        ]) : ((auth()->user()->can('housingmovements.medicalInsurance')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.medicalInsurance')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'medicalInsurance',
-                        ]) : ((auth()->user()->can('housingmovements.workCardIssuing')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.workCardIssuing')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'workCardIssuing',
-                        ]) : ((auth()->user()->can('housingmovements.SIMCard')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.SIMCard')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'SIMCard',
-                        ]) : ((auth()->user()->can('housingmovements.bankAccount')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.bankAccount')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'bankAccounts',
                         ]) : ((auth()->user()->can('housingmovements.contract')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'QiwaContracts',
-                        ]) : ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
+                        ]) : ((auth()->user()->can('government_relations.residencyAdd&Print')) ? action([
                             \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                             'residencyPrint',
                         ]) : action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])))))))))),
