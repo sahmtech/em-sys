@@ -36,4 +36,9 @@ class EssentialsEmployeeAppointmet extends Model
     {
         return $this->belongsTo(BusinessLocation::class, 'business_location_id');
     }
+
+    public function createdByUser()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }
