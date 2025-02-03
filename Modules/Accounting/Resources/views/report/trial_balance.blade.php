@@ -34,12 +34,14 @@
                                 {!! Form::label('with_zero_balances', __('accounting::lang.balance') . ':') !!}
                                 <select class="form-control" name="with_zero_balances" id='with_zero_balances'
                                     style="padding: 2px;">
-                                    <option value="0" selected>{{ __('accounting::lang.without_zero_balances') }}
-                                    </option>
+                                    <option value="0" selected>{{ __('accounting::lang.without_zero_balances') }}</option>
                                     <option value="1">{{ __('accounting::lang.with_zero_balances') }}</option>
+                                    <option value="2">{{ __('accounting::lang.zero_balances') }}</option>
+                                    <!-- New option -->
                                 </select>
                             </div>
                         </div>
+
 
                         <div class="col-md-3">
                             <div class="form-group">

@@ -361,7 +361,6 @@ class Util
         if (!empty($ref)) {
             $ref->ref_count += 1;
             $ref->save();
-
             return $ref->ref_count;
         } else {
             $new_ref = ReferenceCount::create([
@@ -385,7 +384,6 @@ class Util
     public function generateReferenceNumber($type, $ref_count, $business_id = null, $company_id = null, $default_prefix = null)
     {
         $prefix = '';
-
         if (session()->has('business') && !empty(request()->session()->get('business.ref_no_prefixes')[$type])) {
             $prefix = request()->session()->get('business.ref_no_prefixes')[$type];
         }
@@ -404,7 +402,9 @@ class Util
         }
 
         $ref_digits = str_pad($ref_count, 4, 0, STR_PAD_LEFT);
-
+        if ($type == 'employee_payment') {
+            $prefix = 'EP';
+        }
         if (!in_array($type, ['contacts', 'business_location', 'username'])) {
             $ref_year = Carbon::now()->year;
             $ref_number = $prefix . $ref_year . '/' . $ref_digits;
@@ -1459,14 +1459,14 @@ class Util
                     \App\Notifications\RecurringInvoiceNotification::class
                 ) {
                     $msg = !empty($data['invoice_status']) && $data['invoice_status'] == 'draft' ?
-                    __(
-                        'lang_v1.recurring_invoice_error_message',
-                        ['product_name' => $data['out_of_stock_product'], 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
-                    ) :
-                    __(
-                        'lang_v1.recurring_invoice_message',
-                        ['invoice_no' => !empty($data['invoice_no']) ? $data['invoice_no'] : '', 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
-                    );
+                        __(
+                            'lang_v1.recurring_invoice_error_message',
+                            ['product_name' => $data['out_of_stock_product'], 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
+                        ) :
+                        __(
+                            'lang_v1.recurring_invoice_message',
+                            ['invoice_no' => !empty($data['invoice_no']) ? $data['invoice_no'] : '', 'subscription_no' => !empty($data['subscription_no']) ? $data['subscription_no'] : '']
+                        );
                     $icon_class = !empty($data['invoice_status']) && $data['invoice_status'] == 'draft' ? 'fas fa-exclamation-triangle bg-yellow' : 'fas fa-recycle bg-green';
                     $link = action([\App\Http\Controllers\SellPosController::class, 'listSubscriptions']);
                 } elseif (
@@ -1870,7 +1870,7 @@ class Util
             if (empty($user_details['username'])) {
                 $ref_count = $this->setAndGetReferenceCount('username', $business_id);
                 $user_details['username'] = $this->generateReferenceNumber('username', $ref_count, $business_id);
-            }{
+            } {
                 $username_ext = $this->getUsernameExtension();
                 if (!empty($username_ext)) {
                     $user_details['username'] .= $username_ext;
@@ -2074,7 +2074,7 @@ class Util
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
                     $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
-                    $accTransMappingSetting['journal_entry_prefix'] : '';
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
@@ -2155,7 +2155,7 @@ class Util
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
                     $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
-                    $accTransMappingSetting['journal_entry_prefix'] : '';
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);
@@ -2250,7 +2250,7 @@ class Util
                 $ref_count = $this->setAndGetReferenceCount('journal_entry', $business_id, $company_id);
                 if (empty($ref_no)) {
                     $prefix = !empty($accTransMappingSetting['journal_entry_prefix']) ?
-                    $accTransMappingSetting['journal_entry_prefix'] : '';
+                        $accTransMappingSetting['journal_entry_prefix'] : '';
 
                     //Generate reference number
                     $ref_no = $this->generateReferenceNumber('journal_entry', $ref_count, $business_id, $company_id, $prefix);

@@ -41,6 +41,7 @@ class AccountTransaction extends Model
             'sell_return' => 'debit',
             'payroll' => 'debit',
             'expense_refund' => 'credit',
+            'employee' => 'credit',
         ];
 
         return $account_transaction_types[$tansaction_type];
@@ -86,7 +87,7 @@ class AccountTransaction extends Model
                 'transaction_payment_id',
                 $transaction_payment->id
             )
-                    ->first();
+                ->first();
             if (! empty($account_transaction)) {
                 $account_transaction->amount = $transaction_payment->amount;
                 $account_transaction->account_id = $transaction_payment->account_id;

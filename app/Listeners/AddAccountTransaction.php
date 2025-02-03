@@ -43,7 +43,7 @@ class AddAccountTransaction
         //     return true;
         // }
 
-       
+
         // //Create new account transaction
         if (!empty($event->formInput['account_id']) && $event->transactionPayment->method != 'advance') {
             $type = !empty($event->transactionPayment->payment_type) ? $event->transactionPayment->payment_type : AccountTransaction::getAccountTransactionType($event->formInput['transaction_type']);
@@ -51,7 +51,7 @@ class AddAccountTransaction
                 'amount' => $event->formInput['amount'],
                 'accounting_account_id' => $event->formInput['account_id'],
                 'type' => $type,
-                'sub_type'=>$event->formInput['transaction_type'],
+                'sub_type' => $event->formInput['transaction_type'],
                 'operation_date' => $event->transactionPayment->paid_on,
                 'created_by' => $event->transactionPayment->created_by,
                 'transaction_id' => $event->transactionPayment->transaction_id,
@@ -62,9 +62,9 @@ class AddAccountTransaction
             if ($event->formInput['transaction_type'] == 'sell' && isset($event->formInput['is_return']) && $event->formInput['is_return'] == 1) {
                 $account_transaction_data['type'] = 'debit';
             }
-          
-            
-          
+
+
+
             AccountingAccountsTransaction::createTransaction($account_transaction_data);
             // AccountTransaction::createAccountTransaction($account_transaction_data);
         }

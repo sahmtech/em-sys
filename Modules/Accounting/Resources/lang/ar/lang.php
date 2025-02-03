@@ -477,6 +477,7 @@ return [
     'employees_statement_of_account_report' => 'تقرير كشف حساب الموظفين',
     'with_zero_balances' => 'مع الأرصدة الصفرية',
     'without_zero_balances' => 'بدون الأرصدة الصفرية',
+    'zero_balances' => 'الأرصدة الصفرية',
     'aggregated' => 'تجميعي',
     'detailed' => 'تفصيلي',
     'ref_no' => 'الرقم المرجعي',
@@ -521,6 +522,7 @@ return [
     'add_request' => 'إضافة طلب',
     'change_status' => 'تغيير حالة الطلب',
     'view_accounting_requests' => 'عرض طلبات المحاسبة',
+
 
 
     'autoMigration' => [
@@ -813,5 +815,6 @@ return [
     'print_journal' => 'طباعة قيد مرجعي',
     'no_contact_selected' => 'لا توجد بيانات',
     'transaction_op' => 'العملية',
-
+    'aCustomer' => 'عميل',
+    'employee' => 'الموظف',
 ];

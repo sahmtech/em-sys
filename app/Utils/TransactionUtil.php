@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Utils;
 
 use App\AccountTransaction;
@@ -21,6 +22,7 @@ use App\Transaction;
 use App\TransactionPayment;
 use App\TransactionSellLine;
 use App\TransactionSellLinesPurchaseLines;
+use App\User;
 use App\Variation;
 use App\VariationLocationDetails;
 use Illuminate\Support\Facades\DB;
@@ -108,7 +110,7 @@ class TransactionUtil extends Util
             'shipping_custom_field_4'    => ! empty($input['shipping_custom_field_4']) ? $input['shipping_custom_field_4'] : null,
             'shipping_custom_field_5'    => ! empty($input['shipping_custom_field_5']) ? $input['shipping_custom_field_5'] : null,
             'exchange_rate'              => ! empty($input['exchange_rate']) ?
-            $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
+                $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
             'selling_price_group_id'     => isset($input['selling_price_group_id']) ? $input['selling_price_group_id'] : null,
             'pay_term_number'            => $pay_term_number,
             'pay_term_type'              => $pay_term_type,
@@ -230,7 +232,7 @@ class TransactionUtil extends Util
             'shipping_custom_field_4'    => ! empty($input['shipping_custom_field_4']) ? $input['shipping_custom_field_4'] : null,
             'shipping_custom_field_5'    => ! empty($input['shipping_custom_field_5']) ? $input['shipping_custom_field_5'] : null,
             'exchange_rate'              => ! empty($input['exchange_rate']) ?
-            $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
+                $uf_data ? $this->num_uf($input['exchange_rate']) : $input['exchange_rate'] : 1,
             'selling_price_group_id'     => isset($input['selling_price_group_id']) ? $input['selling_price_group_id'] : null,
             'pay_term_number'            => $pay_term_number,
             'pay_term_type'              => $pay_term_type,
@@ -753,7 +755,7 @@ class TransactionUtil extends Util
                     if ($transaction->type == 'purchase') {
                         $prefix_type = 'purchase_payment';
                     }
-                    $ref_count = $this->setAndGetReferenceCount($prefix_type, $business_id, );
+                    $ref_count = $this->setAndGetReferenceCount($prefix_type, $business_id,);
                     //Generate reference number
                     $payment_ref_no = $this->generateReferenceNumber($prefix_type, $ref_count, $business_id);
 
@@ -1036,8 +1038,8 @@ class TransactionUtil extends Util
 
         if ($il->show_letter_head == 1) {
             $output['letter_head'] = ! empty($il->letter_head) &&
-            file_exists(public_path('uploads/invoice_logos/' . $il->letter_head)) ?
-            asset('uploads/invoice_logos/' . $il->letter_head) : null;
+                file_exists(public_path('uploads/invoice_logos/' . $il->letter_head)) ?
+                asset('uploads/invoice_logos/' . $il->letter_head) : null;
         }
 
         //Logo
@@ -1231,7 +1233,6 @@ class TransactionUtil extends Util
             $output['company_info'] .= $comapny_data->name;
             $output['company_info_state'] .= $company_location->state;
             $output['company_info_landmark'] .= $company_location->landmark;
-
         }
 
         // end company info
@@ -1574,57 +1575,57 @@ class TransactionUtil extends Util
                         if ($value['method'] == 'cash') {
                             $output['payments'][] =
                                 [
-                                'method' => $method . ($value['is_return'] == 1 ? ' (' . $il->change_return_label . ')(-)' : ''),
-                                'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                                'date'   => $this->format_date($value['paid_on'], false, $business_details),
-                            ];
+                                    'method' => $method . ($value['is_return'] == 1 ? ' (' . $il->change_return_label . ')(-)' : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date'   => $this->format_date($value['paid_on'], false, $business_details),
+                                ];
                             if ($value['is_return'] == 1) {
                             }
                         } elseif ($value['method'] == 'card') {
                             $output['payments'][] =
                                 [
-                                'method' => $method . (! empty($value['card_transaction_number']) ? (', Transaction Number:' . $value['card_transaction_number']) : ''),
-                                'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                                'date'   => $this->format_date($value['paid_on'], false, $business_details),
-                            ];
+                                    'method' => $method . (! empty($value['card_transaction_number']) ? (', Transaction Number:' . $value['card_transaction_number']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date'   => $this->format_date($value['paid_on'], false, $business_details),
+                                ];
                         } elseif ($value['method'] == 'cheque') {
                             $output['payments'][] =
                                 [
-                                'method' => $method . (! empty($value['cheque_number']) ? (', Cheque Number:' . $value['cheque_number']) : ''),
-                                'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                                'date'   => $this->format_date($value['paid_on'], false, $business_details),
-                            ];
+                                    'method' => $method . (! empty($value['cheque_number']) ? (', Cheque Number:' . $value['cheque_number']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date'   => $this->format_date($value['paid_on'], false, $business_details),
+                                ];
                         } elseif ($value['method'] == 'bank_transfer') {
                             $output['payments'][] =
                                 [
-                                'method' => $method . (! empty($value['bank_account_number']) ? (', Account Number:' . $value['bank_account_number']) : ''),
-                                'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                                'date'   => $this->format_date($value['paid_on'], false, $business_details),
-                            ];
+                                    'method' => $method . (! empty($value['bank_account_number']) ? (', Account Number:' . $value['bank_account_number']) : ''),
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date'   => $this->format_date($value['paid_on'], false, $business_details),
+                                ];
                         } elseif ($value['method'] == 'advance') {
                             $output['payments'][] =
                                 [
-                                'method' => $method,
-                                'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                                'date'   => $this->format_date($value['paid_on'], false, $business_details),
-                            ];
+                                    'method' => $method,
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date'   => $this->format_date($value['paid_on'], false, $business_details),
+                                ];
                         } elseif ($value['method'] == 'other') {
                             $output['payments'][] =
                                 [
-                                'method' => $method,
-                                'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                                'date'   => $this->format_date($value['paid_on'], false, $business_details),
-                            ];
+                                    'method' => $method,
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    'date'   => $this->format_date($value['paid_on'], false, $business_details),
+                                ];
                         }
 
                         for ($i = 1; $i < 8; $i++) {
                             if ($value['method'] == "custom_pay_{$i}") {
                                 $output['payments'][] =
                                     [
-                                    'method' => $method . (! empty($value['transaction_no']) ? (', ' . trans('lang_v1.transaction_no') . ':' . $value['transaction_no']) : ''),
-                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
-                                    'date'   => $this->format_date($value['paid_on'], false, $business_details),
-                                ];
+                                        'method' => $method . (! empty($value['transaction_no']) ? (', ' . trans('lang_v1.transaction_no') . ':' . $value['transaction_no']) : ''),
+                                        'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                        'date'   => $this->format_date($value['paid_on'], false, $business_details),
+                                    ];
                             }
                         }
                     }
@@ -2508,7 +2509,7 @@ class TransactionUtil extends Util
         //$output['total_purchase_exc_tax'] = $purchase_details->sum('total_exc_tax');
         $output['total_purchase_exc_tax'] = $purchase_details->total_before_tax_sum;
         $output['purchase_due']           = $purchase_details->final_total_sum -
-        $purchase_details->total_paid;
+            $purchase_details->total_paid;
         $output['total_shipping_charges']   = $purchase_details->total_shipping_charges;
         $output['total_additional_expense'] = $purchase_details->total_expense;
 
@@ -3370,12 +3371,12 @@ class TransactionUtil extends Util
                     if ($qty_allocated != 0) {
                         $purchase_adjustment_map[] =
                             [
-                            'stock_adjustment_line_id' => $line->id,
-                            'purchase_line_id'         => $row->purchase_lines_id,
-                            'quantity'                 => $qty_allocated,
-                            'created_at'               => \Carbon::now(),
-                            'updated_at'               => \Carbon::now(),
-                        ];
+                                'stock_adjustment_line_id' => $line->id,
+                                'purchase_line_id'         => $row->purchase_lines_id,
+                                'quantity'                 => $qty_allocated,
+                                'created_at'               => \Carbon::now(),
+                                'updated_at'               => \Carbon::now(),
+                            ];
 
                         //Update purchase line
                         PurchaseLine::where('id', $row->purchase_lines_id)
@@ -3778,12 +3779,12 @@ class TransactionUtil extends Util
                             ->decrement('quantity_sold', $row->quantity);
                     } else {
                         $stock_adjustment_lines[] =
-                        (object) [
-                            'id'           => $row->adjust_line_id,
-                            'quantity'     => $row->quantity,
-                            'product_id'   => $row->adjust_product_id,
-                            'variation_id' => $row->adjust_variation_id,
-                        ];
+                            (object) [
+                                'id'           => $row->adjust_line_id,
+                                'quantity'     => $row->quantity,
+                                'product_id'   => $row->adjust_product_id,
+                                'variation_id' => $row->adjust_variation_id,
+                            ];
                         PurchaseLine::where('id', $row->purchase_line_id)
                             ->decrement('quantity_adjusted', $row->quantity);
                     }
@@ -3802,12 +3803,12 @@ class TransactionUtil extends Util
                             ->decrement('quantity_sold', $extra_sold);
                     } else {
                         $stock_adjustment_lines[] =
-                        (object) [
-                            'id'           => $row->adjust_line_id,
-                            'quantity'     => $extra_sold,
-                            'product_id'   => $row->adjust_product_id,
-                            'variation_id' => $row->adjust_variation_id,
-                        ];
+                            (object) [
+                                'id'           => $row->adjust_line_id,
+                                'quantity'     => $extra_sold,
+                                'product_id'   => $row->adjust_product_id,
+                                'variation_id' => $row->adjust_variation_id,
+                            ];
 
                         PurchaseLine::where('id', $row->purchase_line_id)
                             ->decrement('quantity_adjusted', $extra_sold);
@@ -4603,75 +4604,75 @@ class TransactionUtil extends Util
 
         if (in_array('purchase_return', $transaction_types)) {
             $output['total_purchase_return_inc_tax'] = ! empty($transaction_totals->total_purchase_return_inc_tax) ?
-            $transaction_totals->total_purchase_return_inc_tax : 0;
+                $transaction_totals->total_purchase_return_inc_tax : 0;
 
             $output['total_purchase_return_exc_tax'] =
-            ! empty($transaction_totals->total_purchase_return_exc_tax) ?
-            $transaction_totals->total_purchase_return_exc_tax : 0;
+                ! empty($transaction_totals->total_purchase_return_exc_tax) ?
+                $transaction_totals->total_purchase_return_exc_tax : 0;
         }
 
         if (in_array('sell_return', $transaction_types)) {
             $output['total_sell_return_inc_tax'] =
-            ! empty($transaction_totals->total_sell_return_inc_tax) ?
-            $transaction_totals->total_sell_return_inc_tax : 0;
+                ! empty($transaction_totals->total_sell_return_inc_tax) ?
+                $transaction_totals->total_sell_return_inc_tax : 0;
 
             $output['total_sell_return_exc_tax'] =
-            ! empty($transaction_totals->total_sell_return_exc_tax) ?
-            $transaction_totals->total_sell_return_exc_tax : 0;
+                ! empty($transaction_totals->total_sell_return_exc_tax) ?
+                $transaction_totals->total_sell_return_exc_tax : 0;
 
             $output['total_sell_return_discount'] =
-            ! empty($transaction_totals->total_sell_return_discount) ?
-            $transaction_totals->total_sell_return_discount : 0;
+                ! empty($transaction_totals->total_sell_return_discount) ?
+                $transaction_totals->total_sell_return_discount : 0;
         }
 
         if (in_array('sell_transfer', $transaction_types)) {
             $output['total_transfer_shipping_charges'] =
-            ! empty($transaction_totals->total_transfer_shipping_charges) ?
-            $transaction_totals->total_transfer_shipping_charges : 0;
+                ! empty($transaction_totals->total_transfer_shipping_charges) ?
+                $transaction_totals->total_transfer_shipping_charges : 0;
         }
 
         if (in_array('expense', $transaction_types)) {
             $total_expense = ! empty($transaction_totals->total_expense) ?
-            $transaction_totals->total_expense : 0;
+                $transaction_totals->total_expense : 0;
             $total_expense_refund = ! empty($transaction_totals->total_expense_refund) ?
-            $transaction_totals->total_expense_refund : 0;
+                $transaction_totals->total_expense_refund : 0;
             $output['total_expense'] = $total_expense - $total_expense_refund;
         }
 
         if (in_array('payroll', $transaction_types)) {
             $output['total_payroll'] =
-            ! empty($transaction_totals->total_payroll) ?
-            $transaction_totals->total_payroll : 0;
+                ! empty($transaction_totals->total_payroll) ?
+                $transaction_totals->total_payroll : 0;
         }
 
         if (in_array('stock_adjustment', $transaction_types)) {
             $output['total_adjustment'] =
-            ! empty($transaction_totals->total_adjustment) ?
-            $transaction_totals->total_adjustment : 0;
+                ! empty($transaction_totals->total_adjustment) ?
+                $transaction_totals->total_adjustment : 0;
 
             $output['total_recovered'] =
-            ! empty($transaction_totals->total_recovered) ?
-            $transaction_totals->total_recovered : 0;
+                ! empty($transaction_totals->total_recovered) ?
+                $transaction_totals->total_recovered : 0;
         }
 
         if (in_array('purchase', $transaction_types)) {
             $output['total_purchase_discount'] =
-            ! empty($transaction_totals->total_purchase_discount) ?
-            $transaction_totals->total_purchase_discount : 0;
+                ! empty($transaction_totals->total_purchase_discount) ?
+                $transaction_totals->total_purchase_discount : 0;
         }
 
         if (in_array('sell', $transaction_types)) {
             $output['total_sell_discount'] =
-            ! empty($transaction_totals->total_sell_discount) ?
-            $transaction_totals->total_sell_discount : 0;
+                ! empty($transaction_totals->total_sell_discount) ?
+                $transaction_totals->total_sell_discount : 0;
 
             $output['total_reward_amount'] =
-            ! empty($transaction_totals->total_reward_amount) ?
-            $transaction_totals->total_reward_amount : 0;
+                ! empty($transaction_totals->total_reward_amount) ?
+                $transaction_totals->total_reward_amount : 0;
 
             $output['total_sell_round_off'] =
-            ! empty($transaction_totals->total_sell_round_off) ?
-            $transaction_totals->total_sell_round_off : 0;
+                ! empty($transaction_totals->total_sell_round_off) ?
+                $transaction_totals->total_sell_round_off : 0;
         }
 
         return $output;
@@ -5036,12 +5037,12 @@ class TransactionUtil extends Util
     {
         $expenses = Transaction::leftJoin('expense_categories AS ec', 'transactions.expense_category_id', '=', 'ec.id')
             ->leftJoin('expense_categories AS esc', 'transactions.expense_sub_category_id', '=', 'esc.id')
-        // ->join(
-        //     'business_locations AS bl',
-        //     'transactions.location_id',
-        //     '=',
-        //     'bl.id'
-        // )
+            // ->join(
+            //     'business_locations AS bl',
+            //     'transactions.location_id',
+            //     '=',
+            //     'bl.id'
+            // )
             ->leftJoin('tax_rates as tr', 'transactions.tax_id', '=', 'tr.id')
             ->leftJoin('users AS U', 'transactions.expense_for', '=', 'U.id')
             ->leftJoin('users AS usr', 'transactions.created_by', '=', 'usr.id')
@@ -5092,7 +5093,7 @@ class TransactionUtil extends Util
     public function getListSells($business_id, $sale_type = 'sell', $company_id = null)
     {
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
-        // ->leftJoin('transaction_payments as tp', 'transactions.id', '=', 'tp.transaction_id')
+            // ->leftJoin('transaction_payments as tp', 'transactions.id', '=', 'tp.transaction_id')
             ->leftJoin('transaction_sell_lines as tsl', function ($join) {
                 $join->on('transactions.id', '=', 'tsl.transaction_id')
                     ->whereNull('tsl.parent_sell_line_id');
@@ -5101,12 +5102,12 @@ class TransactionUtil extends Util
             ->leftJoin('users as ss', 'transactions.res_waiter_id', '=', 'ss.id')
             ->leftJoin('users as dp', 'transactions.delivery_person', '=', 'dp.id')
             ->leftJoin('res_tables as tables', 'transactions.res_table_id', '=', 'tables.id')
-        // ->join(
-        //     'business_locations AS bl',
-        //     'transactions.location_id',
-        //     '=',
-        //     'bl.id'
-        // )
+            // ->join(
+            //     'business_locations AS bl',
+            //     'transactions.location_id',
+            //     '=',
+            //     'bl.id'
+            // )
             ->leftJoin(
                 'transactions AS SR',
                 'transactions.id',
@@ -5733,9 +5734,9 @@ class TransactionUtil extends Util
         //                         + $data['total_purchase_return']
         //                         - $data['total_sell_return'];
         $data['net_profit'] = $module_total + $gross_profit
-             + ($data['total_sell_round_off'] + $data['total_recovered'] + $data['total_sell_shipping_charge'] + $data['total_purchase_discount'] + $data['total_sell_additional_expense'] + $data['total_sell_return_discount']
-        ) - ($data['total_reward_amount'] + $data['total_expense'] + $data['total_adjustment'] + $data['total_transfer_shipping_charges'] + $data['total_purchase_shipping_charge'] + $data['total_purchase_additional_expense'] + $data['total_sell_discount']
-        );
+            + ($data['total_sell_round_off'] + $data['total_recovered'] + $data['total_sell_shipping_charge'] + $data['total_purchase_discount'] + $data['total_sell_additional_expense'] + $data['total_sell_return_discount']
+            ) - ($data['total_reward_amount'] + $data['total_expense'] + $data['total_adjustment'] + $data['total_transfer_shipping_charges'] + $data['total_purchase_shipping_charge'] + $data['total_purchase_additional_expense'] + $data['total_sell_discount']
+            );
 
         //get gross profit from Project Module
         $module_parameters = [
@@ -5972,6 +5973,7 @@ class TransactionUtil extends Util
     public function updateContactBalance($contact, $amount, $type = 'add')
     {
         if (! is_object($contact)) {
+
             $contact = Contact::findOrFail($contact);
         }
 
@@ -5986,8 +5988,9 @@ class TransactionUtil extends Util
     public function payContact($request, $format_data = true, $company_id = null)
     {
         $contact_id  = $request->input('contact_id');
+        $employee_id = $request->input('employee_id');
         $business_id = auth()->user()->business_id;
-        $inputs      = $request->only([
+        $inputs = $request->only([
             'amount',
             'method',
             'note',
@@ -6011,6 +6014,7 @@ class TransactionUtil extends Util
         if (! array_key_exists($inputs['method'], $payment_types)) {
             throw new \Exception('Payment method not found');
         }
+
         $inputs['paid_on'] = $request->input('paid_on', \Carbon::now()->toDateTimeString());
         if ($format_data) {
             $inputs['paid_on'] = $this->uf_date($inputs['paid_on'], true);
@@ -6018,7 +6022,7 @@ class TransactionUtil extends Util
         }
 
         $inputs['created_by']  = auth()->user()->id;
-        $inputs['payment_for'] = $contact_id;
+        $inputs['payment_for'] = $contact_id ?? $employee_id;
         $inputs['business_id'] = $business_id;
         $inputs['company_id']  = $company_id;
 
@@ -6032,25 +6036,42 @@ class TransactionUtil extends Util
             }
         }
 
-        $contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
-            ->where('id', $contact_id)
-            ->first();
+        $contact = null;
+        if ($contact_id) {
+            $contact = Contact::where('business_id', $business_id)->where('company_id', $company_id)
+                ->where('id', $contact_id)
+                ->first();
+        }
+
+        $user = null;
+        if ($employee_id) {
+            $user = User::where('id', $employee_id)->first();
+        }
 
         $due_payment_type = $request->input('due_payment_type');
         if (empty($due_payment_type)) {
-            $due_payment_type = $contact->type == 'supplier' ? 'purchase' : 'sell';
+            if ($contact) {
+                $due_payment_type = $contact->type == 'supplier' ? 'purchase' : 'sell';
+            } else {
+                $due_payment_type =  'employee';
+            }
         }
 
         $prefix_type = '';
-        if ($contact->type == 'customer') {
-            $prefix_type = 'sell_payment';
-        } elseif ($contact->type == 'supplier') {
-            $prefix_type = 'purchase_payment';
+        if ($contact) {
+            if ($contact->type == 'customer') {
+                $prefix_type = 'sell_payment';
+            } elseif ($contact->type == 'supplier') {
+                $prefix_type = 'purchase_payment';
+            }
+        } else if ($user) {
+            $prefix_type = 'employee_payment';
         }
+
         $ref_count = $this->setAndGetReferenceCount($prefix_type, $business_id, $company_id);
+
         //Generate reference number
         $payment_ref_no = $this->generateReferenceNumber($prefix_type, $ref_count, $business_id);
-
         $inputs['payment_ref_no'] = $payment_ref_no;
 
         if (! empty($request->input('account_id'))) {
@@ -6067,6 +6088,9 @@ class TransactionUtil extends Util
         if ($due_payment_type == 'purchase' && $is_reverse) {
             $payment_type = 'credit';
         }
+        if ($due_payment_type == 'employee' && $is_reverse) {
+            $payment_type = 'debit';
+        }
 
         $inputs['payment_type'] = $payment_type;
 
@@ -6077,14 +6101,16 @@ class TransactionUtil extends Util
 
         $inputs['transaction_type'] = $due_payment_type;
 
-        event(new TransactionPaymentAdded($parent_payment, $inputs));
-
+        if ($contact_id) {
+            event(new TransactionPaymentAdded($parent_payment, $inputs));
+        }
         //Distribute above payment among unpaid transactions
         if (! $is_reverse) {
             $excess_amount = $this->payAtOnce($parent_payment, $due_payment_type);
         }
+
         //Update excess amount
-        if (! empty($excess_amount)) {
+        if ($contact_id && !empty($excess_amount)) {
             $this->updateContactBalance($contact, $excess_amount);
         }
 
