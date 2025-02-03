@@ -47,6 +47,7 @@
                         <th>@lang('accounting::lang.receipt_voucher_date')</th>
                         <th>@lang('accounting::lang.invoice_no')</th>
                         <th>@lang('accounting::lang.customer')</th>
+                        <th>@lang('accounting::lang.employee')</th>
                         <th>@lang('accounting::lang.amount')</th>
                         <th>@lang('accounting::lang.note')</th>
                         <th>@lang('accounting::lang.payment_method')</th>
@@ -62,6 +63,33 @@
 @stop
 
 @section('javascript')
+    <script>
+        $(document).ready(function() {
+            function toggleSections() {
+                var userType = $('#userTypeSelect').val();
+
+                if (userType === 'customer') {
+                    $('#employee_id').closest('.col-md-4').hide().find('select').prop('required', false);
+                    $('#contact_id').closest('.col-md-4').show().find('select').prop('required', true);
+                    $('#receipt_type_value').closest('.col-md-4').show().find('input').prop('required', true);
+                    $('#transaction_id').closest('.col-md-4').show().find('select').prop('required', true);
+                } else if (userType === 'employee') {
+                    $('#employee_id').closest('.col-md-4').show().find('select').prop('required', true);
+                    $('#contact_id').closest('.col-md-4').hide().find('select').prop('required', false);
+                    $('#receipt_type_value').closest('.col-md-4').hide().find('input').prop('required', false);
+                    $('#transaction_id').closest('.col-md-4').hide().find('select').prop('required', false);
+                }
+            }
+
+            toggleSections();
+
+            $('#userTypeSelect').change(function() {
+                toggleSections();
+            });
+        });
+    </script>
+
+
     <script>
         $(document).ready(function() {
             $('#receipt_voucher_table').DataTable({
@@ -107,6 +135,10 @@
                         name: 'contact_id'
                     },
                     {
+                        data: 'payment_for',
+                        name: 'payment_for'
+                    },
+                    {
                         data: 'amount',
                         name: 'amount'
                     },
@@ -127,12 +159,11 @@
 
         });
 
-        $('#receipt_voucher_date_range_filter').daterangepicker(
-            {
-                    ...dateRangeSettings,
-                    startDate: moment().startOf('year'), 
-                    endDate: moment().endOf('year'),
-                },
+        $('#receipt_voucher_date_range_filter').daterangepicker({
+                ...dateRangeSettings,
+                startDate: moment().startOf('year'),
+                endDate: moment().endOf('year'),
+            },
             function(start, end) {
                 $('#receipt_voucher_date_range_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(
                     moment_date_format));

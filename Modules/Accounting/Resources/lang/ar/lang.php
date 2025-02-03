@@ -524,6 +524,7 @@ return [
     'view_accounting_requests' => 'عرض طلبات المحاسبة',
 
 
+
     'autoMigration' => [
         'sell' => 'مبيعات',
         'sell_return' => 'بيع العائد',
@@ -814,5 +815,6 @@ return [
     'print_journal' => 'طباعة قيد مرجعي',
     'no_contact_selected' => 'لا توجد بيانات',
     'transaction_op' => 'العملية',
-
+    'aCustomer' => 'عميل',
+    'employee' => 'الموظف',
 ];
