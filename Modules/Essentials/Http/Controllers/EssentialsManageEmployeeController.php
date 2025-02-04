@@ -337,10 +337,12 @@ class EssentialsManageEmployeeController extends Controller
         if (request()->ajax()) {
 
             return Datatables::of($users)
-                ->addColumn('company_id', function ($row) use ($companies) {
-                    $item = $companies[$row->company_id] ?? '';
-                    return $item;
-                })
+            ->addColumn('company_id', function ($row) use ($companies) {
+                return isset($row->company_id, $companies[$row->company_id]) 
+                    ? $companies[$row->company_id] 
+                    : '';
+            })
+            
                 ->addColumn('total_salary', function ($row) {
                     return $row->calculateTotalSalary();
                 })

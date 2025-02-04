@@ -1,16 +1,18 @@
 <?php
 namespace Modules\HousingMovements\Http\Controllers;
 
-use App\User;
-use App\Utils\ModuleUtil;
 use Excel;
-use Illuminate\Contracts\Support\Renderable;
+use App\User;
+use App\SentNotification;
+use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
+use App\SentNotificationsUser;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Contracts\Support\Renderable;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
-use Yajra\DataTables\Facades\DataTables;
 
 class HousingMovementsController extends Controller
 {
@@ -180,12 +182,10 @@ class HousingMovementsController extends Controller
     public function postImportWorkersNewArrival(Request $request)
     {
 
-        $delegation_id              = $request->input('delegation_id');
-        $agency_id                  = $request->input('agency_id');
-        $transaction_sell_line_id   = $request->input('transaction_sell_line_id');
-        $unSupportedworker_order_id = $request->input('unSupportedworker_order_id');
-
         try {
+            $depts = [30, 35, 34, 41, 44, 42];
+            $roles = [84, 88, 92, 93, 94, 95, 98];
+
             // Validate the uploaded file
             $request->validate([
                 'workers_csv' => 'required|file|mimes:xlsx,xls,csv',
@@ -322,6 +322,8 @@ class HousingMovementsController extends Controller
 
             DB::commit();
 
+           self::sendNewArrivalNotification($depts, $roles);
+
             return redirect()->route('travelers')->with('notification', [
                 'success' => 1,
                 'msg'     => __('product.file_imported_successfully'),
@@ -444,4 +446,51 @@ class HousingMovementsController extends Controller
         $interview_status = $this->statuses;
         return view('housingmovements::worker.proposed_laborIndex')->with(compact('interview_status', 'nationalities', 'specializations', 'professions', 'agencys'));
     }
+
+    public function sendNewArrivalNotification(array $depts, array $roles)
+    {
+        // Get the department and role IDs
+        $departmentIds = EssentialsDepartment::whereIn('id', $depts)
+            ->pluck('id')->toArray();
+
+        $rolesIds = DB::table('roles')
+            ->whereIn('id', $roles)
+            ->pluck('id')->toArray();
+
+        // Get users based on roles
+        $users = User::whereHas('roles', function ($query) use ($rolesIds) {
+            $query->whereIn('id', $rolesIds);
+        });
+
+        // Get user IDs and their full names
+        $user_ids = $users->pluck('id')->toArray();
+        $to       = $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+            ->pluck('full_name')->toArray();
+
+        // Notification details
+        $title = 'وصول جديد';
+        $msg   = 'تم إضافة وصول جديد للعمال أو الموظفين';
+
+        // Check if there are users to notify
+        if (! empty($user_ids)) {
+            // Create the notification
+            $sentNotification = SentNotification::create([
+                'via'       => 'dashboard',
+                'type'      => 'GeneralManagementNotification',
+                'title'     => $title,
+                'msg'       => $msg,
+                'sender_id' => auth()->user()->id,
+                'to'        => json_encode($to),
+            ]);
+
+            // Create entries in SentNotificationsUser for each user
+            foreach ($user_ids as $user_id) {
+                SentNotificationsUser::create([
+                    'sent_notifications_id' => $sentNotification->id,
+                    'user_id'               => $user_id,
+                ]);
+            }
+        }
+    }
+
 }
