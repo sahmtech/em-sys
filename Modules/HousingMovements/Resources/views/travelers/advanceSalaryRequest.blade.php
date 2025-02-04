@@ -177,7 +177,7 @@
                             {!! Form::select(
                             'type',
                             \Illuminate\Support\Facades\DB::table('requests_types')
-                            ->whereIn('id', [5, 6])
+                            ->where('type','advanceSalary')
                             ->get()
                             ->mapWithKeys(function ($requestType) {
                             return [
