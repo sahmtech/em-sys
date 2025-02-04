@@ -173,15 +173,19 @@
 
                         <div class="form-group col-md-6">
                             {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
+
                             {!! Form::select(
                             'type',
-                            \Modules\CEOManagment\Entities\RequestsType::find([5, 6])->mapWithKeys(function
-                            ($requestType) {
+                            \Illuminate\Support\Facades\DB::table('requests_types')
+                            ->whereIn('id', [5, 6])
+                            ->get()
+                            ->mapWithKeys(function ($requestType) {
                             return [
                             $requestType->id => trans('request.' . $requestType->type) . ' - ' . trans('request.' .
                             $requestType->for),
                             ];
-                            })->toArray(),
+                            })
+                            ->toArray(), 
                             null,
                             [
                             'class' => 'form-control',
@@ -192,6 +196,7 @@
                             ]
                             ) !!}
                         </div>
+
 
                         <div class="form-group col-md-6">
                             {!! Form::label('user_id', __('essentials::lang.name') . ':*') !!}
