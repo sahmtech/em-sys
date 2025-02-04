@@ -799,4 +799,5 @@ return [
     'pending'                                            => 'Pending',
     'appointment_date_start_from'                        => 'appointment start date',
     'appointment_date_end_at'                            => 'appointment end date',
+    'attach_owner_type'                                  => 'Attachment Owner Type',
 ];

@@ -83,8 +83,7 @@ class FollowupDeliveryAttachmentController extends Controller
         $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $workersIds)
             ->whereHas('attachment', function ($query) {
                 $query->where('type', 'Attached');
-            })
-            ->get();
+            }); 
 
         $workers_have_docs_Ids = FollowupDeliveryDocument::whereIn('user_id', $workersIds)
             ->whereHas('attachment', function ($query) {
@@ -98,16 +97,22 @@ class FollowupDeliveryAttachmentController extends Controller
             ->get();
 
         if (request()->ajax()) {
-
             if (! empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
-
                 $delivery_documents = $delivery_documents->where('user_id', request()->input('worker_id'));
             }
 
             if (! empty(request()->input('document_id')) && request()->input('document_id') !== 'all') {
-
                 $delivery_documents = $delivery_documents->where('document_id', request()->input('document_id'));
             }
+
+            if (! empty(request()->input('user_type_id')) && request()->input('user_type_id') !== 'all') {
+                $userType           = trim(request()->input('user_type_id'));
+                $delivery_documents = $delivery_documents->whereHas('user', function ($query) use ($userType) {
+                    $query->whereNotNull('user_type')->where('user_type', $userType);
+                });
+            }
+
+            $delivery_documents = $delivery_documents->get();
 
             return DataTables::of($delivery_documents)
 
