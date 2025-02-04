@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.automatedMigration'))
+@section('company_title', __('accounting::lang.automatedMigration'))
 
 @section('content')
 
@@ -17,7 +17,7 @@
                 <div class="col-md-12">
                     @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                         <div class="row">
-                          
+
                             <div class="col-sm-4">
                                 {!! Form::label('type_fillter_lable', __('accounting::lang.operatio_type')) !!}
                                 <select class="form-control" name="type_fillter" id="type_fillter"style="padding: 3px" required>
@@ -68,13 +68,11 @@
                             <p>@lang('accounting::lang.add_auto_migration_help')</p>
                             <a href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@store_deflute_auto_migration') }}"
                                 data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@store_deflute_auto_migration') }}"
-                                 class="btn btn-success btn-xs ">
+                                class="btn btn-success btn-xs ">
                                 <i class="fas fa-plus"></i> @lang('accounting::lang.add_new_auto_migration')
                             </a>
                         </div>
                     @else
-                    
-
                         <div class="col-sm-12">
                             <h4 style="text-align: start">@lang('accounting::lang.migration_list')</h4>
 
@@ -153,7 +151,7 @@
                     {
                         "data": "method"
                     },
-              
+
                     {
                         "data": "active"
                     }
@@ -177,7 +175,7 @@
                 //check if same or not
                 if ($('.total_credit_hidden').val() != $('.total_debit_hidden').val()) {
                     is_valid = false;
-                    alert("@lang('accounting::lang.credit_debit_equal')");
+                    alert("@extends('layouts.app')");
                 }
 
                 //check if all account selected or not
@@ -188,7 +186,7 @@
                     if (credit != 0 || debit != 0) {
                         if ($(tr).find('.account_id').val() == '') {
                             is_valid = false;
-                            alert("@lang('accounting::lang.select_all_accounts')");
+                            alert("@lang('accounting::lang.automatedMigration')");
                         }
                     }
                 });
@@ -257,17 +255,17 @@
                 tbode_number + '[' +
                 counter +
                 ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><select class="form-control cost_center" style="width: 100%;" name="cost_center' +
-                    tbode_number + '[' +
-                    counter +
-                    ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select> </td><td><label class="radio-inline"><input value="debit" type="radio" name="type' +
                 tbode_number + '[' +
                 counter +
-                ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>@endforeach </select> </td><td><label class="radio-inline"><input value="debit" type="radio" name="type' +
                 tbode_number + '[' +
                 counter +
-                ']">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="amount_type' +
+                ']" checked>@lang('lang_v1.all')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                tbode_number + '[' +
+                counter +
+                ']">@lang('accounting::lang.autoMigration.sell')</label></td><td><select class="form-control" name="amount_type' +
                 tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
-                '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
+                '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.sell_return')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.opening_stock')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.purchase')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.purchase_order')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.purchase_return')</option></select></td></tr>'
             )
             $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
                 ajax: {
