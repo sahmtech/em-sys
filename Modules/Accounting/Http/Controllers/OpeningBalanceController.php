@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Company;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class OpeningBalanceController extends Controller
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_opening_balances = auth()->user()->can('accounting.opening_balances');
@@ -106,13 +107,18 @@ class OpeningBalanceController extends Controller
                 ])
                 ->make(true);
         }
-
-        return view('accounting::opening_balance.index', compact('sub_types'));
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>          __('accounting::lang.opening_balances'), 'url' =>   action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index'])],
+        ];
+        return view('accounting::opening_balance.index', compact('sub_types', 'breadcrumbs'));
     }
 
     protected function store(Request $request)
     {
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
         $rules = [
             // 'year' => 'required|String',
             'accounting_account_id' => 'required|String|exists:accounting_accounts,id',
@@ -224,7 +230,7 @@ class OpeningBalanceController extends Controller
     protected function calcEquation()
     {
         $business_id = \request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
         $credit = AccountingAccountsTransaction::query()->where('sub_type', 'opening_balance')->where('type', 'credit')->sum('amount');
         $debt = AccountingAccountsTransaction::query()->where('sub_type', 'opening_balance')->where('type', 'debit')->sum('amount');
         return response()->json(['credit' => $credit, 'debt' => $debt]);
@@ -258,7 +264,7 @@ class OpeningBalanceController extends Controller
         }
         $openingBalanceBeforImport = OpeningBalance::count();
         try {
-             $company_id = Session::get('selectedCompanyId');
+            $company_id = Session::get('selectedCompanyId');
 
             if ($request->hasFile('opeining_balance_csv')) {
                 $file = $request->file('opeining_balance_csv');

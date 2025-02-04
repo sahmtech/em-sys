@@ -14,6 +14,7 @@ use Modules\Accounting\Entities\AccountingAccountsTransaction;
 use Illuminate\Support\Facades\DB;
 use App\TransactionPayment;
 use App\BusinessLocation;
+use App\Company;
 use App\Contact;
 use App\User;
 use Illuminate\Support\Facades\Session;
@@ -78,8 +79,15 @@ class TransactionController extends Controller
         $suppliers = Contact::suppliersDropdown($business_id, false, true, $company_id);
         $orderStatuses = $this->transactionUtil->orderStatuses();
 
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>  __('accounting::lang.accounting_transactions'), 'url' =>   action([\Modules\Accounting\Http\Controllers\TransactionController::class, 'index'])],
+        ];
+
         return view('accounting::transactions.index')
-            ->with(compact('business_locations', 'suppliers', 'orderStatuses'));
+            ->with(compact('business_locations', 'suppliers', 'orderStatuses', 'breadcrumbs'));
     }
 
     protected function _allSales()

@@ -8,6 +8,21 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('accounting::lang.employees_statement_of_account_report') - {{ $user->first_name }}
         </h1>
     </section>
@@ -90,38 +105,38 @@
             <div class="col-sm-12">
                 <div class="box">
                     <div class="box-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped" id="ledger">
-                                    <thead>
-                                        <tr>
-                                            <th>@lang('accounting::lang.number')</th>
-                                            <th>@lang('messages.date')</th>
-                                            <th>@lang('accounting::lang.transaction')</th>
-                                            <th>@lang('lang_v1.cost_senter')</th>
-                                            <th>@lang('brand.note')</th>
-                                            <th>@lang('lang_v1.added_by')</th>
-                                            <th>@lang('account.debit')</th>
-                                            <th>@lang('account.credit')</th>
-                                        </tr>
-                                    </thead>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="ledger">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('accounting::lang.number')</th>
+                                        <th>@lang('messages.date')</th>
+                                        <th>@lang('accounting::lang.transaction')</th>
+                                        <th>@lang('lang_v1.cost_senter')</th>
+                                        <th>@lang('brand.note')</th>
+                                        <th>@lang('lang_v1.added_by')</th>
+                                        <th>@lang('account.debit')</th>
+                                        <th>@lang('account.credit')</th>
+                                    </tr>
+                                </thead>
 
 
 
-                                    <tfoot>
-                                        <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
-                                            <td class="footer_total_debit"></td>
-                                            <td class="footer_total_credit"></td>
-                                        </tr>
-                                        <tr class="bg-gray font-17 footer-total text-center">
-                                            <td colspan="6"><strong>@lang('accounting::lang.autoMigration.final_total'):</strong></td>
-                                            <td class="footer_final_total_debit"></td>
-                                            <td class="footer_final_total_credit"></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
-                            </div>
+                                <tfoot>
+                                    <tr class="bg-gray font-17 footer-total text-center">
+                                        <td colspan="6"><strong>@lang('sale.total'):</strong></td>
+                                        <td class="footer_total_debit"></td>
+                                        <td class="footer_total_credit"></td>
+                                    </tr>
+                                    <tr class="bg-gray font-17 footer-total text-center">
+                                        <td colspan="6"><strong>@lang('accounting::lang.autoMigration.final_total'):</strong></td>
+                                        <td class="footer_final_total_debit"></td>
+                                        <td class="footer_final_total_credit"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div class="modal fade" id="printJournalEntry" tabindex="-1" role="dialog"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -152,7 +167,7 @@
                     ledger.ajax.reload();
                 }
             );
-            
+
             $('#contact_filter').select2();
 
             // Account Book
