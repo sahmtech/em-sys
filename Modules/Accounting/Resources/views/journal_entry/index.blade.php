@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.journal_entry'))
+@section('company_title', __('accounting::lang.journal_entry'))
 
 @section('content')
 
@@ -116,9 +116,9 @@
                 ]
             });
 
-            $('#journal_entry_date_range_filter').daterangepicker(   {
+            $('#journal_entry_date_range_filter').daterangepicker({
                     ...dateRangeSettings,
-                    startDate: moment().startOf('year'), 
+                    startDate: moment().startOf('year'),
                     endDate: moment().endOf('year'),
                 },
 
