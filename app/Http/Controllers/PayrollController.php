@@ -905,6 +905,7 @@ class PayrollController extends Controller
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
 
         $payrollGroupUsers = PayrollGroupUser::with('user')->where('ceo_cleared', 1);
+        
         if (request()->input('select_department_id') && request()->input('select_department_id') != 'all') {
             $select_department_id = request()->input('select_department_id');
 
