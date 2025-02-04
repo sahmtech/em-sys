@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Company;
 use App\Contact;
 use App\Events\TransactionPaymentAdded;
 use App\Exceptions\AdvanceBalanceNotAvailable;
@@ -126,7 +127,14 @@ class ReceiptVouchersController extends Controller
 
         $users = User::whereIn('user_type', ['employee', 'manager', 'department_head'])->where('company_id', $company_id)->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
-        return view('accounting::receipt_vouchers.index', compact('payment_types', 'accounts', 'contacts', 'users'));
+
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>  __('accounting::lang.receipt_vouchers'), 'url' => action([\Modules\Accounting\Http\Controllers\ReceiptVouchersController::class, 'index'])],
+        ];
+        return view('accounting::receipt_vouchers.index', compact('payment_types', 'accounts', 'contacts', 'users', 'breadcrumbs'));
     }
 
     protected function store(Request $request)

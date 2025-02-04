@@ -4,6 +4,7 @@ namespace Modules\Accounting\Http\Controllers;
 
 use App\Account;
 use App\AccountTransaction;
+use App\Company;
 use App\Contact;
 use App\Events\TransactionPaymentAdded;
 use App\Exceptions\AdvanceBalanceNotAvailable;
@@ -77,7 +78,7 @@ class PaymentVouchersController extends Controller
 
         if (request()->ajax()) {
             $transactions = TransactionPayment::with('transaction');
-          
+
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end =  request()->end_date;
@@ -97,7 +98,7 @@ class PaymentVouchersController extends Controller
             }
             $transactions->where(function ($q) {
                 $q->where('payment_type', 'debit')->orWhereHas('transaction', function ($q) {
-                    $q->whereIn('type', ['purchase', 'expense','payroll']);
+                    $q->whereIn('type', ['purchase', 'expense', 'payroll']);
                 });
             })->orderBy('id');
             return Datatables::of($transactions)
@@ -143,15 +144,20 @@ class PaymentVouchersController extends Controller
                 ])
                 ->make(true);
         }
-
-        return view('accounting::payment_vouchers.index', compact('payment_types', 'accounts', 'contacts'));
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>        __('accounting::lang.payment_vouchers'), 'url' => action([\Modules\Accounting\Http\Controllers\PaymentVouchersController::class, 'index'])],
+        ];
+        return view('accounting::payment_vouchers.index', compact('payment_types', 'accounts', 'contacts', 'breadcrumbs'));
     }
 
     protected function store(Request $request)
     {
-          $transaction_id = $request->input('transaction_id');
+        $transaction_id = $request->input('transaction_id');
         if ($transaction_id) {
-        
+
             try {
                 $business_id = $request->session()->get('user.business_id');
                 $company_id = Session::get('selectedCompanyId');
@@ -302,7 +308,7 @@ class PaymentVouchersController extends Controller
 
                 return redirect()->back()->with(['status' => $output]);
             } else {
-               
+
                 if (!auth()->user()->can('account.access')) {
                     //temp  abort(403, 'Unauthorized action.');
                 }

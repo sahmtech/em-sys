@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Company;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -47,7 +48,7 @@ class TransferController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_transfer = auth()->user()->can('accounting.transfer');
@@ -162,8 +163,13 @@ class TransferController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-
-        return view('accounting::transfer.index');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>       __('accounting::lang.balances_transfer'), 'url' =>   action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index'])],
+        ];
+        return view('accounting::transfer.index')->with(compact('breadcrumbs'));
     }
 
     /**
@@ -173,7 +179,7 @@ class TransferController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -191,7 +197,7 @@ class TransferController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -281,7 +287,7 @@ class TransferController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -313,7 +319,7 @@ class TransferController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 
@@ -383,7 +389,7 @@ class TransferController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-         $company_id = Session::get('selectedCompanyId');
+        $company_id = Session::get('selectedCompanyId');
 
 
 

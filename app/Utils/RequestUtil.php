@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Utils;
 
 use App\AccessRole;
@@ -100,7 +101,6 @@ class RequestUtil extends Util
             $view = 'generalmanagement::requests.filteredRequests';
             if ($departmentId) {
                 $departmentId = EssentialsDepartment::where('id', $departmentId)->pluck('id')->toArray();
-
             } else {
                 $departmentIds = EssentialsDepartment::pluck('id')->toArray();
             }
@@ -185,9 +185,9 @@ class RequestUtil extends Util
                         $query->where('name', 'LIKE', '%تشغيل%')
                             ->where('name', 'LIKE', '%أعمال%');
                     })->orWhere(function ($query) {
-                    $query->where('name', 'LIKE', '%تشغيل%')
-                        ->where('name', 'LIKE', '%شركات%');
-                });
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
             })
                 ->pluck('id')->toArray();
 
@@ -198,9 +198,9 @@ class RequestUtil extends Util
                             $query->where('name', 'LIKE', '%تشغيل%')
                                 ->where('name', 'LIKE', '%أعمال%');
                         })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
+                            $query->where('name', 'LIKE', '%تشغيل%')
+                                ->where('name', 'LIKE', '%شركات%');
+                        });
                 })->pluck('id')->toArray();
             $ownerTypes = ['employee', 'manager', 'worker'];
         }
@@ -230,7 +230,6 @@ class RequestUtil extends Util
             $departmentIds = $departmentIds;
         } else {
             $departmentIds = $departmentId;
-
         }
         // dd($departmentIds);
 
@@ -416,7 +415,7 @@ class RequestUtil extends Util
                                 if ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
                                     if ($is_admin || $can_change_status) {
                                         $status = '<span class="label ' . $statuses[$row->status]['class'] . '">'
-                                        . __($statuses[$row->status]['name']) . '</span>';
+                                            . __($statuses[$row->status]['name']) . '</span>';
                                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                                     }
                                 }
@@ -579,10 +578,8 @@ class RequestUtil extends Util
 
         if ($departmentId) {
             $departments = EssentialsDepartment::where('id', $departmentId)->pluck('name', 'id');
-
         } else {
             $departments = EssentialsDepartment::all()->pluck('name', 'id');
-
         }
         // dd($departments);
 
@@ -668,9 +665,9 @@ class RequestUtil extends Util
                         $query->where('name', 'LIKE', '%تشغيل%')
                             ->where('name', 'LIKE', '%أعمال%');
                     })->orWhere(function ($query) {
-                    $query->where('name', 'LIKE', '%تشغيل%')
-                        ->where('name', 'LIKE', '%شركات%');
-                });
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
             })
                 ->pluck('id')->toArray();
         }
@@ -1210,7 +1207,7 @@ class RequestUtil extends Util
                                 if ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
                                     if ($is_admin || $can_change_status) {
                                         $status = '<span class="label ' . $statuses[$row->status]['class'] . '">'
-                                        . __($statuses[$row->status]['name']) . '</span>';
+                                            . __($statuses[$row->status]['name']) . '</span>';
                                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                                     }
                                 }
@@ -1311,7 +1308,7 @@ class RequestUtil extends Util
                         if ($row->final_status == 'pending') {
                             $statusLabel        = __('request.tranfered_from_GM');
                             $changeStatusButton = '<button type="button" class="btn btn-warning change_after_transfer" data-request-id="' . $row->id . '" data-toggle="modal" data-target="#changeAfterTransferModal">'
-                            . trans('request.change_status') . '</button>';
+                                . trans('request.change_status') . '</button>';
                         } else {
                             $changeStatusButton = trans('request.' . $row->final_status);
                         }
@@ -1353,6 +1350,16 @@ class RequestUtil extends Util
                 ->make(true);
         }
         $all_status = ['approved', 'pending', 'rejected'];
+
+        $breadcrumbs = null;
+        if ($view == 'accounting::requests.allRequest') {
+            $company_name = Company::where('id', $company_id)->first()->name;
+            $breadcrumbs = [
+                ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+                ['title' => $company_name, 'url' => route('accounting.dashboard')],
+                ['title' =>  __('accounting::lang.requests'), 'url' => route('accounting.requests')],
+            ];
+        }
         return view($view)->with(compact(
             'users',
             'requestTypes',
@@ -1368,7 +1375,8 @@ class RequestUtil extends Util
             'specializations',
             'nationalities',
             'allRequestTypes',
-            'all_status'
+            'all_status',
+            'breadcrumbs'
         ));
     }
 
@@ -1433,9 +1441,9 @@ class RequestUtil extends Util
 
 
                 $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
-                
 
-                
+
+
                 if ($isExists && count($request->user_id) == 1) {
                     $output = [
                         'success' => 0,
@@ -1589,7 +1597,7 @@ class RequestUtil extends Util
                         if ($userType == 'worker') {
 
                             $procedure = WkProcedure::where('business_id', $business_id)
-                            //     ->where('request_type_id', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
+                                //     ->where('request_type_id', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
                                 ->where('request_type_id', $request->type)->where('start', 1)->first();
 
                             // if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
@@ -1764,7 +1772,7 @@ class RequestUtil extends Util
                 }
             }
 
-           
+
 
             if ($success) {
                 $this->makeToDo($Request, $business_id);
@@ -1783,7 +1791,7 @@ class RequestUtil extends Util
                 return redirect()->back()->withErrors([$output['msg']]);
             }
         } catch (\Exception $e) {
-            
+
             DB::rollBack();
             return $e->getMessage();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -1923,7 +1931,6 @@ class RequestUtil extends Util
                 }
             }
         }
-
     }
 
     ////// change request status ///////////////////
@@ -3014,14 +3021,14 @@ class RequestUtil extends Util
                             return $allRequestTypes[$row->request_type_id];
                         }
                     })->addColumn('view', function ($row) use ($is_admin, $can_show_request) {
-                    $buttonsHtml = '';
+                        $buttonsHtml = '';
 
-                    if ($is_admin || $can_show_request) {
-                        $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
-                        $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
-                    }
-                    return $buttonsHtml;
-                })
+                        if ($is_admin || $can_show_request) {
+                            $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                            $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+                        }
+                        return $buttonsHtml;
+                    })
                     ->rawColumns(['view'])
                     ->make(true);
             }

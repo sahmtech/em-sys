@@ -5,6 +5,21 @@
 @section('content')
     {{-- @include('accounting::layouts.nav') --}}
     <section class="content-header">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
                 <a href="{{ route('accounting.getFilteredRequests', ['filter' => 'today_requests']) }}">
