@@ -5,8 +5,8 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <div class="accounting-card-grid">
 
+        <div class="accounting-card-grid">
             @foreach ($cardsOfCompanies as $card)
                 <div class="col-md-3">
                     <div class="accounting-card">

@@ -66,6 +66,7 @@ class AccountingController extends Controller
                 // 'link' => action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
             ];
         }
+
         return view('accounting::accounting_landing_page')->with(compact('cardsOfCompanies'));
     }
 
@@ -74,6 +75,7 @@ class AccountingController extends Controller
         Session::put('selectedCompanyId', $request->companyId);
         $company_name = Company::where('id', $request->companyId)->first()->name;
         Session::put('company.name', $company_name);
+
         return redirect()->route('accounting.dashboard');
     }
 
@@ -228,7 +230,14 @@ class AccountingController extends Controller
         $pending_requests =   $counts->pending_requests;
         $completed_requests =   $counts->completed_requests;
         $all_requests =   $counts->all_requests;
+
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+        ];
         return view('accounting::accounting.dashboard')->with(compact(
+
             'coa_overview_chart',
             'all_charts',
             'coa_overview',
@@ -238,7 +247,8 @@ class AccountingController extends Controller
             'today_requests',
             'pending_requests',
             'completed_requests',
-            'all_requests'
+            'all_requests',
+            'breadcrumbs'
         ));
     }
 

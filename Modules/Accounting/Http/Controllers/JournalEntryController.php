@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Company;
 use App\Contact;
 use App\Transaction;
 use App\TransactionPayment;
@@ -152,8 +153,13 @@ class JournalEntryController extends Controller
                 ->rawColumns(['action', 'path_file'])
                 ->make(true);
         }
-
-        return view('accounting::journal_entry.index');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>  __('accounting::lang.journal_entry'), 'url' => action([\Modules\Accounting\Http\Controllers\JournalEntryController::class, 'index'])],
+        ];
+        return view('accounting::journal_entry.index')->with(compact('breadcrumbs'));
     }
 
     public function print($id)
