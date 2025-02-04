@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
@@ -155,13 +156,19 @@ class BudgetController extends Controller
                 }
             }
         }
-
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>                   __('accounting::lang.budget'), 'url' =>    action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index'])],
+        ];
         return view('accounting::budget.index')->with(compact(
             'accounts',
             'budget',
             'months',
             'fy_year',
-            'account_types'
+            'account_types',
+            'breadcrumbs'
         ));
     }
 

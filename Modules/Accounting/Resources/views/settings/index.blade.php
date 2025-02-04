@@ -8,6 +8,21 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('messages.settings')</h1>
     </section>
     <section class="content">
@@ -206,7 +221,7 @@
             </div>
         </div>
         <div class="modal fade" id="add_BankAccounts" tabindex="-1" role="dialog"></div>
-<div class="modal fade" id="edit_BankAccounts" tabindex="-1" role="dialog"></div>
+        <div class="modal fade" id="edit_BankAccounts" tabindex="-1" role="dialog"></div>
     </section>
     @include('accounting::account_type.create')
     <div class="modal fade" id="edit_account_type_modal" tabindex="-1" role="dialog">

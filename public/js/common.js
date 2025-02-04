@@ -133,7 +133,6 @@ $(document).ready(function () {
 
     //Set page level currency to be used for some pages. (Purchase page)
     if ($('input#p_symbol').length > 0) {
-       
         __p_currency_symbol = $('input#p_symbol').val();
         __p_currency_thousand_separator = $('input#p_thousand').val();
         __p_currency_decimal_separator = $('input#p_decimal').val();
@@ -306,7 +305,7 @@ $(document).ready(function () {
 
 //Default settings for daterangePicker
 var ranges = {};
-ranges[LANG.undefined] = [moment("1900-01-01"), moment("2099-12-31")];
+ranges[LANG.undefined] = [moment('1900-01-01'), moment('2099-12-31')];
 ranges[LANG.today] = [moment(), moment()];
 ranges[LANG.yesterday] = [moment().subtract(1, 'days'), moment().subtract(1, 'days')];
 ranges[LANG.last_7_days] = [moment().subtract(6, 'days'), moment()];
@@ -333,8 +332,8 @@ ranges[LANG.last_financial_year] = [
 
 var dateRangeSettings = {
     ranges: ranges,
-    startDate: moment("1900-01-01"),
-    endDate: moment("2099-12-31"),
+    startDate: moment('1900-01-01'),
+    endDate: moment('2099-12-31'),
     locale: {
         cancelLabel: LANG.clear,
         applyLabel: LANG.apply,

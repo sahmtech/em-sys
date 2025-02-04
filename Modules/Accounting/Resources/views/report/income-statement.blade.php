@@ -1,10 +1,25 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.income_list'))
+@section('company_title', __('accounting::lang.income_list'))
 
 @section('content')
 
     <section class="content-header">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('accounting::lang.income_list')</h1>
     </section>
 
