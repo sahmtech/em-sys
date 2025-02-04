@@ -52,6 +52,7 @@
 
 
         </div>
+    </div>
         @endcomponent
 
         <div class="row">
