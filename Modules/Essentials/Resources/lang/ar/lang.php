@@ -2055,5 +2055,6 @@ return [
     'createdBy'                                           => ' بواسطة',
     'appointment_date_start_from'                         => 'تاريخ بداية التعيين',
     'appointment_date_end_at'                             => 'تاريخ نهاية التعيين',
+    'attach_owner_type'                                   => 'نوع صاحب المرفق',
 
 ];

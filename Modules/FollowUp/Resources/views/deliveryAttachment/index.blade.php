@@ -15,8 +15,8 @@
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
             <div class="row">
-                <div class="col-sm-4">
-                    {!! Form::label('worker', __('followup::lang.select_employee_or_worker')) !!}
+                <div class="col-sm-3">
+                    {!! Form::label('worker', __('followup::lang.attachment_owner')) !!}
 
                     <select class="form-control" name="worker_filtter" id='worker_filtter'>
                         <option value="all" selected>@lang('lang_v1.all')</option>
@@ -30,8 +30,27 @@
 
                 </div>
 
-                <div class="col-sm-4" style="margin-top: 0px;">
-                    {!! Form::label('documents', __('followup::lang.attachments_types')) !!}
+                <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('user_type_filter', __('essentials::lang.attach_owner_type') . ':') !!}
+                        {!! Form::select(
+                            'user_type_filter',
+                            [
+                                'worker' => __('essentials::lang.worker'),
+                                'employee' => __('essentials::lang.employee'),
+                            ],
+                            null,
+                            [
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                                'placeholder' => __('lang_v1.all'),
+                            ],
+                        ) !!}
+                    </div>
+                </div>
+
+                <div class="col-sm-3" style="margin-top: 0px;">
+                    {!! Form::label('documents', __('followup::lang.attachment_type')) !!}
 
                     <select class="form-control" name="documents_filtter" id='documents_filtter'>
                         <option value="all" selected>@lang('lang_v1.all')</option>
@@ -41,6 +60,8 @@
                         @endforeach
                     </select>
                 </div>
+
+
                 @endcomponent
             </div>
         </div>
@@ -101,6 +122,8 @@
 
             $('#documents_filtter').select2();
             $('#worker_filtter').select2();
+            $('#user_type_filter').select2();
+            
 
 
             document_delivery_table = $('#document_delivery_table').DataTable({
@@ -115,6 +138,10 @@
                         }
                         if ($('#documents_filtter').val()) {
                             d.document_id = $('#documents_filtter').val();
+
+                        }
+                        if ($('#user_type_filter').val()) {
+                            d.user_type_id = $('#user_type_filter').val();
 
                         }
                     }
@@ -192,7 +219,7 @@
             });
 
 
-            $('#worker_filtter,#documents_filtter').on('change',
+            $('#worker_filtter,#documents_filtter,#user_type_filter').on('change',
                 function() {
                     document_delivery_table.ajax.reload();
                 });
