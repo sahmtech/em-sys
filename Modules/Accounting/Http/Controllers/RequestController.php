@@ -4,6 +4,7 @@ namespace Modules\Accounting\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleRequest;
+use App\Company;
 use App\Utils\RequestUtil;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
