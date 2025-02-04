@@ -2,69 +2,92 @@
 @section('title', __('helpdesk::lang.tickets'))
 
 @section('content')
-    <style>
-        .badge-orange {
-            background-color: #fd7e14;
-            color: white;
-        }
-    </style>
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>
-            <span>@lang('helpdesk::lang.tickets')</span>
-        </h1>
-    </section>
-    @if (session('status'))
-        <script>
-            var status = @json(session('status')); // Convert the session data into a JavaScript object
+<style>
+    .badge-orange {
+        background-color: #fd7e14;
+        color: white;
+    }
+</style>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <span>@lang('helpdesk::lang.tickets')</span>
+    </h1>
+</section>
+@if (session('status'))
+<script>
+    var status = @json(session('status')); // Convert the session data into a JavaScript object
 
             if (status.success) {
                 toastr.success(status.msg); // Show success message using Toastr
             } else {
                 toastr.error(status.msg); // Show error message using Toastr (if success is false)
             }
-        </script>
-    @endif
+</script>
+@endif
 
 
 
 
-    <section class="content">
+<section class="content">
+
+    @component('components.widget', ['class' => 'box-primary'])
+    <div class="row">
+        <div class="col-md-12">
+            @component('components.filters', ['title' => __('report.filters')])
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="department_filter">@lang('helpdesk::lang.ticket_department'):</label>
+                    {!! Form::select('select_department_id', $departments, null, [
+                    'class' => 'form-control select2',
+                    'id' => 'select_department_id',
+                    'style' => 'height:40px; width:100%',
+                    'placeholder' => __('lang_v1.all'),
+                    ]) !!}
+                </div>
+            </div>
+
+            @endcomponent
+
+
+        </div>
+        @endcomponent
 
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
-                    @slot('tool')
-                        <div class="box-tools">
+                @slot('tool')
+                <div class="box-tools">
 
-                            <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                                data-target="#addTicketModal">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </button>
-                        </div>
-                    @endslot
+                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                        data-target="#addTicketModal">
+                        <i class="fa fa-plus"></i> @lang('messages.add')
+                    </button>
+                </div>
+                @endslot
 
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="tickets_table">
-                            <thead>
-                                <tr>
-                                    {{-- <th>@lang('helpdesk::lang.ticket_number')</th> --}}
-                                    <th style="white-space: nowrap; width: 2%;">@lang('helpdesk::lang.ticket_number')</th>
-                                    <th>@lang('helpdesk::lang.title')</th>
-                                    <th>@lang('helpdesk::lang.ticket_user_create')</th>
-                                    <th>@lang('helpdesk::lang.ticket_department')</th>
-                                    <th>@lang('helpdesk::lang.user_reply')</th>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="tickets_table">
+                        <thead>
+                            <tr>
+                                {{-- <th>@lang('helpdesk::lang.ticket_number')</th> --}}
+                                <th style="white-space: nowrap; width: 2%;">@lang('helpdesk::lang.ticket_number')</th>
+                                <th>@lang('helpdesk::lang.title')</th>
+                                <th>@lang('helpdesk::lang.ticket_user_create')</th>
+                                <th>@lang('helpdesk::lang.ticket_department')</th>
+                                <th>@lang('helpdesk::lang.user_reply')</th>
 
-                                    <th>@lang('helpdesk::lang.priority')</th>
-                                    <th>@lang('helpdesk::lang.status')</th>
-                                    <th>@lang('helpdesk::lang.ticket_created_at')</th>
-                                    <th>@lang('helpdesk::lang.last_update_date')</th>
-                                    <th>@lang('messages.action')</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
+                                <th>@lang('helpdesk::lang.priority')</th>
+                                <th>@lang('helpdesk::lang.status')</th>
+                                <th>@lang('helpdesk::lang.ticket_created_at')</th>
+                                <th>@lang('helpdesk::lang.last_update_date')</th>
+                                <th>@lang('messages.action')</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
                 @endcomponent
             </div>
             <div class="modal fade" id="addTicketModal" tabindex="-1" role="dialog"
@@ -73,11 +96,11 @@
                     <div class="modal-content">
 
                         {!! Form::open([
-                            'route' => 'tickets.store',
-                            'enctype' => 'multipart/form-data',
-                            'method' => 'post',
-                        
-                            'files' => true,
+                        'route' => 'tickets.store',
+                        'enctype' => 'multipart/form-data',
+                        'method' => 'post',
+
+                        'files' => true,
                         ]) !!}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -91,9 +114,9 @@
                                 <div class="form-group col-md-6">
                                     {!! Form::label('urgency', __('helpdesk::lang.urgency') . ':') !!}
                                     {!! Form::select('urgency', $urgencies, null, [
-                                        'class' => 'form-control select2',
-                                        'style' => 'height:40px',
-                                        'id' => 'urgency_select',
+                                    'class' => 'form-control select2',
+                                    'style' => 'height:40px',
+                                    'id' => 'urgency_select',
                                     ]) !!}
                                 </div>
 
@@ -104,31 +127,31 @@
                                 <div class="form-group col-md-6">
                                     {!! Form::label('title', __('helpdesk::lang.title') . ':*') !!}
                                     {!! Form::text('title', null, [
-                                        'class' => 'form-control',
-                                        'style' => 'height:40px',
-                                        'placeholder' => __('helpdesk::lang.title'),
-                                        'required',
+                                    'class' => 'form-control',
+                                    'style' => 'height:40px',
+                                    'placeholder' => __('helpdesk::lang.title'),
+                                    'required',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('attachments', __('helpdesk::lang.attachments') . ':') !!}
                                     {!! Form::file('attachments[]', [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('helpdesk::lang.attachments'),
-                                        'style' => 'height:40px',
-                                        'id' => 'attachments',
-                                        'multiple',
+                                    'class' => 'form-control',
+                                    'placeholder' => __('helpdesk::lang.attachments'),
+                                    'style' => 'height:40px',
+                                    'id' => 'attachments',
+                                    'multiple',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-12">
                                     {!! Form::label('message', __('helpdesk::lang.message') . ':*') !!}
                                     {!! Form::textarea('message', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('brand.note'),
-                                        'rows' => 8,
-                                        'required',
+                                    'class' => 'form-control',
+                                    'placeholder' => __('brand.note'),
+                                    'rows' => 8,
+                                    'required',
                                     ]) !!}
                                 </div>
 
@@ -137,18 +160,19 @@
 
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                            <button type="button" class="btn btn-default"
+                                data-dismiss="modal">@lang('messages.close')</button>
                         </div>
                         {!! Form::close() !!}
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+</section>
 @endsection
 @section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
+<script type="text/javascript">
+    $(document).ready(function() {
             $('#addTicketModal').on('shown.bs.modal', function(e) {
                 $('#urgency_select').select2({
                     dropdownParent: $(
@@ -159,16 +183,27 @@
 
             });
             var tickets_table;
+            $('#select_department_id')
+                .on('change',
+                    function() {
+                        tickets_table.ajax.reload();
+                    })
 
-            function reloadDataTable() {
-                tickets_table.ajax.reload();
-            }
+            // function reloadDataTable() {
+            //     tickets_table.ajax.reload();
+            // }
 
             tickets_table = $('#tickets_table').DataTable({
                 processing: true,
                 serverSide: true,
+
+                    
+
                 ajax: {
                     "url": "{{ route('tickets.index') }}",
+                    data: function(d) {
+                        d.select_department_id = $('#select_department_id').val();
+                    }
                 },
 
                 columns: [{
@@ -207,33 +242,6 @@
                 ],
             });
 
-            // $(document).on('click', 'button.delete_insurance_company_button', function() {
-            //     swal({
-            //         title: LANG.sure,
-            //         text: LANG.confirm_delete_country,
-            //         icon: "warning",
-            //         buttons: true,
-            //         dangerMode: true,
-            //     }).then((willDelete) => {
-            //         if (willDelete) {
-            //             var href = $(this).data('href');
-            //             $.ajax({
-            //                 method: "DELETE",
-            //                 url: href,
-            //                 dataType: "json",
-            //                 success: function(result) {
-            //                     if (result.success == true) {
-            //                         toastr.success(result.msg);
-            //                         tickets_table.ajax.reload();
-            //                     } else {
-            //                         toastr.error(result.msg);
-            //                     }
-            //                 }
-            //             });
-            //         }
-            //     });
-            // });
-
         });
-    </script>
+</script>
 @endsection

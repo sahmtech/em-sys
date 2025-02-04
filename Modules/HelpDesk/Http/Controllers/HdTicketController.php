@@ -1,11 +1,11 @@
 <?php
-
 namespace Modules\HelpDesk\Http\Controllers;
 
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\HelpDesk\Entities\HdAttachment;
 use Modules\HelpDesk\Entities\HdTicket;
 use Modules\HelpDesk\Entities\HdTicketReply;
@@ -20,12 +20,22 @@ class HdTicketController extends Controller
     public function index()
     {
 
-        $user = User::where('id', auth()->user()->id)->first();
+        $user     = User::where('id', auth()->user()->id)->first();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $departments = EssentialsDepartment::where('is_main', 1)->pluck('name', 'id');
 
         $tickets = HdTicket::query()->orderBy('created_at', 'desc');
 
-        if (!$is_admin || $user->user_type != 'admin') {
+        if (request()->input('select_department_id') && request()->input('select_department_id') != 'all') {
+            $select_department_id = request()->input('select_department_id');
+
+            $tickets = $tickets->whereHas('user', function ($query) use ($select_department_id) {
+                $query->where('essentials_department_id', $select_department_id);
+            });
+        }
+
+        if (! $is_admin || $user->user_type != 'admin') {
             $tickets = $tickets->where('user_id', $user->id);
         }
         if (request()->ajax()) {
@@ -57,10 +67,10 @@ class HdTicketController extends Controller
                         // Assuming 'status_id' holds the ticket status (1 for open, 2 for closed)
                         if ($row->status_id == 1) {
                             $title = 'مفتوحة'; // Open status
-                            $color = '#28a745'; // Green color for open
+                            $color = '#28a745';      // Green color for open
                         } elseif ($row->status_id == 2) {
                             $title = 'مغلقة'; // Closed status
-                            $color = '#dc3545'; // Red color for closed
+                            $color = '#dc3545';    // Red color for closed
                         } else {
                             $title = $status->title;
                             $color = $status->color; // Fallback to the original color if other status exists
@@ -74,10 +84,10 @@ class HdTicketController extends Controller
 
                 ->addColumn('priority', function ($row) {
                     $priorityMapping = [
-                        'low' => ['label' => 'منخفضة', 'color' => '#28a745'], // Green
-                        'mid' => ['label' => 'متوسطة', 'color' => '#ffc107'], // Yellow
-                        'high' => ['label' => 'عالية', 'color' => '#fd7e14'], // Orange
-                        'urgent' => ['label' => 'عاجلة', 'color' => '#dc3545'], // Red
+                        'low'    => ['label' => 'منخفضة', 'color' => '#28a745'], // Green
+                        'mid'    => ['label' => 'متوسطة', 'color' => '#ffc107'], // Yellow
+                        'high'   => ['label' => 'عالية', 'color' => '#fd7e14'],   // Orange
+                        'urgent' => ['label' => 'عاجلة', 'color' => '#dc3545'],   // Red
                     ];
 
                     $priority = $priorityMapping[$row->urgency] ?? ['label' => 'غير محدد', 'color' => '#6c757d']; // 'غير محدد' = Not Specified
@@ -106,12 +116,12 @@ class HdTicketController extends Controller
                 ->make(true);
         }
         $urgencies = [
-            'low' => __('helpdesk::lang.low'),
-            'mid' => __('helpdesk::lang.mid'),
-            'high' => __('helpdesk::lang.high'),
+            'low'    => __('helpdesk::lang.low'),
+            'mid'    => __('helpdesk::lang.mid'),
+            'high'   => __('helpdesk::lang.high'),
             'urgent' => __('helpdesk::lang.urgent'),
         ];
-        return view('helpdesk::tickets.index')->with(compact('urgencies'));
+        return view('helpdesk::tickets.index')->with(compact('urgencies', 'departments'));
     }
 
     /**
@@ -124,7 +134,7 @@ class HdTicketController extends Controller
         $ticket = HdTicket::find($id);
 
         // Check if the ticket exists
-        if (!$ticket) {
+        if (! $ticket) {
             return redirect()->route('tickets.index')->with('error', 'التذكرة غير موجودة');
         }
 
@@ -135,7 +145,7 @@ class HdTicketController extends Controller
 
         $output = [
             'success' => true,
-            'msg' => __('lang_v1.close_ticket'),
+            'msg'     => __('lang_v1.close_ticket'),
         ];
 
         return redirect()->route('tickets.index')->with('status', $output);
@@ -156,12 +166,12 @@ class HdTicketController extends Controller
 
         try {
             $input = $request->all();
-            $data = [
-                'user_id' => auth()->user()->id,
-                'title' => $input['title'],
-                'message' => $input['message'],
+            $data  = [
+                'user_id'   => auth()->user()->id,
+                'title'     => $input['title'],
+                'message'   => $input['message'],
                 'status_id' => 1,
-                'urgency' => $input['urgency'],
+                'urgency'   => $input['urgency'],
             ];
             $ticket = HdTicket::create($data);
 
@@ -171,14 +181,14 @@ class HdTicketController extends Controller
                     $path = $attachment->store('/tickets_attachments');
                     HdAttachment::create([
                         'ticket_id' => $ticket->id,
-                        'type' => 'ticket',
-                        'path' => $path,
+                        'type'      => 'ticket',
+                        'path'      => $path,
                     ]);
                 }
             }
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.added_success'),
+                'msg'     => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -186,7 +196,7 @@ class HdTicketController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -200,11 +210,11 @@ class HdTicketController extends Controller
      */
     public function show($id)
     {
-        $ticket = HdTicket::with('attachments', 'replies', 'user', 'hdTicketStatus')->find($id);
+        $ticket    = HdTicket::with('attachments', 'replies', 'user', 'hdTicketStatus')->find($id);
         $urgencies = [
-            'low' => __('helpdesk::lang.low'),
-            'mid' => __('helpdesk::lang.mid'),
-            'high' => __('helpdesk::lang.high'),
+            'low'    => __('helpdesk::lang.low'),
+            'mid'    => __('helpdesk::lang.mid'),
+            'high'   => __('helpdesk::lang.high'),
             'urgent' => __('helpdesk::lang.urgent'),
         ];
         return view('helpdesk::tickets.show')->with(compact('ticket', 'urgencies'));
