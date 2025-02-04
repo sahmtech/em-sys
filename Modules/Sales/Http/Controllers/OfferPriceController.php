@@ -141,7 +141,7 @@ class OfferPriceController extends Controller
                 ->editColumn('status', function ($row) use ($is_admin, $can_change_offer_price_status) {
                     if ($is_admin || $can_change_offer_price_status) {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
+                            . $this->statuses[$row->status]['name'] . '</span>';
                         $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     } else {
                         $status = $row->status;
@@ -247,31 +247,31 @@ class OfferPriceController extends Controller
 
             return Datatables::of($sells)
 
-            // ->addColumn(
-            //     'action',
-            //     function ($row) use ($is_admin, $can_print_offer_price) {
-            //         $html = '';
-            //         if ($is_admin || $can_print_offer_price) {
-            //             $html = '<div class="btn-group">
-            //                 <button type="button" class="btn btn-info dropdown-toggle btn-xs"
-            //                     data-toggle="dropdown" aria-expanded="false">' .
-            //                 __('messages.actions') .
-            //                 '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-            //                     </span>
-            //                 </button>
-            //                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-            //                     <li>
-            //                     <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
-            //                     <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
-            //                     </a>
-            //                     </li>';
+                // ->addColumn(
+                //     'action',
+                //     function ($row) use ($is_admin, $can_print_offer_price) {
+                //         $html = '';
+                //         if ($is_admin || $can_print_offer_price) {
+                //             $html = '<div class="btn-group">
+                //                 <button type="button" class="btn btn-info dropdown-toggle btn-xs"
+                //                     data-toggle="dropdown" aria-expanded="false">' .
+                //                 __('messages.actions') .
+                //                 '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                //                     </span>
+                //                 </button>
+                //                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                //                     <li>
+                //                     <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
+                //                     <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
+                //                     </a>
+                //                     </li>';
 
-            //             $html .= '</ul></div>';
-            //         }
+                //             $html .= '</ul></div>';
+                //         }
 
-            //         return $html;
-            //     }
-            // )
+                //         return $html;
+                //     }
+                // )
                 ->addColumn(
                     'action',
                     function ($row) use ($is_admin, $can_print_offer_price, $can_approve_offer_price) {
@@ -533,8 +533,8 @@ class OfferPriceController extends Controller
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
 
         $change_return = $this->dummyPaymentLine;
-
-        $leads = Contact::where('type', 'qualified')
+        //converted instead of qualified
+        $leads = Contact::where('type', 'converted')
             ->whereDoesntHave('transactions', function ($query) {
                 $query->where('status', 'under_study');
             })

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.journal_entry'))
+@section('company_title', __('accounting::lang.journal_entry'))
 
 @section('content')
 
@@ -327,11 +327,11 @@
             </td>
             <td>
                 <select class="form-control accounts-dropdown account_id" style="width: 100%;" name="account_id[${counter}]">
-                    <option value="">@lang('messages.please_select')</option>
+                    <option value="">@extends('layouts.app')</option>
                 </select>
             </td>
             <td>
-                <button type="button" id="${counter}" class="btn btn-primary open-dialog-btn">@lang('accounting::lang.select_partner')</button>
+                <button type="button" id="${counter}" class="btn btn-primary open-dialog-btn">@lang('accounting::lang.journal_entry')</button>
                 <input type="text" readonly name="selected_partner[${counter}]" class="selected_partner" id="selected_partner[${counter}]"
                     style="background: transparent; border: 0;">
                 <input type="text" readonly name="selected_partner_type[${counter}]" class="selected_partner_type[${counter}]"
@@ -407,7 +407,7 @@
 
                 $('#selected_partner\\[' + id + '\\]').val(selectedText);
                 $('#selected_partner_id\\[' + id + '\\]').val(selectedValue);
-                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.employees')");
+                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.select_partner')");
                 $('#selected_partner_type_\\[' + id + '\\]').val("employees");
 
 
@@ -423,7 +423,7 @@
 
                 $('#selected_partner_id\\[' + id + '\\]').val(selectedValue);
                 $('#selected_partner\\[' + id + '\\]').val(selectedText);
-                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.customers_suppliers')");
+                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.employees')");
                 $('#selected_partner_type_\\[' + id + '\\]').val("customers_suppliers");
 
 
@@ -449,7 +449,7 @@
                 //check if same or not
                 if ($('.total_credit_hidden').val() != $('.total_debit_hidden').val()) {
                     is_valid = false;
-                    alert("@lang('accounting::lang.credit_debit_equal')");
+                    alert("@lang('accounting::lang.customers_suppliers')");
                 }
 
                 //check if all account selected or not
@@ -460,7 +460,7 @@
                     if (credit != 0 || debit != 0) {
                         if ($(tr).find('.account_id').val() == '') {
                             is_valid = false;
-                            alert("@lang('accounting::lang.select_all_accounts')");
+                            alert("@lang('messages.please_select')");
                         }
                     }
                 });

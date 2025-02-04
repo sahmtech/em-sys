@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.journal_entry'))
+@section('company_title', __('accounting::lang.journal_entry'))
 
 @section('content')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -187,9 +187,14 @@
                                         id="selected_partner_type_[1]" class="selected_partner">
                                 </th>
 
-                              
+
                                 <td>
-                                    <select class="form-control cost_center" style="width: 100%;" name="cost_center[1]"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select>
+                                    <select class="form-control cost_center" style="width: 100%;" name="cost_center[1]">
+                                        <option selected="selected" value="">يرجى الاختيار</option>
+                                        @foreach ($allCenters as $allCenter)
+                                            <option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
+                                        @endforeach
+                                    </select>
                                 </td>
                                 <td>
                                     {!! Form::text('debit[' . 1 . ']', null, ['class' => 'form-control input_number debit']) !!}
@@ -265,7 +270,7 @@
 
                 $('#selected_partner\\[' + id + '\\]').val(selectedText);
                 $('#selected_partner_id\\[' + id + '\\]').val(selectedValue);
-                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.employees')");
+                $('#selected_partner_type\\[' + id + '\\]').val("@extends('layouts.app')");
                 $('#selected_partner_type_\\[' + id + '\\]').val("employees");
 
 
@@ -281,7 +286,7 @@
 
                 $('#selected_partner_id\\[' + id + '\\]').val(selectedValue);
                 $('#selected_partner\\[' + id + '\\]').val(selectedText);
-                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.customers_suppliers')");
+                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.journal_entry')");
                 $('#selected_partner_type_\\[' + id + '\\]').val("customers_suppliers");
 
 
@@ -305,7 +310,7 @@
                 //check if same or not
                 if ($('.total_credit_hidden').val() != $('.total_debit_hidden').val()) {
                     is_valid = false;
-                    alert("@lang('accounting::lang.credit_debit_equal')");
+                    alert("@lang('accounting::lang.select_partner')");
                 }
 
                 $('table > tbody  > tr').each(function(index, tr) {
@@ -315,7 +320,7 @@
                     if (credit != 0 || debit != 0) {
                         if ($(tr).find('.account_id').val() == '') {
                             is_valid = false;
-                            alert("@lang('accounting::lang.select_all_accounts')");
+                            alert("@lang('accounting::lang.employees')");
                         }
                     }
                 });
@@ -379,7 +384,7 @@
                 counter +
                 ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <th class="col-md-1"> <button type="button" id="' +
                 counter +
-                '"  class="btn btn-primary open-dialog-btn">@lang('accounting::lang.select_partner')</button>  <input type="text" readonly name="selected_partner[' +
+                '"  class="btn btn-primary open-dialog-btn">@lang('accounting::lang.customers_suppliers')</button>  <input type="text" readonly name="selected_partner[' +
                 counter + ']" class="selected_partner" id="selected_partner[' + counter +
                 ']" style="background: transparent;border: 0;"> <input type="text" readonly name="selected_partner_type[' +
                 counter + ']" class="selected_partner_type[' + counter + ']" id="selected_partner_type[' +
@@ -388,7 +393,9 @@
                 counter + ']" id="selected_partner_id[' + counter +
                 ']" class="selected_partner"> <input type="hidden" readonly name="selected_partner_type_[' +
                 counter + ']" id="selected_partner_type_[' + counter +
-                ']" class="selected_partner"></th><td><select class="form-control cost_center" style="width: 100%;" name="cost_center[' + counter +']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{$allCenter->id}}">{{$allCenter->ar_name}}</option>@endforeach </select> </td> <td> <input class="form-control input_number debit" name="debit[' +
+                ']" class="selected_partner"></th><td><select class="form-control cost_center" style="width: 100%;" name="cost_center[' +
+                counter +
+                ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>@endforeach </select> </td> <td> <input class="form-control input_number debit" name="debit[' +
                 counter +
                 ']" type="text"> </td> <td> <input class="form-control input_number credit" name="credit[' +
                 counter +
