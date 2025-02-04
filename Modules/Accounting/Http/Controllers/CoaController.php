@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Company;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -133,8 +134,13 @@ class CoaController extends Controller
                     ->with(compact('accounts', 'account_exist', 'account_types', 'account_GLC', 'account_sub_types'));
             }
         }
-
-        return view('accounting::chart_of_accounts.index')->with(compact('account_types'));
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>      __('accounting::lang.tree_of_accounts'), 'url' =>    action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index'])],
+        ];
+        return view('accounting::chart_of_accounts.index')->with(compact('account_types', 'breadcrumbs'));
     }
 
     /**
