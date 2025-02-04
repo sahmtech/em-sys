@@ -82,8 +82,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //traveleres
         Route::get('/travelers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index'])->name('travelers');
         Route::get('/housed-workers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('housed_workers');
-        Route::get('/workers/index/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
         Route::get('/workers/show/{id}', [\Modules\Essentials\Http\Controllers\EssentailsworkersController::class, 'show'])->name('htr.show.workers');
+
+        Route::get('/workers/index/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
 
         Route::get('/medicalExamination', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'])->name('medicalExamination');
         Route::post('/upload-medical-document', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'uploadMedicalDocument'])->name('uploadMedicalDocument');

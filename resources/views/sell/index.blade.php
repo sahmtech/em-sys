@@ -108,7 +108,7 @@
 
     <!-- This will be printed -->
     <!-- <section class="invoice print_section" id="receipt_section">
-        </section> -->
+                                                        </section> -->
 
 @stop
 
@@ -177,7 +177,7 @@
                 scrollY: "75vh",
                 scrollX: true,
                 scrollCollapse: true,
-                
+
                 columns: [{
                         data: 'action',
                         name: 'action',

@@ -29,8 +29,11 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title') - {{ Session::get('business.name') }}</title>
-
+    @hasSection('company_title')
+        <title> @yield('company_title') - {{ Session::get('company.name') }}</title>
+    @else
+        <title>@yield('title') - {{ Session::get('business.name') }}</title>
+    @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     {{-- toastr --}}

@@ -3,98 +3,100 @@
 
 @section('content')
 
-    <section class="content-header">
-        <h1>
-            <span>@lang('followup::lang.attachment_delivery')</span>
-        </h1>
-    </section>
+<section class="content-header">
+    <h1>
+        <span>@lang('followup::lang.attachment_delivery')</span>
+    </h1>
+</section>
 
-    <!-- Main content -->
-    <section class="content">
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+            <div class="row">
+                <div class="col-sm-4">
+                    {!! Form::label('worker', __('followup::lang.select_employee_or_worker')) !!}
+
+                    <select class="form-control" name="worker_filtter" id='worker_filtter'>
+                        <option value="all" selected>@lang('lang_v1.all')</option>
+                        @foreach ($workers as $worker)
+                        <option value="{{ $worker->id }}">
+                            {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->mid_name . ' ' .
+                            $worker->last_name }}
+                        </option>
+                        @endforeach
+                    </select>
+
+                </div>
+
+                <div class="col-sm-4" style="margin-top: 0px;">
+                    {!! Form::label('documents', __('followup::lang.attachments_types')) !!}
+
+                    <select class="form-control" name="documents_filtter" id='documents_filtter'>
+                        <option value="all" selected>@lang('lang_v1.all')</option>
+                        @foreach ($documents as $document)
+                        <option value="{{ $document->id }}">
+                            {{ $document->name_ar . ' - ' . $document->name_en }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endcomponent
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="row">
-                        <div class="col-sm-4">
-                            {!! Form::label('worker', __('followup::lang.select_employee_or_worker')) !!}
-
-                            <select class="form-control" name="worker_filtter" id='worker_filtter'>
-                                <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($workers as $worker)
-                                    <option value="{{ $worker->id }}">
-                                        {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->mid_name . ' ' . $worker->last_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                        </div>
-
-                        <div class="col-sm-4" style="margin-top: 0px;">
-                            {!! Form::label('documents', __('followup::lang.attachments_types')) !!}
-
-                            <select class="form-control" name="documents_filtter" id='documents_filtter'>
-                                <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($documents as $document)
-                                    <option value="{{ $document->id }}">
-                                        {{ $document->name_ar . ' - ' . $document->name_en }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    @endcomponent
+                @component('components.widget', ['class' => 'box-primary'])
+                @slot('tool')
+                <div class="box-tools">
+                    <a class="btn btn-primary pull-right m-5 btn-modal"
+                        href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController@create') }}"
+                        data-href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController@create') }}"
+                        data-container="#add_document_delivery_model">
+                        <i class="fas fa-plus"></i> @lang('messages.add')</a>
                 </div>
+                @endslot
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="document_delivery_table"
+                        style="margin-bottom: 100px;">
+                        <thead>
+                            <tr>
+
+                                <th>@lang('followup::lang.worker')</th>
+                                <th>@lang('followup::lang.residency_Igama')</th>
+                                <th>@lang('followup::lang.attachments_types')</th>
+                                <th>@lang('followup::lang.title')</th>
+                                <th>@lang('followup::lang.nots')</th>
+                                <th>@lang('messages.action')</th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                    {{-- <center class="mt-5">
+                        {{ $Cars->links() }}
+                    </center> --}}
+                </div>
+
+
+                <div class="modal fade" id="add_document_delivery_model" tabindex="-1" role="dialog"></div>
+                <div class="modal fade" id="edit_document_delivery_model" tabindex="-1" role="dialog">
+                </div>
+                @endcomponent
             </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    @component('components.widget', ['class' => 'box-primary'])
-                        @slot('tool')
-                            <div class="box-tools">
-                                <a class="btn btn-primary pull-right m-5 btn-modal"
-                                    href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController@create') }}"
-                                    data-href="{{ action('Modules\FollowUp\Http\Controllers\FollowupDeliveryAttachmentController@create') }}"
-                                    data-container="#add_document_delivery_model">
-                                    <i class="fas fa-plus"></i> @lang('messages.add')</a>
-                            </div>
-                        @endslot
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="document_delivery_table"
-                                style="margin-bottom: 100px;">
-                                <thead>
-                                    <tr>
-
-                                        <th>@lang('followup::lang.worker')</th>
-                                        <th>@lang('followup::lang.attachments_types')</th>
-                                        <th>@lang('followup::lang.title')</th>
-                                        <th>@lang('followup::lang.nots')</th>
-                                        <th>@lang('messages.action')</th>
-                                    </tr>
-                                </thead>
-
-                            </table>
-                            {{-- <center class="mt-5">
-                            {{ $Cars->links() }}
-                        </center> --}}
-                        </div>
-
-
-                        <div class="modal fade" id="add_document_delivery_model" tabindex="-1" role="dialog"></div>
-                        <div class="modal fade" id="edit_document_delivery_model" tabindex="-1" role="dialog">
-                        </div>
-                    @endcomponent
-                </div>
-
-
-    </section>
-    <!-- /.content -->
+</section>
+<!-- /.content -->
 
 @endsection
 
 @section('javascript')
 
 
-    <script type="text/javascript">
-        $(document).ready(function() {
+<script type="text/javascript">
+    $(document).ready(function() {
 
 
             $('#documents_filtter').select2();
@@ -103,7 +105,7 @@
 
             document_delivery_table = $('#document_delivery_table').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: '{{ route('attachments-delivery') }}',
                     data: function(d) {
@@ -126,6 +128,9 @@
                                 .replace(':id', row.user_id) + '">' + data + '</a>';
                             return link;
                         }
+                    },
+                    {
+                        "data":"id_proof_number"
                     },
                     {
                         "data": "attach_name"
@@ -193,5 +198,5 @@
                 });
 
         });
-    </script>
+</script>
 @endsection

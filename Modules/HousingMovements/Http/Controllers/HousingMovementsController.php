@@ -1,17 +1,18 @@
 <?php
-
 namespace Modules\HousingMovements\Http\Controllers;
 
-use App\User;
-use App\Utils\ModuleUtil;
 use Excel;
-use Illuminate\Contracts\Support\Renderable;
+use App\User;
+use App\SentNotification;
+use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
+use App\SentNotificationsUser;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Contracts\Support\Renderable;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
-use Yajra\DataTables\Facades\DataTables;
 
 class HousingMovementsController extends Controller
 {
@@ -38,19 +39,19 @@ class HousingMovementsController extends Controller
     }
     public function department_employees()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id              = request()->session()->get('user.business_id');
+        $is_admin                 = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_department_employees = auth()->user()->can('housingmovements.housingmovements_view_department_employees');
 
-        if (!($is_admin || $can_department_employees)) {
+        if (! ($is_admin || $can_department_employees)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
-                'msg' => __('message.unauthorized'),
+                'msg'     => __('message.unauthorized'),
             ]);
         }
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        if (!$is_admin) {
+        if (! $is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
@@ -181,27 +182,25 @@ class HousingMovementsController extends Controller
     public function postImportWorkersNewArrival(Request $request)
     {
 
-        $delegation_id = $request->input('delegation_id');
-        $agency_id = $request->input('agency_id');
-        $transaction_sell_line_id = $request->input('transaction_sell_line_id');
-        $unSupportedworker_order_id = $request->input('unSupportedworker_order_id');
-
         try {
+            $depts = [30, 35, 34, 41, 44, 42];
+            $roles = [84, 88, 92, 93, 94, 95, 98];
+
             // Validate the uploaded file
             $request->validate([
                 'workers_csv' => 'required|file|mimes:xlsx,xls,csv',
             ]);
 
-            if (!$request->hasFile('workers_csv')) {
+            if (! $request->hasFile('workers_csv')) {
                 return back()->withErrors(['workers_csv' => 'File not uploaded. Please try again.']);
             }
 
             $file = $request->file('workers_csv');
 
-            $parsed_array = Excel::toArray([], $file);
-            $imported_data = array_splice($parsed_array[0], 1); // Skip header row
+            $parsed_array     = Excel::toArray([], $file);
+            $imported_data    = array_splice($parsed_array[0], 1); // Skip header row
             $passport_numbers = [];
-            $formated_data = [];
+            $formated_data    = [];
 
             DB::beginTransaction();
 
@@ -215,28 +214,28 @@ class HousingMovementsController extends Controller
 
                 $worker_array = [];
 
-                if (!empty($value[0])) {
+                if (! empty($value[0])) {
                     $worker_array['first_name'] = $value[0];
                 } else {
                     throw new \Exception(__('essentials::lang.first_name_required') . " at row $row_no");
                 }
 
-                $worker_array['mid_name'] = $value[1];
+                $worker_array['mid_name']        = $value[1];
                 $worker_array['interviewStatus'] = 'acceptable';
 
-                if (!empty($value[2])) {
+                if (! empty($value[2])) {
                     $worker_array['last_name'] = $value[2];
                 } else {
                     throw new \Exception(__('essentials::lang.last_name_required') . " at row $row_no");
                 }
 
-                if (!empty($value[3])) {
+                if (! empty($value[3])) {
                     $worker_array['nationality'] = $value[3];
                 } else {
                     throw new \Exception(__('essentials::lang.nationality_required') . " at row $row_no");
                 }
 
-                if (!empty($value[4])) {
+                if (! empty($value[4])) {
                     $worker_array['passport_number'] = $value[4];
                 } else {
                     throw new \Exception(__('essentials::lang.passport_number_required') . " at row $row_no");
@@ -252,37 +251,56 @@ class HousingMovementsController extends Controller
                 }
                 $passport_numbers[] = $worker_array['passport_number'];
 
-                if (!empty($value[5])) {
-                    $worker_array['sponsor'] = $value[5];
+                if (! empty($value[5])) {
+                    $worker_array['sponsor']    = $value[5];
+                    $worker_array['company_id'] = $worker_array['sponsor'];
+
                 } else {
                     throw new \Exception(__('essentials::lang.sponsor_required') . " at row $row_no");
                 }
 
                 $worker_array['project'] = $value[6];
-                $worker_array['gender'] = $value[7];
+                $worker_array['gender']  = $value[7];
 
-                if (!empty($value[8])) {
+                if (! empty($value[8])) {
                     if (is_numeric($value[8])) {
                         // Convert Excel numeric date
                         $worker_array['dob'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[8])->format('Y-m-d');
                     } else {
-                        // Convert string date
-                        $date = DateTime::createFromFormat('d/m/Y', $value[8]);
+                        // Normalize separator (convert '-' to '/')
+                        $normalized_date = str_replace('-', '/', $value[8]);
+
+                        // Convert string date using 'Y/m/d' format
+                        $date = \DateTime::createFromFormat('Y/m/d', $normalized_date);
+                        if (! $date) {
+                            // If 'Y/m/d' fails, try 'm/d/Y' format
+                            $date = \DateTime::createFromFormat('m/d/Y', $normalized_date);
+                        }
+                        if (! $date) {
+                            // If 'm/d/Y' fails, try 'd/m/Y' format
+                            $date = \DateTime::createFromFormat('d/m/Y', $normalized_date);
+                        }
+
                         if ($date) {
                             $worker_array['dob'] = $date->format('Y-m-d');
                         } else {
                             throw new \Exception(__('essentials::lang.invalid_date_format') . " at row $row_no");
                         }
                     }
+                } else {
+                    throw new \Exception(__('essentials::lang.dob_required') . " at row $row_no");
                 }
 
-                if (!empty($value[9])) {
+                if (! empty($value[9])) {
                     if (is_numeric($value[9])) {
                         // Convert Excel numeric date
                         $worker_array['arrival_date'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value[9])->format('Y-m-d');
                     } else {
-                        // Convert string date
-                        $date = DateTime::createFromFormat('d/m/Y', $value[9]);
+                        // Normalize separator (convert '-' to '/')
+                        $normalized_date = str_replace('-', '/', $value[9]);
+
+                        // Convert string date using 'Y/m/d' format
+                        $date = \DateTime::createFromFormat('Y/m/d', $normalized_date);
                         if ($date) {
                             $worker_array['arrival_date'] = $date->format('Y-m-d');
                         } else {
@@ -296,15 +314,19 @@ class HousingMovementsController extends Controller
                 $formated_data[] = $worker_array;
             }
 
+            unset($worker_array['sponsor']);
+
             foreach ($formated_data as $worker_data) {
                 IrProposedLabor::create($worker_data);
             }
 
             DB::commit();
 
+           self::sendNewArrivalNotification($depts, $roles);
+
             return redirect()->route('travelers')->with('notification', [
                 'success' => 1,
-                'msg' => __('product.file_imported_successfully'),
+                'msg'     => __('product.file_imported_successfully'),
             ]);
 
         } catch (\Exception $e) {
@@ -316,7 +338,7 @@ class HousingMovementsController extends Controller
 
             return redirect()->back()->with('notification', [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg'     => $e->getMessage(),
             ]);
         }
     }
@@ -324,19 +346,19 @@ class HousingMovementsController extends Controller
     public function proposed_laborIndex(Request $request)
     {
 
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id             = request()->session()->get('user.business_id');
+        $is_admin                = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
 
-        if (!($is_admin)) {
+        if (! ($is_admin)) {
         }
 
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $business_id = request()->session()->get('user.business_id');
-        $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
-        $workers = IrProposedLabor::with('transactionSellLine.service', 'agency', 'unSupportedworker_order')->where('interviewStatus', null)->select([
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $business_id     = request()->session()->get('user.business_id');
+        $agencys         = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+        $workers         = IrProposedLabor::with('transactionSellLine.service', 'agency', 'unSupportedworker_order')->where('interviewStatus', null)->select([
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             'age',
@@ -355,7 +377,7 @@ class HousingMovementsController extends Controller
             'unSupportedworker_order_id',
         ]);
 
-        if (!empty($request->input('specialization'))) {
+        if (! empty($request->input('specialization'))) {
             $workers->where(function ($query) use ($request) {
                 $query->whereHas('transactionSellLine.service', function ($subQuery) use ($request) {
                     $subQuery->where('specialization_id', $request->input('specialization'));
@@ -365,7 +387,7 @@ class HousingMovementsController extends Controller
                     });
             });
         }
-        if (!empty($request->input('profession'))) {
+        if (! empty($request->input('profession'))) {
             $workers->where(function ($query) use ($request) {
                 $query->whereHas('transactionSellLine.service', function ($subQuery) use ($request) {
                     $subQuery->where('profession_id', $request->input('profession'));
@@ -376,7 +398,7 @@ class HousingMovementsController extends Controller
             });
         }
 
-        if (!empty($request->input('agency'))) {
+        if (! empty($request->input('agency'))) {
             $workers->where('agency_id', $request->input('agency'));
         }
 
@@ -424,4 +446,51 @@ class HousingMovementsController extends Controller
         $interview_status = $this->statuses;
         return view('housingmovements::worker.proposed_laborIndex')->with(compact('interview_status', 'nationalities', 'specializations', 'professions', 'agencys'));
     }
+
+    public function sendNewArrivalNotification(array $depts, array $roles)
+    {
+        // Get the department and role IDs
+        $departmentIds = EssentialsDepartment::whereIn('id', $depts)
+            ->pluck('id')->toArray();
+
+        $rolesIds = DB::table('roles')
+            ->whereIn('id', $roles)
+            ->pluck('id')->toArray();
+
+        // Get users based on roles
+        $users = User::whereHas('roles', function ($query) use ($rolesIds) {
+            $query->whereIn('id', $rolesIds);
+        });
+
+        // Get user IDs and their full names
+        $user_ids = $users->pluck('id')->toArray();
+        $to       = $users->select([DB::raw("CONCAT(COALESCE(users.first_name, ''),' ', COALESCE(users.last_name, '')) as full_name")])
+            ->pluck('full_name')->toArray();
+
+        // Notification details
+        $title = 'وصول جديد';
+        $msg   = 'تم إضافة وصول جديد للعمال أو الموظفين';
+
+        // Check if there are users to notify
+        if (! empty($user_ids)) {
+            // Create the notification
+            $sentNotification = SentNotification::create([
+                'via'       => 'dashboard',
+                'type'      => 'GeneralManagementNotification',
+                'title'     => $title,
+                'msg'       => $msg,
+                'sender_id' => auth()->user()->id,
+                'to'        => json_encode($to),
+            ]);
+
+            // Create entries in SentNotificationsUser for each user
+            foreach ($user_ids as $user_id) {
+                SentNotificationsUser::create([
+                    'sent_notifications_id' => $sentNotification->id,
+                    'user_id'               => $user_id,
+                ]);
+            }
+        }
+    }
+
 }

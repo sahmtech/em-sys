@@ -48,7 +48,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/president_pending_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_pending_requests'])->name('president_pending_requests');
         Route::get('/president_done_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'president_done_requests'])->name('president_done_requests');
-        Route::get('/filtered_requests/{filter}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('generalmanagement.getFilteredRequests');
+        // Route::get('/filtered_requests/{filter}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('generalmanagement.getFilteredRequests');
+        Route::get('/filtered_requests/{filter}/{departmentId?}', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'getFilteredRequests'])->name('generalmanagement.getFilteredRequests');
 
         Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');
         Route::post('/changeEscalationStatus', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeEscalationStatus'])->name('generalmanagement.changeEscalationStatus');
@@ -57,10 +58,15 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/requests_types', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'index'])->name('requests_types');
         Route::post('storeRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'store'])->name('storeRequestType');
+        Route::post('request-types/update/{id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'updateRequestType'])->name('updateRequestType');
+
         Route::DELETE('deleteRequestType/{id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'destroy'])->name('deleteRequestType');
         Route::post('updateRequestType', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'update'])->name('updateRequestType');
+
         Route::get('/get-tasks-for-type', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'getTasksForType'])->name('get-tasks-for-type');
         Route::get('/getRequestType/{request_type_id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'getRequestType'])->name('getRequestType');
+        Route::get('/editRequestType/{request_type_id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'editRequestType'])->name('editRequestType');
+
         Route::post('/update_selfish_service/{id}', [\Modules\CEOManagment\Http\Controllers\RequestTypeController::class, 'updateSelfishService'])->name('update_selfish_service');
 
         Route::get('/departments', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index'])->name('departments');

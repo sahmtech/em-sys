@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Crm\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -22,7 +21,7 @@ class DashboardController extends Controller
     public function __construct(ContactUtil $contactUtil, ModuleUtil $moduleUtil)
     {
         $this->contactUtil = $contactUtil;
-        $this->moduleUtil = $moduleUtil;
+        $this->moduleUtil  = $moduleUtil;
     }
 
     /**
@@ -33,7 +32,6 @@ class DashboardController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-
 
         $crm_contact_id = auth()->user()->crm_contact_id;
 

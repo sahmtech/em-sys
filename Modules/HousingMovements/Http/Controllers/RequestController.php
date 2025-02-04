@@ -56,6 +56,8 @@ class RequestController extends Controller
 
         $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
+
+
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
 

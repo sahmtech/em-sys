@@ -89,7 +89,7 @@
                         <div class="form-group">
 
                             <div class="input-group">
-                                {!! Form::label('contact_id', __('sales::lang.project_name') . ':*') !!}
+                                {!! Form::label('contact_id', __('sales::lang.customer_name') . ':*') !!}
 
 
                                 {!! Form::select('contact_id', $leads, null, [

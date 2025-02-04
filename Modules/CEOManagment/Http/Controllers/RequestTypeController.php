@@ -22,7 +22,6 @@ class RequestTypeController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_edit_requests_type = auth()->user()->can('generalmanagement.edit_requests_type');
         $can_delete_requests_type = auth()->user()->can('generalmanagement.delete_requests_type');
@@ -61,7 +60,7 @@ class RequestTypeController extends Controller
             'salaryIntroLetter',
             'QiwaContract',
             'ExitWithoutReturnReport',
-            'residenceIssue'
+            'residenceIssue',
         ];
 
         $typesWithBoth = RequestsType::whereExists(function ($query) {
@@ -80,7 +79,6 @@ class RequestTypeController extends Controller
 
         if (request()->ajax()) {
 
-
             return datatables::of($requestsTypes)
                 ->addColumn('tasks', function ($requestType) {
 
@@ -96,7 +94,13 @@ class RequestTypeController extends Controller
                         $html = '';
                         if ($is_admin || $can_edit_requests_type) {
 
-                            $html .= '<a href="#" class="btn btn-xs btn-primary edit-request-type" data-id="' . $row->id . '" data-url="' . route('getRequestType', ['request_type_id' => $row->id]) . '">' . __('ceomanagment::lang.edit_request_tasks') . '</a>&nbsp;';
+                            $html .= '<a href="#"
+                            class="btn btn-xs btn-primary edit-request-type"
+                            data-id="' . $row->id . '"
+                            data-url="' . route('getRequestType', ['request_type_id' => $row->id]) . '">
+                            ' . __('ceomanagment::lang.edit_request_tasks') . '
+                        </a>&nbsp;';
+                            $html .= '<a href="#" class="btn btn-xs btn-primary edit-request-type-btn" data-id="' . $row->id . '" data-url="' . route('getRequestType', ['request_type_id' => $row->id]) . '">' . __('ceomanagment::lang.edit_requests_type') . '</a>&nbsp;';
                         }
                         if ($is_admin || $can_delete_requests_type) {
                             $html .= '<button class="btn btn-xs btn-danger delete_item_button"
@@ -104,11 +108,9 @@ class RequestTypeController extends Controller
                             <i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
-
                         return $html;
                     }
                 )
-
 
                 ->rawColumns(['action', 'tasks'])
                 ->make(true);
@@ -141,7 +143,6 @@ class RequestTypeController extends Controller
             ];
             return redirect()->back()->with(['status' => $output]);
         }
-
 
         try {
             $input = $request->only(['type', 'for', 'selfish_service', 'user_type']);
@@ -197,10 +198,60 @@ class RequestTypeController extends Controller
             ];
         }
 
-
         return redirect()->back()->with(['status' => $output]);
     }
+    public function updateRequestType(Request $request, $id)
+    {
+        try {
+            $requestType = RequestsType::findOrFail($id);
 
+            // Check if there are any procedures linked to this request type
+            $procedures = WkProcedure::where('request_type_id', $id)->get();
+            if ($procedures->count() != 0) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('ceomanagment::lang.cant_edit_type_it_have_procedures'),
+                ];
+                return response()->json($output);
+            }
+
+            // Update request type details
+            $requestType->update($request->only(['type', 'for', 'selfish_service', 'user_type']));
+
+            // Update tasks
+            Task::where('request_type_id', $id)->delete();
+            if (isset($request->tasks)) {
+                $descriptions = $request->tasks['description'] ?? [];
+                $links = $request->tasks['link'] ?? [];
+
+                foreach ($descriptions as $index => $description) {
+                    if (!empty($description)) {
+                        $taskInput = [
+                            'description' => $description,
+                            'link' => $links[$index] ?? null,
+                            'request_type_id' => $id,
+                        ];
+                        Task::create($taskInput);
+                    }
+                }
+            }
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            return $e;
+            \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return response()->json($output);
+    }
 
     // public function update(Request $request)
 
@@ -225,7 +276,6 @@ class RequestTypeController extends Controller
 
     //             foreach ($descriptions as $index => $description) {
 
-
     //                 if (!empty($description)) {
 
     //                     $taskInput = [
@@ -234,12 +284,10 @@ class RequestTypeController extends Controller
     //                         'request_type_id' => $request->request_type_id,
     //                     ];
 
-
     //                     Task::create($taskInput);
     //                 }
     //             }
     //         }
-
 
     //         $output = [
     //             'success' => true,
@@ -256,7 +304,84 @@ class RequestTypeController extends Controller
 
     //     return $output;
     // }
-    public function update(Request $request)
+    public function updateType(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $tasks = $request->tasks ?? [];
+            $deletedTasks = json_decode($request->deleted_tasks, true) ?? [];
+
+            // Handle deleted tasks
+            if (!empty($deletedTasks)) {
+                $linkedTasks = DB::table('procedure_tasks')
+                    ->whereIn('task_id', $deletedTasks)
+                    ->pluck('task_id')
+                    ->toArray();
+
+                if (!empty($linkedTasks)) {
+                    return response()->json([
+                        'success' => false,
+                        'msg' => __('ceomanagment::lang.task_linked_procedure_error'),
+                    ]);
+                }
+
+                Task::whereIn('id', $deletedTasks)->delete();
+            }
+
+            // Handle updated and new tasks
+            if (!empty($tasks)) {
+                foreach ($tasks['description'] as $type => $taskDescriptions) {
+                    foreach ($taskDescriptions as $index => $description) {
+                        if (!empty($description)) {
+                            $link = $tasks['link'][$type][$index] ?? null;
+
+                            if ($type === 'old') {
+                                $task = Task::find($tasks['id'][$type][$index]);
+                                $task?->update([
+                                    'description' => $description,
+                                    'link' => $link !== 'null' ? $link : null,
+                                ]);
+                            } elseif ($type === 'new') {
+                                Task::create([
+                                    'description' => $description,
+                                    'link' => $link !== 'null' ? $link : null,
+                                    'request_type_id' => $request->request_type_id,
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Update the request type details
+            $requestType = RequestsType::findOrFail($request->requestTypeId);
+            $data = $request->only(['type', 'for', 'selfish_service', 'user_type']);
+            $data['selfish_service'] = !empty($data['selfish_service']) ? 1 : 0;
+
+            $requestType->update($data);
+
+            // Commit the transaction and return success response
+            DB::commit();
+
+            return back()->with([
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'msg' => $e->getMessage() .__('messages.something_went_wrong'),
+            ]);
+        }
+    }
+
+     public function update(Request $request)
     {
         try {
             // Log the incoming request data
@@ -333,9 +458,6 @@ class RequestTypeController extends Controller
         return response()->json($output);
     }
 
-
-
-
     private function getTypePrefix($type)
     {
 
@@ -374,7 +496,7 @@ class RequestTypeController extends Controller
             'salaryIntroLetter' => 'salIntroLetter_',
             'QiwaContract' => 'QiwaCont_',
             'ExitWithoutReturnReport' => 'exitReport_',
-            'residenceIssue' => 'ResIsu_'
+            'residenceIssue' => 'ResIsu_',
         ];
 
         return $typePrefixMap[$type];
@@ -426,7 +548,6 @@ class RequestTypeController extends Controller
 
         return response()->json($tasks);
     }
-
 
     public function getRequestType($id)
     {

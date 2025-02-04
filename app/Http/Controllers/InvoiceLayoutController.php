@@ -34,7 +34,7 @@ class InvoiceLayoutController extends Controller
     public function create()
     {
         if (!auth()->user()->can('invoice_settings.access')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $designs = $this->getDesigns();
@@ -53,7 +53,7 @@ class InvoiceLayoutController extends Controller
     public function store(Request $request)
     {
         if (!auth()->user()->can('invoice_settings.access')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -151,7 +151,7 @@ class InvoiceLayoutController extends Controller
     public function edit($id)
     {
         if (!auth()->user()->can('invoice_settings.access')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $invoice_layout = InvoiceLayout::findOrFail($id);
@@ -176,7 +176,7 @@ class InvoiceLayoutController extends Controller
     public function update(Request $request, $id)
     {
         if (!auth()->user()->can('invoice_settings.access')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

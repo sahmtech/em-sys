@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\AccessRole;
@@ -44,20 +43,20 @@ class RoleController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        if (!($is_admin || auth()->user()->can('roles.view'))) {
+        if (! ($is_admin || auth()->user()->can('roles.view'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
-            $business_id = request()->session()->get('user.business_id');
+            $business_id     = request()->session()->get('user.business_id');
             $can_role_update = auth()->user()->can('roles.update');
             $can_role_delete = auth()->user()->can('roles.delete');
-            $roles = Role::where('business_id', $business_id)
+            $roles           = Role::where('business_id', $business_id)
                 ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
                 ->addColumn('action', function ($row) use ($is_admin, $can_role_update, $can_role_delete) {
-                    if (!$row->is_default || $row->name == 'Cashier#' . $row->business_id) {
+                    if (! $row->is_default || $row->name == 'Cashier#' . $row->business_id) {
                         $action = '';
                         if ($is_admin || $can_role_update) {
                             $action .= '
@@ -103,29 +102,29 @@ class RoleController extends Controller
     public function editOrCreateAccessRole($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('roles.create'))) {
+        if (! ($is_admin || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         $accessRole = AccessRole::where('role_id', $id)->first();
-        if (!$accessRole) {
-            $accessRole = new AccessRole();
+        if (! $accessRole) {
+            $accessRole          = new AccessRole();
             $accessRole->role_id = $id;
             $accessRole->save();
         }
         $accessRoleCompanies = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->unique()->toArray();
-        $user_business_id = User::where('id', auth()->user()->id)->first()->business_id;
-        $companies = Company::where('business_id', $user_business_id)->get();
-        $userTypes = User::userTypes();
-        $selectedUserTypes = [];
-        $tmp = AccessRoleCompany::where('access_role_id', $accessRole->id)->get();
+        $user_business_id    = User::where('id', auth()->user()->id)->first()->business_id;
+        $companies           = Company::where('business_id', $user_business_id)->get();
+        $userTypes           = User::userTypes();
+        $selectedUserTypes   = [];
+        $tmp                 = AccessRoleCompany::where('access_role_id', $accessRole->id)->get();
         foreach ($tmp as $accessRoleCompany) {
             $selectedUserTypes[$accessRoleCompany->company_id] = $accessRoleCompany->userTypes();
         }
         $userTypesNames = [
-            'employee' => __('essentials::lang.employee'),
-            'manager' => __('essentials::lang.manager'),
-            'worker' => __('essentials::lang.worker'),
+            'employee'        => __('essentials::lang.employee'),
+            'manager'         => __('essentials::lang.manager'),
+            'worker'          => __('essentials::lang.worker'),
             'department_head' => __('essentials::lang.department_head'),
 
         ];
@@ -137,19 +136,19 @@ class RoleController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('roles.create'))) {
+        if (! ($is_admin || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         $accessRole = AccessRole::where('role_id', $id)->first();
-        if (!$accessRole) {
-            $accessRole = new AccessRole();
+        if (! $accessRole) {
+            $accessRole          = new AccessRole();
             $accessRole->role_id = $id;
             $accessRole->save();
         }
 
         $accessRoleReports = AccessRoleReport::where('access_role_id', $accessRole->id)->pluck('report_id')->unique()->toArray();
-        $reports = Report::all();
+        $reports           = Report::all();
 
         return view('role.edit_create_access_role_report')
             ->with(compact('reports', 'accessRoleReports', 'accessRole', ));
@@ -159,14 +158,14 @@ class RoleController extends Controller
     {
 
         $accessRole = AccessRole::where('role_id', $id)->first();
-        if (!$accessRole) {
-            $accessRole = new AccessRole();
+        if (! $accessRole) {
+            $accessRole          = new AccessRole();
             $accessRole->role_id = $id;
             $accessRole->save();
         }
 
         $accessRoleRequests = AccessRoleRequest::where('access_role_id', $accessRole->id)->pluck('request_id')->unique()->toArray();
-        $requests = RequestsType::all();
+        $requests           = RequestsType::all();
 
         return view('role.edit_create_access_role_request')
             ->with(compact('requests', 'accessRoleRequests', 'accessRole'));
@@ -176,17 +175,17 @@ class RoleController extends Controller
         $reports = $request->reports;
 
         AccessRoleReport::where('access_role_id', $roleId)->delete();
-        if (!empty($reports)) {
+        if (! empty($reports)) {
             foreach ($reports as $report) {
                 AccessRoleReport::create([
                     'access_role_id' => $roleId,
-                    'report_id' => $report,
+                    'report_id'      => $report,
                 ]);
             }
         }
         $output = [
             'success' => 1,
-            'msg' => __('user.role_updated'),
+            'msg'     => __('user.role_updated'),
         ];
         return redirect('roles')->with('status', $output);
     }
@@ -195,43 +194,43 @@ class RoleController extends Controller
         $requests = $request->requests;
 
         AccessRoleRequest::where('access_role_id', $roleId)->delete();
-        if (!empty($requests)) {
+        if (! empty($requests)) {
             foreach ($requests as $request) {
                 AccessRoleRequest::create([
                     'access_role_id' => $roleId,
-                    'request_id' => $request,
+                    'request_id'     => $request,
                 ]);
             }
         }
         $output = [
             'success' => 1,
-            'msg' => __('user.role_updated'),
+            'msg'     => __('user.role_updated'),
         ];
         return redirect('roles')->with('status', $output);
     }
     public function updateAccessRole(Request $request, $roleId)
     {
         $user_business_id = User::where('id', auth()->user()->id)->first()->business_id;
-        $companies = Company::where('business_id', $user_business_id)->get();
+        $companies        = Company::where('business_id', $user_business_id)->get();
         AccessRoleCompany::where('access_role_id', $roleId)->delete();
         foreach ($companies as $company) {
             $types = $request->input('usertypes#' . $company->id) ?? [];
-            if (!empty($types)) {
+            if (! empty($types)) {
                 $accessRoleCompany = AccessRoleCompany::create([
                     'access_role_id' => $roleId,
-                    'company_id' => $company->id,
+                    'company_id'     => $company->id,
                 ]);
                 foreach ($types as $type) {
                     $accessRoleCompanyUserType = AccessRoleCompanyUserType::create([
                         'access_role_company_id' => $accessRoleCompany->id,
-                        'user_type' => $type,
+                        'user_type'              => $type,
                     ]);
                 }
             }
         }
         $output = [
             'success' => 1,
-            'msg' => __('user.role_updated'),
+            'msg'     => __('user.role_updated'),
         ];
         return redirect('roles')->with('status', $output);
     }
@@ -244,7 +243,7 @@ class RoleController extends Controller
     public function create()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('roles.create'))) {
+        if (! ($is_admin || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -254,7 +253,7 @@ class RoleController extends Controller
             ->active()
             ->get();
 
-        $temp = $this->moduleUtil->getModuleData('user_permissions');
+        $temp               = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
 
         $general_permissions = $this->moduleUtil->generalPermissions();
@@ -269,7 +268,7 @@ class RoleController extends Controller
         }
 
         //  return $module_permissions;
-        $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+        $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         return view('role.create')
             ->with(compact('selling_price_groups', 'module_permissions', 'common_settings'));
@@ -284,12 +283,12 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('roles.create'))) {
+        if (! ($is_admin || auth()->user()->can('roles.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
-            $role_name = $request->input('name');
+            $role_name   = $request->input('name');
             $permissions = $request->input('permissions');
             $business_id = $request->session()->get('user.business_id');
 
@@ -303,21 +302,21 @@ class RoleController extends Controller
                 }
 
                 $role = Role::create([
-                    'name' => $role_name . '#' . $business_id,
-                    'business_id' => $business_id,
+                    'name'             => $role_name . '#' . $business_id,
+                    'business_id'      => $business_id,
                     'is_service_staff' => $is_service_staff,
                 ]);
 
                 //Include selling price group permissions
                 $spg_permissions = $request->input('radio_option');
-                if (!empty($spg_permissions)) {
+                if (! empty($spg_permissions)) {
                     foreach ($spg_permissions as $spg_permission) {
                         $permissions[] = $spg_permission;
                     }
                 }
 
                 $radio_options = $request->input('radio_option');
-                if (!empty($radio_options)) {
+                if (! empty($radio_options)) {
                     foreach ($radio_options as $key => $value) {
                         $permissions[] = $value;
                     }
@@ -325,17 +324,17 @@ class RoleController extends Controller
 
                 $this->__createPermissionIfNotExists($permissions);
 
-                if (!empty($permissions)) {
+                if (! empty($permissions)) {
                     $role->syncPermissions($permissions);
                 }
                 $output = [
                     'success' => 1,
-                    'msg' => __('user.role_added'),
+                    'msg'     => __('user.role_added'),
                 ];
             } else {
                 $output = [
                     'success' => 0,
-                    'msg' => __('user.role_already_exists'),
+                    'msg'     => __('user.role_already_exists'),
                 ];
             }
         } catch (\Exception $e) {
@@ -343,7 +342,7 @@ class RoleController extends Controller
 
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -369,14 +368,15 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
+
         try {
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            if (!($is_admin || auth()->user()->can('roles.update'))) {
+            if (! ($is_admin || auth()->user()->can('roles.update'))) {
                 //temp  abort(403, 'Unauthorized action.');
             }
 
             $business_id = request()->session()->get('user.business_id');
-            $role = Role::where('business_id', $business_id)
+            $role        = Role::where('business_id', $business_id)
                 ->with(['permissions'])
                 ->find($id);
             $role_permissions = [];
@@ -389,8 +389,8 @@ class RoleController extends Controller
                 ->get();
 
             // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
-            $temp = $this->moduleUtil->getModuleData('user_permissions');
-            $module_permissions = [];
+            $temp                = $this->moduleUtil->getModuleData('user_permissions');
+            $module_permissions  = [];
             $general_permissions = $this->moduleUtil->generalPermissions();
             foreach ($general_permissions as $general_permission) {
                 $module_permissions[] = $general_permission;
@@ -402,13 +402,13 @@ class RoleController extends Controller
                 }
             }
 
-            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
         return view('role.edit')
@@ -425,12 +425,12 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('roles.update'))) {
+        if (! ($is_admin || auth()->user()->can('roles.update'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
-            $role_name = $request->input('name');
+            $role_name   = $request->input('name');
             $permissions = $request->input('permissions');
             $business_id = $request->session()->get('user.business_id');
 
@@ -441,7 +441,7 @@ class RoleController extends Controller
             if ($count == 0) {
                 $role = Role::findOrFail($id);
 
-                if (!$role->is_default || $role->name == 'Cashier#' . $business_id) {
+                if (! $role->is_default || $role->name == 'Cashier#' . $business_id) {
                     if ($role->name == 'Cashier#' . $business_id) {
                         $role->is_default = 0;
                     }
@@ -451,19 +451,19 @@ class RoleController extends Controller
                         $is_service_staff = 1;
                     }
                     $role->is_service_staff = $is_service_staff;
-                    $role->name = $role_name . '#' . $business_id;
+                    $role->name             = $role_name . '#' . $business_id;
                     $role->save();
 
                     //Include selling price group permissions
                     $spg_permissions = $request->input('spg_permissions');
-                    if (!empty($spg_permissions)) {
+                    if (! empty($spg_permissions)) {
                         foreach ($spg_permissions as $spg_permission) {
                             $permissions[] = $spg_permission;
                         }
                     }
 
                     $radio_options = $request->input('radio_option');
-                    if (!empty($radio_options)) {
+                    if (! empty($radio_options)) {
                         foreach ($radio_options as $key => $value) {
                             $permissions[] = $value;
                         }
@@ -471,24 +471,24 @@ class RoleController extends Controller
 
                     $this->__createPermissionIfNotExists($permissions);
 
-                    if (!empty($permissions)) {
+                    if (! empty($permissions)) {
                         $role->syncPermissions($permissions);
                     }
 
                     $output = [
                         'success' => 1,
-                        'msg' => __('user.role_updated'),
+                        'msg'     => __('user.role_updated'),
                     ];
                 } else {
                     $output = [
                         'success' => 0,
-                        'msg' => __('user.role_is_default'),
+                        'msg'     => __('user.role_is_default'),
                     ];
                 }
             } else {
                 $output = [
                     'success' => 0,
-                    'msg' => __('user.role_already_exists'),
+                    'msg'     => __('user.role_already_exists'),
                 ];
             }
         } catch (\Exception $e) {
@@ -496,7 +496,7 @@ class RoleController extends Controller
 
             $output = [
                 'success' => 0,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -512,7 +512,7 @@ class RoleController extends Controller
     public function destroy($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('roles.delete'))) {
+        if (! ($is_admin || auth()->user()->can('roles.delete'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -522,16 +522,16 @@ class RoleController extends Controller
 
                 $role = Role::where('business_id', $business_id)->find($id);
 
-                if (!$role->is_default || $role->name == 'Cashier#' . $business_id) {
+                if (! $role->is_default || $role->name == 'Cashier#' . $business_id) {
                     $role->delete();
                     $output = [
                         'success' => true,
-                        'msg' => __('user.role_deleted'),
+                        'msg'     => __('user.role_deleted'),
                     ];
                 } else {
                     $output = [
                         'success' => 0,
-                        'msg' => __('user.role_is_default'),
+                        'msg'     => __('user.role_is_default'),
                     ];
                 }
             } catch (\Exception $e) {
@@ -539,7 +539,7 @@ class RoleController extends Controller
 
                 $output = [
                     'success' => false,
-                    'msg' => __('messages.something_went_wrong'),
+                    'msg'     => __('messages.something_went_wrong'),
                 ];
             }
 
@@ -561,11 +561,11 @@ class RoleController extends Controller
 
         $non_existing_permissions = array_diff($permissions, $exising_permissions);
 
-        if (!empty($non_existing_permissions)) {
+        if (! empty($non_existing_permissions)) {
             foreach ($non_existing_permissions as $new_permission) {
                 $time_stamp = \Carbon::now()->toDateTimeString();
                 Permission::create([
-                    'name' => $new_permission,
+                    'name'       => $new_permission,
                     'guard_name' => 'web',
                 ]);
             }

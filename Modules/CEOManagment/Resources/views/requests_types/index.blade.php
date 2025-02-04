@@ -24,6 +24,7 @@
                     @endif
 
                     <div class="table-responsive">
+
                         <table class="table table-bordered table-striped" id="requests_types">
                             <thead>
                                 <tr>
@@ -142,9 +143,146 @@
                                     </div>
 
                                 </div>
-                                <div class="form-group col-md-6" class="checkbox">
-                                    <label style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                        {!! Form::checkbox('selfish_service', '1', false) !!}
+
+
+                                <div class="form-group col-md-6">
+                                    <div class="checkbox">
+                                        <label for="selfish_service_select" class="d-flex align-items-center"
+                                            style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                            {!! Form::checkbox('selfish_service', '1', old('selfish_service', $selfishServiceValue ?? false), [
+                                                'id' => 'selfish_service_select',
+                                                'class' => 'custom-checkbox',
+                                                'aria-checked' => old('selfish_service', $selfishServiceValue ?? false) ? 'true' : 'false',
+                                            ]) !!}
+                                            <span class="ml-2">@lang('ceomanagment::lang.selfish_service')</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="editRequestTypeBtnModal" tabindex="-1" role="dialog"
+                aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        {!! Form::open([
+                            'route' => ['updateType', ':id'],
+                            'method' => 'POST',
+                            'id' => 'editRequestTypeFormBtn',
+                            'enctype' => 'multipart/form-data',
+                        ]) !!}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">@lang('ceomanagment::lang.edit_requests_type')</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <input type="hidden" name="requestTypeId" id="requestTypeId">
+
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    {!! Form::label('type', __('essentials::lang.request_type') . ':*') !!}
+                                    {!! Form::select(
+                                        'type',
+                                        [
+                                            'exitRequest' => __('ceomanagment::lang.exitRequest'),
+                                            'returnRequest' => __('ceomanagment::lang.returnRequest'),
+                                            'escapeRequest' => __('ceomanagment::lang.escapeRequest'),
+                                            'advanceSalary' => __('ceomanagment::lang.advanceSalary'),
+                                            'leavesAndDepartures' => __('ceomanagment::lang.leavesAndDepartures'),
+                                            'atmCard' => __('ceomanagment::lang.atmCard'),
+                                            'residenceRenewal' => __('ceomanagment::lang.residenceRenewal'),
+                                            'residenceIssue' => __('ceomanagment::lang.residenceIssue'),
+                                            'workerTransfer' => __('ceomanagment::lang.workerTransfer'),
+                                            'residenceCard' => __('ceomanagment::lang.residenceCard'),
+                                            'workInjuriesRequest' => __('ceomanagment::lang.workInjuriesRequest'),
+                                            'residenceEditRequest' => __('ceomanagment::lang.residenceEditRequest'),
+                                            'baladyCardRequest' => __('ceomanagment::lang.baladyCardRequest'),
+                                            'mofaRequest' => __('ceomanagment::lang.mofaRequest'),
+                                            'insuranceUpgradeRequest' => __('ceomanagment::lang.insuranceUpgradeRequest'),
+                                            'chamberRequest' => __('ceomanagment::lang.chamberRequest'),
+                                            'cancleContractRequest' => __('ceomanagment::lang.cancleContractRequest'),
+                                            'WarningRequest' => __('ceomanagment::lang.WarningRequest'),
+                                            'assetRequest' => __('ceomanagment::lang.assetRequest'),
+                                            'passportRenewal' => __('ceomanagment::lang.passportRenewal'),
+                                            'AjirAsked' => __('ceomanagment::lang.AjirAsked'),
+                                            'AlternativeWorker' => __('ceomanagment::lang.AlternativeWorker'),
+                                            'TransferringGuaranteeFromExternalClient' => __('ceomanagment::lang.TransferringGuaranteeFromExternalClient'),
+                                            'Permit' => __('ceomanagment::lang.Permit'),
+                                            'FamilyInsurace' => __('ceomanagment::lang.FamilyInsurace'),
+                                            'Ajir_link' => __('ceomanagment::lang.Ajir_link'),
+                                            'authorizationRequest' => __('ceomanagment::lang.authorizationRequest'),
+                                            'ticketReservationRequest' => __('ceomanagment::lang.ticketReservationRequest'),
+                                            'interviewsRequest' => __('ceomanagment::lang.interviewsRequest'),
+                                            'salaryInquiryRequest' => __('ceomanagment::lang.salaryInquiryRequest'),
+                                            'moqimPrint' => __('ceomanagment::lang.moqimPrint'),
+                                            'salaryIntroLetter' => __('ceomanagment::lang.salaryIntroLetter'),
+                                            'QiwaContract' => __('ceomanagment::lang.QiwaContract'),
+                                            'ExitWithoutReturnReport' => __('ceomanagment::lang.ExitWithoutReturnReport'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'type_select',
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    {!! Form::label('for', __('ceomanagment::lang.request_for') . ':*') !!}
+                                    {!! Form::select(
+                                        'for',
+                                        [
+                                            'worker' => __('ceomanagment::lang.worker'),
+                                            'employee' => __('ceomanagment::lang.employee'),
+                                            'both' => __('ceomanagment::lang.both'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'for_select',
+                                            'placeholder' => __('ceomanagment::lang.select_type'),
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('user_type', __('ceomanagment::lang.user_type') . ':*') !!}
+                                    {!! Form::select(
+                                        'user_type',
+                                        [
+                                            'resident' => __('ceomanagment::lang.resident'),
+                                            'citizen' => __('ceomanagment::lang.citizen'),
+                                            'both' => __('ceomanagment::lang.both'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control',
+                                            'id' => 'user_type_select',
+                                            'style' => 'height:37px',
+                                        ],
+                                    ) !!}
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>
+                                        {!! Form::checkbox('selfish_service', '1', false, ['id' => 'selfish_service_select']) !!}
                                         @lang('ceomanagment::lang.selfish_service')
                                     </label>
                                 </div>
@@ -184,7 +322,8 @@
 
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                            <button type="button" class="btn btn-default"
+                                data-dismiss="modal">@lang('messages.close')</button>
                         </div>
                         {!! Form::close() !!}
                     </div>
@@ -475,7 +614,7 @@
 
                         tasksContainer.append(
                             '<button class="btn btn-primary add-task-btn" type="button">Add New Task</button>'
-                            );
+                        );
 
                         tasksContainer.on('click', '.remove-task-btn-edit', function() {
                             var taskGroup = $(this).closest('.task-input-group');
@@ -544,6 +683,79 @@
                     });
                 });
             });
+
+            
+            $(document).on('click', '.edit-request-type-btn', function(e) {
+                e.preventDefault();
+
+                var url = $(this).data('url'); // Base URL for update
+                var requestTypeId = $(this).data('id'); // ID of the request type
+
+                // Set the form action dynamically
+                $('#editRequestTypeForm').attr('action', url.replace(':id', requestTypeId));
+
+                // Fetch data and populate modal
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#editRequestTypeBtnModal #requestTypeId').val(requestTypeId);
+                            $('#editRequestTypeBtnModal #type_select').val(response.requestType
+                                .type);
+                            $('#editRequestTypeBtnModal #for_select').val(response.requestType
+                                .for);
+                            $('#editRequestTypeBtnModal #user_type_select').val(response
+                                .requestType.user_type);
+                            $('#editRequestTypeBtnModal #selfish_service_select').prop(
+                                'checked', response.requestType.selfish_service == 1);
+
+                            // Show modal
+                            $('#editRequestTypeBtnModal').modal('show');
+                        } else {
+                            console.error('Failed to fetch data');
+                        }
+                    },
+                    error: function() {
+                        console.error('Error fetching request type data');
+                    }
+                });
+            });
+
+
+            
+
+
+
+            // Form Submission
+            // $('#editRequestTypeForm').on('submit', function(e) {
+            //     e.preventDefault();
+
+            //     var formAction = $(this).attr('action');
+            //     var formData = $(this).serialize();
+
+            //     $.ajax({
+            //         url: formAction,
+            //         type: 'POST',
+            //         data: formData,
+            //         success: function(response) {
+            //             if (response.success) {
+            //                 toastr.success(response.msg);
+            //                 $('#editRequestTypeBtnModal').modal('hide');
+            //                 location.reload();
+            //             } else {
+            //                 toastr.error(response.msg);
+            //             }
+            //         },
+            //         error: function() {
+            //             toastr.error('An error occurred while saving data.');
+            //         }
+            //     });
+            // });
+
+
+
+
 
             // Add a hidden input field to store deleted task IDs
             $('#editRequestTypeForm').append(

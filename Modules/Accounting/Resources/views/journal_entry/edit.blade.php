@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.journal_entry'))
+@section('company_title', __('accounting::lang.journal_entry'))
 
 @section('content')
 
@@ -210,7 +210,14 @@
                                         {!! Form::hidden('accounts_transactions_id[' . $i . ']', $accounts_transactions[$i - 1]['id']) !!}
                                     @endif
 
-                                    <td>{{ $i }}</td>
+                                    <td>
+                                        <i class="fa fa-plus-square fa-2x text-primary cursor-pointer"
+                                            data-id="{{ $i }}"></i>
+                                        <a type="button" class="fa fa-trash fa-2x cursor-pointer" data-id="{{ $i }}"
+                                            name="{{ $i }}" value=""
+                                            style="background: transparent; border: 0px; color: red; font-size: large; padding: 7px;"></a>
+
+                                    </td>
                                     <td>
                                         {!! Form::select('account_id[' . $i . ']', $default_array, $account_id, [
                                             'class' => 'form-control accounts-dropdown account_id',
@@ -236,12 +243,12 @@
                                             value="{{ $selected_partner_type }}">
                                     </th>
                                     <td>
-                                        <select class="form-control cost_center" style="width: 100%;" name="cost_center[{{ $i }}]">
-                                            <option  value="">يرجى الاختيار</option>
+                                        <select class="form-control cost_center" style="width: 100%;"
+                                            name="cost_center[{{ $i }}]">
+                                            <option value="">يرجى الاختيار</option>
                                             @foreach ($allCenters as $allCenter)
-                                                <option @if ($cost_center_id == $allCenter->id)
-                                                    selected
-                                                @endif value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
+                                                <option @if ($cost_center_id == $allCenter->id) selected @endif
+                                                    value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -293,6 +300,87 @@
 @section('javascript')
     @include('accounting::accounting.common_js')
     <script type="text/javascript">
+        $(document).on("click", ".fa-trash", function() {
+            const row = $(this).closest("tr");
+            const transactionId = row.find('input[name^="accounts_transactions_id"]').val();
+
+            if (transactionId) {
+                const deleteInput = `<input type="hidden" name="deleted_transactions[]" value="${transactionId}">`;
+                $("#journal_add_form").append(deleteInput);
+            }
+
+            row.remove();
+
+            calculate_total();
+        });
+
+
+        $(document).on("click", ".fa-plus-square", function() {
+            let counter = $("#journal_table tbody tr").length + 1;
+
+            $("#journal_table tbody").append(`
+        <tr>
+            <td>
+                <i class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="${counter}"></i>
+                <a type="button" class="fa fa-trash fa-2x cursor-pointer" data-id="${counter}" name="${counter}" value=""
+                    style="background: transparent; border: 0px; color: red; font-size: large; padding: 7px;"></a>
+            </td>
+            <td>
+                <select class="form-control accounts-dropdown account_id" style="width: 100%;" name="account_id[${counter}]">
+                    <option value="">@extends('layouts.app')</option>
+                </select>
+            </td>
+            <td>
+                <button type="button" id="${counter}" class="btn btn-primary open-dialog-btn">@lang('accounting::lang.journal_entry')</button>
+                <input type="text" readonly name="selected_partner[${counter}]" class="selected_partner" id="selected_partner[${counter}]"
+                    style="background: transparent; border: 0;">
+                <input type="text" readonly name="selected_partner_type[${counter}]" class="selected_partner_type[${counter}]"
+                    id="selected_partner_type[${counter}]" style="background: transparent; border: 0;">
+                <input type="hidden" name="selected_partner_id[${counter}]" id="selected_partner_id[${counter}]">
+                <input type="hidden" name="selected_partner_type_[${counter}]" id="selected_partner_type_[${counter}]">
+            </td>
+            <td>
+                <select class="form-control cost_center" style="width: 100%;" name="cost_center[${counter}]">
+                    <option value="">يرجى الاختيار</option>
+                    @foreach ($allCenters as $allCenter)
+                        <option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
+                    @endforeach
+                </select>
+            </td>
+            <td>
+                <input class="form-control input_number debit" name="debit[${counter}]" type="text">
+            </td>
+            <td>
+                <input class="form-control input_number credit" name="credit[${counter}]" type="text">
+            </td>
+            <td>
+                <input class="form-control additional_notes" name="additional_notes[${counter}]" type="text">
+            </td>
+        </tr>
+    `);
+
+            $(".accounts-dropdown").select2({
+                ajax: {
+                    url: '{{ route('accounts-dropdown') }}',
+                    dataType: 'json',
+                    processResults: function(data) {
+                        return {
+                            results: data,
+                        };
+                    },
+                },
+                escapeMarkup: function(markup) {
+                    return markup;
+                },
+                templateResult: function(data) {
+                    return data.html;
+                },
+                templateSelection: function(data) {
+                    return data.text;
+                },
+            });
+        });
+
         $(document).ready(function() {
             $('#myModal').on('shown.bs.modal', function(e) {
                 $('#select-employees').select2({
@@ -319,7 +407,7 @@
 
                 $('#selected_partner\\[' + id + '\\]').val(selectedText);
                 $('#selected_partner_id\\[' + id + '\\]').val(selectedValue);
-                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.employees')");
+                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.select_partner')");
                 $('#selected_partner_type_\\[' + id + '\\]').val("employees");
 
 
@@ -335,7 +423,7 @@
 
                 $('#selected_partner_id\\[' + id + '\\]').val(selectedValue);
                 $('#selected_partner\\[' + id + '\\]').val(selectedText);
-                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.customers_suppliers')");
+                $('#selected_partner_type\\[' + id + '\\]').val("@lang('accounting::lang.employees')");
                 $('#selected_partner_type_\\[' + id + '\\]').val("customers_suppliers");
 
 
@@ -361,7 +449,7 @@
                 //check if same or not
                 if ($('.total_credit_hidden').val() != $('.total_debit_hidden').val()) {
                     is_valid = false;
-                    alert("@lang('accounting::lang.credit_debit_equal')");
+                    alert("@lang('accounting::lang.customers_suppliers')");
                 }
 
                 //check if all account selected or not
@@ -372,7 +460,7 @@
                     if (credit != 0 || debit != 0) {
                         if ($(tr).find('.account_id').val() == '') {
                             is_valid = false;
-                            alert("@lang('accounting::lang.select_all_accounts')");
+                            alert("@lang('messages.please_select')");
                         }
                     }
                 });

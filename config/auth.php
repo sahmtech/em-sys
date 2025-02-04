@@ -13,8 +13,8 @@ return [
     |
     */
 
-    'defaults' => [
-        'guard' => 'web',
+    'defaults'         => [
+        'guard'     => 'web',
         'passwords' => 'users',
     ],
 
@@ -35,19 +35,19 @@ return [
     |
     */
 
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
+    'guards'           => [
+        'web'      => [
+            'driver'   => 'session',
             'provider' => 'users',
         ],
 
-        'api' => [
-            'driver' => 'passport',
+        'api'      => [
+            'driver'   => 'passport',
             'provider' => 'users',
         ],
-        
+
         'customer' => [
-            'driver' => 'session',
+            'driver'   => 'session',
             'provider' => 'contacts',
         ],
     ],
@@ -69,15 +69,15 @@ return [
     |
     */
 
-    'providers' => [
-        'users' => [
+    'providers'        => [
+        'users'    => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model'  => App\User::class,
         ],
 
         'contacts' => [
             'driver' => 'eloquent',
-            'model' => App\Contact::class,
+            'model'  => App\Contact::class,
         ],
 
         // 'users' => [
@@ -101,18 +101,18 @@ return [
     |
     */
 
-    'passwords' => [
-        'users' => [
+    'passwords'        => [
+        'users'    => [
             'provider' => 'users',
-            'table' => 'password_resets',
-            'expire' => 60,
+            'table'    => 'password_resets',
+            'expire'   => 60,
             'throttle' => 60,
         ],
 
         'contacts' => [
             'provider' => 'contacts',
-            'table' => 'password_resets_contacts',
-            'expire' => 60,
+            'table'    => 'password_resets_contacts',
+            'expire'   => 60,
         ],
     ],
 

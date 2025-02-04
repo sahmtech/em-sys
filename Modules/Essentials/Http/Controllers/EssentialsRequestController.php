@@ -321,6 +321,7 @@ class EssentialsRequestController extends Controller
 
                     return $status;
                 })
+
                 ->editColumn('can_return', function ($row) {
                     $buttonsHtml = '';
 

@@ -72,6 +72,8 @@ class AccountingController extends Controller
     public function setSession(Request $request)
     {
         Session::put('selectedCompanyId', $request->companyId);
+        $company_name = Company::where('id', $request->companyId)->first()->name;
+        Session::put('company.name', $company_name);
         return redirect()->route('accounting.dashboard');
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\FollowUp\Http\Controllers;
 
 use App\AccessRole;
@@ -39,17 +38,17 @@ class FollowupDeliveryAttachmentController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $can_followup_crud_attachment_delivery = auth()->user()->can('followup.crud_attachment_delivery');
-        if (!($is_admin || $can_followup_crud_attachment_delivery)) {
+        if (! ($is_admin || $can_followup_crud_attachment_delivery)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
-                'msg' => __('message.unauthorized'),
+                'msg'     => __('message.unauthorized'),
             ]);
         }
-        $can_edit_attachment_delivery = auth()->user()->can('followup.edit_attachment_delivery');
+        $can_edit_attachment_delivery  = auth()->user()->can('followup.edit_attachment_delivery');
         $can_delete_attachment_deliver = auth()->user()->can('followup.delete_attachment_delivery');
-        $can_view_attachment_deliver = auth()->user()->can('followup.view_attachment_delivery');
-        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        if (!$is_admin) {
+        $can_view_attachment_deliver   = auth()->user()->can('followup.view_attachment_delivery');
+        $userIds                       = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (! $is_admin) {
             $userIds = $this->moduleUtil->applyAccessRole();
             $userIds = User::where('user_type', '!=', 'admin')
                 ->where('company_id', auth()->user()->company->id)
@@ -61,11 +60,11 @@ class FollowupDeliveryAttachmentController extends Controller
 
         // dd($workersIds);
 
-        if (!$is_admin) {
+        if (! $is_admin) {
 
-            $workersIds = $this->moduleUtil->applyAccessRole();
+            $workersIds    = $this->moduleUtil->applyAccessRole();
             $companies_ids = [];
-            $roles = auth()->user()->roles;
+            $roles         = auth()->user()->roles;
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
@@ -100,12 +99,12 @@ class FollowupDeliveryAttachmentController extends Controller
 
         if (request()->ajax()) {
 
-            if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
+            if (! empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
 
                 $delivery_documents = $delivery_documents->where('user_id', request()->input('worker_id'));
             }
 
-            if (!empty(request()->input('document_id')) && request()->input('document_id') !== 'all') {
+            if (! empty(request()->input('document_id')) && request()->input('document_id') !== 'all') {
 
                 $delivery_documents = $delivery_documents->where('document_id', request()->input('document_id'));
             }
@@ -114,6 +113,9 @@ class FollowupDeliveryAttachmentController extends Controller
 
                 ->editColumn('worker', function ($row) {
                     return $row->user->id_proof_number . ' - ' . $row->user->first_name . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
+                })
+                ->editColumn('id_proof_number', function ($row) {
+                    return $row->user->id_proof_number ?? $row->user->border_no;
                 })
 
                 ->editColumn('attach_name', function ($row) {
@@ -174,16 +176,16 @@ class FollowupDeliveryAttachmentController extends Controller
      */
     public function create()
     {
-        $workers = User::whereIn('user_type', ['worker', 'employee'])->get();
+        $workers   = User::whereIn('user_type', ['worker', 'employee'])->get();
         $documents = FollowupDocument::where('type', 'Attached')->get();
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin)) {
+        if (! ($is_admin)) {
             $workers = [];
             $workers = $this->moduleUtil->applyAccessRole();
 
             $companies_ids = [];
-            $roles = auth()->user()->roles;
+            $roles         = auth()->user()->roles;
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
@@ -220,27 +222,27 @@ class FollowupDeliveryAttachmentController extends Controller
             );
 
             if ($request->hasFile('document')) {
-                $file = $request->file('document');
-                $filePath = $file->store('/documents');
+                $file                = $request->file('document');
+                $filePath            = $file->store('/documents');
                 $input2['file_path'] = $filePath;
             }
-            $input2['user_id'] = $input['user_id'];
+            $input2['user_id']     = $input['user_id'];
             $input2['document_id'] = $input['document_id'];
-            $input2['title'] = $request->input('title');
-            $input2['nots'] = $input['nots'];
+            $input2['title']       = $request->input('title');
+            $input2['nots']        = $input['nots'];
 
             FollowupDeliveryDocument::create($input2);
 
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.added_success'),
+                'msg'     => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg'     => __('messages.something_went_wrong'),
             ];
         }
 
@@ -264,7 +266,7 @@ class FollowupDeliveryAttachmentController extends Controller
      */
     public function edit($id)
     {
-        $workers = User::whereIn('user_type', ['worker', 'employee'])->get();
+        $workers   = User::whereIn('user_type', ['worker', 'employee'])->get();
         $documents = FollowupDocument::where('type', 'Attached')->get();
 
         $document_delivery = FollowupDeliveryDocument::find($id);
@@ -284,13 +286,13 @@ class FollowupDeliveryAttachmentController extends Controller
             DB::beginTransaction();
             $update_data = [];
             if ($request->hasFile('document')) {
-                $file = $request->file('document');
+                $file                     = $request->file('document');
                 $update_data['file_path'] = $file->store('/documents');
             }
 
-            $update_data['user_id'] = $request->input('user_id');
+            $update_data['user_id']     = $request->input('user_id');
             $update_data['document_id'] = $request->input('document_id');
-            $update_data['nots'] = $request->input('nots');
+            $update_data['nots']        = $request->input('nots');
 
             if ($update_data['document_id'] != 11) {
                 $update_data['title'] = null;
@@ -321,7 +323,7 @@ class FollowupDeliveryAttachmentController extends Controller
                 FollowupDeliveryDocument::find($id)->delete();
                 $output = [
                     'success' => true,
-                    'msg' => 'تم حذف السند بنجاح',
+                    'msg'     => 'تم حذف السند بنجاح',
                 ];
             } catch (Exception $e) {
                 return redirect()->back();

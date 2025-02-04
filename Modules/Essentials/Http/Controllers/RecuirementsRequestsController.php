@@ -1,22 +1,20 @@
 <?php
-
 namespace Modules\Essentials\Http\Controllers;
 
+use App\Utils\BusinessUtil;
+use App\Utils\ContactUtil;
+use App\Utils\ModuleUtil;
+use App\Utils\ProductUtil;
+use App\Utils\TransactionUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
-use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\FollowUp\Entities\followupRecruitmentRequest;
-use App\Utils\BusinessUtil;
-use App\Utils\ContactUtil;
+use Yajra\DataTables\Facades\DataTables;
 
-use App\Utils\ProductUtil;
-use App\Utils\TransactionUtil;
 class RecuirementsRequestsController extends Controller
 {
     /**
@@ -38,39 +36,38 @@ class RecuirementsRequestsController extends Controller
      */
     public function __construct(ContactUtil $contactUtil, BusinessUtil $businessUtil, TransactionUtil $transactionUtil, ModuleUtil $moduleUtil, ProductUtil $productUtil)
     {
-        $this->contactUtil = $contactUtil;
-        $this->businessUtil = $businessUtil;
+        $this->contactUtil     = $contactUtil;
+        $this->businessUtil    = $businessUtil;
         $this->transactionUtil = $transactionUtil;
-        $this->moduleUtil = $moduleUtil;
-        $this->productUtil = $productUtil;
+        $this->moduleUtil      = $moduleUtil;
+        $this->productUtil     = $productUtil;
 
         $this->statuses = [
             'approved' => [
-                'name' => trans('sales::lang.approved'),
+                'name'  => trans('sales::lang.approved'),
                 'class' => 'bg-green',
             ],
             'rejected' => [
-                'name' => trans('sales::lang.cancelled'),
+                'name'  => trans('sales::lang.cancelled'),
                 'class' => 'bg-red',
             ],
-            
-            'pending' => [
-                'name' => trans('sales::lang.under_study'),
+
+            'pending'  => [
+                'name'  => trans('sales::lang.under_study'),
                 'class' => 'bg-yellow',
             ],
         ];
 
- 
     }
     public function index()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $specializations=EssentialsSpecialization::all()->pluck('name','id');
-        $professions=EssentialsProfession::all()->pluck('name','id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $business_id     = request()->session()->get('user.business_id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
 
         $recruitmentRequests = followupRecruitmentRequest::
-        select([
+            select([
             'id',
             'quantity',
             'nationality_id',
@@ -81,62 +78,57 @@ class RecuirementsRequestsController extends Controller
             'status',
             'attachment',
 
-        ])->where('status' ,'pending');
-        if (request()->ajax())
-         {
+        ])->where('status', 'pending');
+        if (request()->ajax()) {
 
             return Datatables::of($recruitmentRequests)
 
-            ->editColumn('status', function ($row) {
-                  
-                $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                ->editColumn('status', function ($row) {
+
+                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                     . $this->statuses[$row->status]['name'] . '</span>';
-                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"  data-quantity="' . $row->quantity . '"   fo data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-          
-            return $status;
-        })
+                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"  data-quantity="' . $row->quantity . '"   fo data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
 
+                    return $status;
+                })
 
-            ->editColumn('nationality_id',function($row)use($nationalities){
-                $item = $nationalities[$row->nationality_id]??'';
+                ->editColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item = $nationalities[$row->nationality_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('profession_id',function($row)use($professions){
-                $item = $professions[$row->profession_id]??'';
+                    return $item;
+                })
+                ->editColumn('profession_id', function ($row) use ($professions) {
+                    $item = $professions[$row->profession_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('specialization_id',function($row)use($specializations){
-                $item = $specializations[$row->specialization_id]??'';
+                    return $item;
+                })
+                ->editColumn('specialization_id', function ($row) use ($specializations) {
+                    $item = $specializations[$row->specialization_id] ?? '';
 
-                return $item;
-            })
-         
-     
-            ->addColumn(
-                'attachments',
-                 function ($row) {
-                    $html = ''; 
-                if (!empty($row->attachment)) {   
-                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->attachment.'\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
-                    '&nbsp;';
-                } else {
-                    $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
-                }
+                    return $item;
+                })
 
-              
-                    return $html;
-                 }
+                ->addColumn(
+                    'attachments',
+                    function ($row) {
+                        $html = '';
+                        if (! empty($row->attachment)) {
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->attachment . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                            '&nbsp;';
+                        } else {
+                            $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                        }
+
+                        return $html;
+                    }
                 )
-          
-           
-            ->rawColumns(['attachments','status'])
-            ->make(true);
-         }
-         $statuses = $this->statuses;
+
+                ->rawColumns(['attachments', 'status'])
+                ->make(true);
+        }
+        $statuses = $this->statuses;
         return view('essentials::requirements_requests.index')
-        ->with(compact('specializations','professions','nationalities','statuses'));
+            ->with(compact('specializations', 'professions', 'nationalities', 'statuses'));
     }
 
     public function changeStatus(Request $request)
@@ -144,110 +136,98 @@ class RecuirementsRequestsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-
         try {
             $input = $request->only(['status', 'request_id', 'quantity']);
-        
+
             $reqRequest = followupRecruitmentRequest::find($input['request_id']);
-          
+
             if ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'approved' && $reqRequest->change_status == 0) {
-               
+
                 $reqRequest->quantity -= $input['quantity'];
                 $reqRequest->change_status = 1;
                 $reqRequest->save();
-        
-                $newreq = new followupRecruitmentRequest();
-                $newreq->nationality_id = $reqRequest->nationality_id;
+
+                $newreq                    = new followupRecruitmentRequest();
+                $newreq->nationality_id    = $reqRequest->nationality_id;
                 $newreq->specialization_id = $reqRequest->specialization_id;
-                $newreq->profession_id = $reqRequest->profession_id;
-                $newreq->date = $reqRequest->date;
-                $newreq->note = $reqRequest->note;
-                $newreq->assigned_to = $reqRequest->id;
-                $newreq->change_status =1;
-                $newreq->attachment = $reqRequest->attachment;
-                $newreq->quantity = $input['quantity'];
-                $newreq->status = $input['status'];
+                $newreq->profession_id     = $reqRequest->profession_id;
+                $newreq->date              = $reqRequest->date;
+                $newreq->note              = $reqRequest->note;
+                $newreq->assigned_to       = $reqRequest->id;
+                $newreq->change_status     = 1;
+                $newreq->attachment        = $reqRequest->attachment;
+                $newreq->quantity          = $input['quantity'];
+                $newreq->status            = $input['status'];
                 $newreq->save();
-            } 
-            
-            elseif ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'approved' && $reqRequest->change_status == 1) 
-            {
-                $reqRequest->quantity =$reqRequest->quantity - $input['quantity'];
+            } elseif ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'approved' && $reqRequest->change_status == 1) {
+                $reqRequest->quantity = $reqRequest->quantity - $input['quantity'];
                 $reqRequest->save();
 
                 $req = followupRecruitmentRequest::where('assigned_to', $reqRequest->id)->first();
-        
+
                 if ($req) {
-                    
+
                     $req->quantity = $req->quantity + $input['quantity'];
                     $req->save();
                 }
             }
 
-
-
-
-                      
             if ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'rejected' && $reqRequest->reject_change_status == 0) {
-               
+
                 $reqRequest->quantity -= $input['quantity'];
                 $reqRequest->reject_change_status = 1;
                 $reqRequest->save();
-        
-                $newreq = new followupRecruitmentRequest();
-                $newreq->nationality_id = $reqRequest->nationality_id;
-                $newreq->specialization_id = $reqRequest->specialization_id;
-                $newreq->profession_id = $reqRequest->profession_id;
-                $newreq->date = $reqRequest->date;
-                $newreq->note = $reqRequest->note;
-                $newreq->assigned_to = $reqRequest->id;
-                $newreq->reject_change_status =1;
-                $newreq->attachment = $reqRequest->attachment;
-                $newreq->quantity = $input['quantity'];
-                $newreq->status = $input['status'];
+
+                $newreq                       = new followupRecruitmentRequest();
+                $newreq->nationality_id       = $reqRequest->nationality_id;
+                $newreq->specialization_id    = $reqRequest->specialization_id;
+                $newreq->profession_id        = $reqRequest->profession_id;
+                $newreq->date                 = $reqRequest->date;
+                $newreq->note                 = $reqRequest->note;
+                $newreq->assigned_to          = $reqRequest->id;
+                $newreq->reject_change_status = 1;
+                $newreq->attachment           = $reqRequest->attachment;
+                $newreq->quantity             = $input['quantity'];
+                $newreq->status               = $input['status'];
                 $newreq->save();
-            } 
-            
-            elseif ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'rejected' && $reqRequest->reject_change_status == 1) 
-            {
-                $reqRequest->quantity =$reqRequest->quantity - $input['quantity'];
+            } elseif ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'rejected' && $reqRequest->reject_change_status == 1) {
+                $reqRequest->quantity = $reqRequest->quantity - $input['quantity'];
                 $reqRequest->save();
 
                 $req = followupRecruitmentRequest::where('assigned_to', $reqRequest->id)->first();
-        
+
                 if ($req) {
-                    
+
                     $req->quantity = $req->quantity + $input['quantity'];
                     $req->save();
                 }
             }
 
-        
             $output = [
                 'success' => true,
-                'msg' => __('lang_v1.updated_success'),
+                'msg'     => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-        
+
             $output = [
                 'success' => false,
-                'msg' => $e->getMessage(),
+                'msg'     => $e->getMessage(),
             ];
         }
-        
+
         return $output;
     }
 
     public function acceptedRequestIndex()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $specializations=EssentialsSpecialization::all()->pluck('name','id');
-        $professions=EssentialsProfession::all()->pluck('name','id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $business_id     = request()->session()->get('user.business_id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
 
         $recruitmentRequests = followupRecruitmentRequest::
-        select([
+            select([
             'id',
             'quantity',
             'nationality_id',
@@ -259,76 +239,60 @@ class RecuirementsRequestsController extends Controller
             'attachment',
             'quantity',
 
-        ])->where('status' ,'approved');
-      
-        if (request()->ajax())
-         {
+        ])->where('status', 'approved');
+
+        if (request()->ajax()) {
 
             return Datatables::of($recruitmentRequests)
 
-        
-                  
-        
-        
-        
-          
-        
-        
+                ->editColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item = $nationalities[$row->nationality_id] ?? '';
 
+                    return $item;
+                })
+                ->editColumn('profession_id', function ($row) use ($professions) {
+                    $item = $professions[$row->profession_id] ?? '';
 
-            ->editColumn('nationality_id',function($row)use($nationalities){
-                $item = $nationalities[$row->nationality_id]??'';
+                    return $item;
+                })
+                ->editColumn('specialization_id', function ($row) use ($specializations) {
+                    $item = $specializations[$row->specialization_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('profession_id',function($row)use($professions){
-                $item = $professions[$row->profession_id]??'';
+                    return $item;
+                })
 
-                return $item;
-            })
-            ->editColumn('specialization_id',function($row)use($specializations){
-                $item = $specializations[$row->specialization_id]??'';
+                ->addColumn(
+                    'attachments',
+                    function ($row) {
+                        $html = '';
+                        if (! empty($row->attachment)) {
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->attachment . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                            '&nbsp;';
+                        } else {
+                            $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                        }
 
-                return $item;
-            })
-         
-     
-            ->addColumn(
-                'attachments',
-                 function ($row) {
-                    $html = ''; 
-                if (!empty($row->attachment)) {   
-                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->attachment.'\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
-                    '&nbsp;';
-                } else {
-                    $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
-                }
-
-              
-                    return $html;
-                 }
+                        return $html;
+                    }
                 )
-          
-           
-            ->rawColumns(['attachments','status'])
-            ->make(true);
-         }
+
+                ->rawColumns(['attachments', 'status'])
+                ->make(true);
+        }
 
         return view('essentials::requirements_requests.aproved_requests_index')
-        ->with(compact('specializations','professions','nationalities'));
+            ->with(compact('specializations', 'professions', 'nationalities'));
     }
 
-   
-   
     public function unacceptedRequestIndex()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $specializations=EssentialsSpecialization::all()->pluck('name','id');
-        $professions=EssentialsProfession::all()->pluck('name','id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $business_id     = request()->session()->get('user.business_id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions     = EssentialsProfession::all()->pluck('name', 'id');
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
 
         $recruitmentRequests = followupRecruitmentRequest::
-        select([
+            select([
             'id',
             'quantity',
             'nationality_id',
@@ -339,62 +303,48 @@ class RecuirementsRequestsController extends Controller
             'status',
             'attachment',
 
-        ])->where('status' ,'rejected');
-        if (request()->ajax())
-         {
+        ])->where('status', 'rejected');
+        if (request()->ajax()) {
 
             return Datatables::of($recruitmentRequests)
 
-            
-        
-                  
-        
-        
-        
-          
-        
-        
+                ->editColumn('nationality_id', function ($row) use ($nationalities) {
+                    $item = $nationalities[$row->nationality_id] ?? '';
 
-            ->editColumn('nationality_id',function($row)use($nationalities){
-                $item = $nationalities[$row->nationality_id]??'';
+                    return $item;
+                })
+                ->editColumn('profession_id', function ($row) use ($professions) {
+                    $item = $professions[$row->profession_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('profession_id',function($row)use($professions){
-                $item = $professions[$row->profession_id]??'';
+                    return $item;
+                })
+                ->editColumn('specialization_id', function ($row) use ($specializations) {
+                    $item = $specializations[$row->specialization_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('specialization_id',function($row)use($specializations){
-                $item = $specializations[$row->specialization_id]??'';
+                    return $item;
+                })
 
-                return $item;
-            })
-         
-     
-            ->addColumn(
-                'attachments',
-                 function ($row) {
-                    $html = ''; 
-                if (!empty($row->attachment)) {   
-                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->attachment.'\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
-                    '&nbsp;';
-                } else {
-                    $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
-                }
+                ->addColumn(
+                    'attachments',
+                    function ($row) {
+                        $html = '';
+                        if (! empty($row->attachment)) {
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->attachment . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                            '&nbsp;';
+                        } else {
+                            $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                        }
 
-              
-                    return $html;
-                 }
+                        return $html;
+                    }
                 )
-          
-           
-            ->rawColumns(['attachments','status'])
-            ->make(true);
-         }
+
+                ->rawColumns(['attachments', 'status'])
+                ->make(true);
+        }
 
         return view('essentials::requirements_requests.rejected_requests_index')
-        ->with(compact('specializations','professions','nationalities'));
+            ->with(compact('specializations', 'professions', 'nationalities'));
     }
 
     /**
@@ -413,7 +363,7 @@ class RecuirementsRequestsController extends Controller
      */
     public function store(Request $request)
     {
-        
+
     }
 
     /**
@@ -444,7 +394,7 @@ class RecuirementsRequestsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
     }
 
     /**
@@ -454,6 +404,6 @@ class RecuirementsRequestsController extends Controller
      */
     public function destroy($id)
     {
-        
+
     }
 }
