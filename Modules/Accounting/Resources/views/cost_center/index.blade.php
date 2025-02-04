@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.cost_centers'))
+@section('company_title', __('accounting::lang.cost_centers'))
 
 @section('content')
 
@@ -8,6 +8,21 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('accounting::lang.cost_centers')</h1>
     </section>
     <section class="content no-print">
@@ -266,7 +281,7 @@
 
             e.preventDefault()
             let id = $('#cost_center_id').val()
-          
+
 
             let url = `{{ route('cost_center_update', 'id') }}`
             url = url.replace('id', id)

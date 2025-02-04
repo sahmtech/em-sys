@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.chart_of_accounts'))
+@section('company_title', __('accounting::lang.chart_of_accounts'))
 
 @section('content')
 @section('css')

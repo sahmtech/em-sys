@@ -865,8 +865,24 @@ class CoaController extends Controller
 
         $total_credit_bal = $total_credit_bal->balance;
 
+        $first_account = AccountingAccount::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->where('status', 'active')
+            ->first();
+        $ledger_url = null;
+        $ledger_url = $first_account ? route('accounting.ledger', $first_account) : null;
+
+
+
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+            ['title' => __('accounting::lang.ledger_report'), 'url' =>   $ledger_url],
+        ];
         return view('accounting::chart_of_accounts.ledger')
-            ->with(compact('account', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
+            ->with(compact('account', 'current_bal', 'total_debit_bal', 'total_credit_bal', 'breadcrumbs'));
     }
 
 

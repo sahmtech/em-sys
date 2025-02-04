@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Http\Controllers;
 
 use App\BusinessLocation;
+use App\Company;
 use App\Contact;
 use App\TaxRate;
 use App\User;
@@ -126,8 +127,14 @@ class ReportController extends Controller
         $employees_statement_url = $first_employee ? route('accounting.employeesStatement', $first_employee) : null;
         $customers_suppliers_statement_url = $first_contact ? route('accounting.customersSuppliersStatement', $first_contact) : route('accounting.customersSuppliersStatement', 0);
         // dd($customers_suppliers_statement_url);
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+        ];
         return view('accounting::report.index')
-            ->with(compact('ledger_url', 'employees_statement_url', 'customers_suppliers_statement_url'));
+            ->with(compact('ledger_url', 'employees_statement_url', 'customers_suppliers_statement_url', 'breadcrumbs'));
     }
 
     /**
@@ -395,8 +402,15 @@ class ReportController extends Controller
                     ->make(true);
             }
 
+            $company_name = Company::where('id', $company_id)->first()->name;
+            $breadcrumbs = [
+                ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+                ['title' => $company_name, 'url' => route('accounting.dashboard')],
+                ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+                ['title' => __('accounting::lang.trial_balance'), 'url' =>   route('accounting.trialBalance')],
+            ];
             return view('accounting::report.trial_balance')
-                ->with(compact('levelsArray', 'accounts_array'));
+                ->with(compact('levelsArray', 'accounts_array', 'breadcrumbs'));
         } catch (\Exception $e) {
             Log::error('Error in trialBalance method: ' . $e->getMessage());
             return redirect()->route('chart-of-accounts.index')
@@ -576,10 +590,23 @@ class ReportController extends Controller
             ->select(DB::raw("SUM(IF((AAT.type = 'credit'), AAT.amount, 0)) as balance"))
             ->first();
 
-        $total_credit_bal = $total_credit_bal->balance;
 
+        $first_employee = User::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->whereIn('user_type', ['employee', 'manager', 'Department_head'])
+            ->where('status', 'active')
+            ->first();
+        $employees_statement_url = $first_employee ? route('accounting.employeesStatement', $first_employee) : null;
+        $total_credit_bal = $total_credit_bal->balance;
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+            ['title' => __('accounting::lang.employees_statement_of_account_report'), 'url' =>   $employees_statement_url],
+        ];
         return view('accounting::chart_of_accounts.employees-statement')
-            ->with(compact('user', 'employee_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
+            ->with(compact('user', 'employee_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal', 'breadcrumbs'));
     }
 
     public function customersSuppliersStatement($contact_id = null, Request $request)
@@ -745,8 +772,23 @@ class ReportController extends Controller
 
         $total_credit_bal = $total_credit_bal->balance;
 
+
+        $first_contact = Contact::where('business_id', $business_id)
+            ->where('company_id', $company_id)
+            ->whereIn('type', ['customer', 'converted', 'draft', 'qualified', 'supplier'])
+            ->active()
+            ->first();
+        $customers_suppliers_statement_url = $first_contact ? route('accounting.customersSuppliersStatement', $first_contact) : route('accounting.customersSuppliersStatement', 0);
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+            ['title' => __('accounting::lang.customers_and_suppliers_statement_of_account_report'), 'url' =>   $customers_suppliers_statement_url],
+        ];
+
         return view('accounting::chart_of_accounts.customers-suppliers-statement')
-            ->with(compact('contact', 'contact_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal'));
+            ->with(compact('contact', 'contact_dropdown', 'current_bal', 'total_debit_bal', 'total_credit_bal', 'breadcrumbs'));
     }
 
     /**
@@ -822,12 +864,21 @@ class ReportController extends Controller
 
         $data = $this->getIcomeStatementData($accounts);
 
+
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+            ['title' => __('accounting::lang.income_list'), 'url' =>  route('accounting.incomeStatement')],
+        ];
         return view('accounting::report.income-statement')
             ->with(compact(
                 'accounts',
                 'start_date',
                 'end_date',
-                'data'
+                'data',
+                'breadcrumbs'
             ));
     }
 
@@ -987,8 +1038,15 @@ class ReportController extends Controller
             ->groupBy('accounting_accounts.name')
             ->get();
 
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+            ['title' => __('accounting::lang.balance_sheet'), 'url' =>  route('accounting.balanceSheet')],
+        ];
         return view('accounting::report.balance_sheet')
-            ->with(compact('assets', 'liabilities', 'equities', 'start_date', 'end_date'));
+            ->with(compact('assets', 'liabilities', 'equities', 'start_date', 'end_date', 'breadcrumbs'));
     }
 
     public function accountReceivableAgeingReport()
@@ -1002,8 +1060,17 @@ class ReportController extends Controller
 
         // $business_locations = BusinessLocation::forDropdown($business_id, true);
         $business_locations = BusinessLocation::forDropdownWithCompany($business_id, $company_id, true);
+
+
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+            ['title' => __('accounting::lang.account_recievable_ageing_report'), 'url' =>  route('accounting.account_receivable_ageing_report')],
+        ];
         return view('accounting::report.account_receivable_ageing_report')
-            ->with(compact('report_details', 'business_locations'));
+            ->with(compact('report_details', 'business_locations', 'breadcrumbs'));
     }
 
     public function accountPayableAgeingReport()
@@ -1015,7 +1082,15 @@ class ReportController extends Controller
         $report_details = $this->accountingUtil->getAgeingReport($business_id, 'purchase', $company_id, 'contact', $location_id);
         $business_locations = BusinessLocation::forDropdownWithCompany($business_id, $company_id, true);
 
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('accounting::lang.reports'), 'url' =>    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index'])],
+            ['title' => __('accounting::lang.account_payable_ageing_report'), 'url' =>  route('accounting.account_payable_ageing_report')],
+        ];
+
         return view('accounting::report.account_payable_ageing_report')
-            ->with(compact('report_details', 'business_locations'));
+            ->with(compact('report_details', 'business_locations', 'breadcrumbs'));
     }
 }

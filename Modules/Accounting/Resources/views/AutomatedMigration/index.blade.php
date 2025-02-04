@@ -4,10 +4,25 @@
 
 @section('content')
 
-    {{-- @include('accounting::layouts.nav') --}}
+
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('accounting::lang.automatedMigration')</h1>
     </section>
 
@@ -98,7 +113,7 @@
                 </div>
             @endcomponent
         </div>
-        </div>
+
     </section>
 
     {{-- <div class="modal fade" id="create_account_modal" tabindex="-1" role="dialog"></div> --}}
@@ -110,29 +125,22 @@
 
 
 @section('javascript')
-    @include('accounting::accounting.common_js')
 
     <script type="text/javascript">
+        @include('accounting::accounting.common_js')
+
         $(document).ready(function() {
 
             auto_migration_table = $('#auto_migration_table').DataTable({
+
                 processing: true,
                 serverSide: true,
                 ajax: {
                     url: '{{ route('automated-migration.index') }}',
                     data: function(d) {
-                        if ($('#mappingSetting_fillter').val()) {
-                            d.mappingSetting_fillter = $('#mappingSetting_fillter').val();
-
-                        }
-                        if ($('#location_id').val()) {
-                            d.location_id = $('#location_id').val();
-
-                        }
-                        if ($('#type_fillter').val()) {
-                            d.type_fillter = $('#type_fillter').val();
-
-                        }
+                        d.mappingSetting_fillter = $('#mappingSetting_fillter').val();
+                        d.location_id = $('#location_id').val();
+                        d.type_fillter = $('#type_fillter').val();
                     }
                 },
 
@@ -210,94 +218,97 @@
                 }
                 calculate_total();
             });
-        });
-
-        function calculate_total() {
-            var total_credit = 0;
-            var total_debit = 0;
-            $('table > tbody  > tr').each(function(index, tr) {
-                var credit = __read_number($(tr).find('.credit'));
-                total_credit += credit;
-
-                var debit = __read_number($(tr).find('.debit'));
-                total_debit += debit;
-            });
-
-            $('.total_credit_hidden').val(total_credit);
-            $('.total_debit_hidden').val(total_debit);
-
-            $('.total_credit').text(__currency_trans_from_en(total_credit));
-            $('.total_debit').text(__currency_trans_from_en(total_debit));
-        }
-        $(document).on("click", ".fa-trash", function() {
-            // console.log("amen");
-            var tbode_number = $(this).val();
-            let counter = $('#auto_migration_table' + tbode_number + ' tr').length - 1;
-            console.log(counter);
-            if (counter > 1) {
-                $(this).parents("tr").remove();
 
 
+            function calculate_total() {
+                var total_credit = 0;
+                var total_debit = 0;
+                $('table > tbody  > tr').each(function(index, tr) {
+                    var credit = __read_number($(tr).find('.credit'));
+                    total_credit += credit;
+
+                    var debit = __read_number($(tr).find('.debit'));
+                    total_debit += debit;
+                });
+
+                $('.total_credit_hidden').val(total_credit);
+                $('.total_debit_hidden').val(total_debit);
+
+                $('.total_credit').text(__currency_trans_from_en(total_credit));
+                $('.total_debit').text(__currency_trans_from_en(total_debit));
             }
+            $(document).on("click", ".fa-trash", function() {
+                // console.log("amen");
+                var tbode_number = $(this).val();
+                let counter = $('#auto_migration_table' + tbode_number + ' tr').length - 1;
+                console.log(counter);
+                if (counter > 1) {
+                    $(this).parents("tr").remove();
 
-        })
-        $(document).on('click', '.fa-plus-square', function() {
-            var tbode_number = $(this).val();
-            let counter = $('#auto_migration_table' + tbode_number + ' tr').length - 1;
-            $('#tbody' + tbode_number).append(
-                '<tr><td style="display: flex;font-size: smaller;align-items:center"><button type="button" class="fa fa-trash fa-2x cursor-pointer" data-id="' +
-                counter +
-                '" name="' + tbode_number + '" value="' + tbode_number +
-                '" style="background: transparent; border: 0px;color: red;font-size: small;"></button><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
-                counter +
-                '" name="' + tbode_number + '" value="' + tbode_number +
-                '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" required style="width: 100%;" name="account_id' +
-                tbode_number + '[' +
-                counter +
-                ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><select class="form-control cost_center" style="width: 100%;" name="cost_center' +
-                tbode_number + '[' +
-                counter +
-                ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>@endforeach </select> </td><td><label class="radio-inline"><input value="debit" type="radio" name="type' +
-                tbode_number + '[' +
-                counter +
-                ']" checked>@lang('lang_v1.all')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
-                tbode_number + '[' +
-                counter +
-                ']">@lang('accounting::lang.autoMigration.sell')</label></td><td><select class="form-control" name="amount_type' +
-                tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
-                '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.sell_return')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.opening_stock')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.purchase')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.purchase_order')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.purchase_return')</option></select></td></tr>'
-            )
-            $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
-                ajax: {
-                    url: '{{ route('accounts-dropdown') }}',
-                    dataType: 'json',
-                    processResults: function(data) {
-                        return {
-                            results: data
-                        }
+
+                }
+
+            })
+            $(document).on('click', '.fa-plus-square', function() {
+                var tbode_number = $(this).val();
+                let counter = $('#auto_migration_table' + tbode_number + ' tr').length - 1;
+                $('#tbody' + tbode_number).append(
+                    '<tr><td style="display: flex;font-size: smaller;align-items:center"><button type="button" class="fa fa-trash fa-2x cursor-pointer" data-id="' +
+                    counter +
+                    '" name="' + tbode_number + '" value="' + tbode_number +
+                    '" style="background: transparent; border: 0px;color: red;font-size: small;"></button><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
+                    counter +
+                    '" name="' + tbode_number + '" value="' + tbode_number +
+                    '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" required style="width: 100%;" name="account_id' +
+                    tbode_number + '[' +
+                    counter +
+                    ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><select class="form-control cost_center" style="width: 100%;" name="cost_center' +
+                    tbode_number + '[' +
+                    counter +
+                    ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>@endforeach </select> </td><td><label class="radio-inline"><input value="debit" type="radio" name="type' +
+                    tbode_number + '[' +
+                    counter +
+                    ']" checked>@lang('lang_v1.all')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                    tbode_number + '[' +
+                    counter +
+                    ']">@lang('accounting::lang.autoMigration.sell')</label></td><td><select class="form-control" name="amount_type' +
+                    tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' +
+                    counter +
+                    '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.sell_return')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.opening_stock')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.purchase')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.purchase_order')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.purchase_return')</option></select></td></tr>'
+                )
+                $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
+                    ajax: {
+                        url: '{{ route('accounts-dropdown') }}',
+                        dataType: 'json',
+                        processResults: function(data) {
+                            return {
+                                results: data
+                            }
+                        },
                     },
-                },
-                escapeMarkup: function(markup) {
-                    return markup;
-                },
-                templateResult: function(data) {
-                    return data.html;
-                },
-                templateSelection: function(data) {
-                    return data.text;
-                }
-            });
-            $('.credit').change(function() {
-                if ($(this).val() > 0) {
-                    $(this).parents('tr').find('.debit').val('');
-                }
-                calculate_total();
-            });
-            $('.debit').change(function() {
-                if ($(this).val() > 0) {
-                    $(this).parents('tr').find('.credit').val('');
-                }
-                calculate_total();
+                    escapeMarkup: function(markup) {
+                        return markup;
+                    },
+                    templateResult: function(data) {
+                        return data.html;
+                    },
+                    templateSelection: function(data) {
+                        return data.text;
+                    }
+                });
+                $('.credit').change(function() {
+                    if ($(this).val() > 0) {
+                        $(this).parents('tr').find('.debit').val('');
+                    }
+                    calculate_total();
+                });
+                $('.debit').change(function() {
+                    if ($(this).val() > 0) {
+                        $(this).parents('tr').find('.credit').val('');
+                    }
+                    calculate_total();
+                });
+
             });
 
         });
