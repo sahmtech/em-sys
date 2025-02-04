@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.automatedMigration'))
+@section('company_title', __('accounting::lang.automatedMigration'))
 
 @section('content')
 
@@ -138,7 +138,8 @@
                                                             name="cost_center1[{{ $index + 1 }}]">
                                                             <option selected="selected" value="">يرجى الاختيار</option>
                                                             @foreach ($allCenters as $allCenter)
-                                                                <option  @if ($journal_entry->cost_center_id == $allCenter->id ) selected @endif value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}
+                                                                <option @if ($journal_entry->cost_center_id == $allCenter->id) selected @endif
+                                                                    value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -278,7 +279,8 @@
                                                             name="cost_center2[{{ $index + 1 }}]">
                                                             <option selected="selected" value="">يرجى الاختيار</option>
                                                             @foreach ($allCenters as $allCenter)
-                                                                <option @if ($journal_entry->cost_center_id == $allCenter->id ) selected @endif value="{{ $allCenter->id }}">
+                                                                <option @if ($journal_entry->cost_center_id == $allCenter->id) selected @endif
+                                                                    value="{{ $allCenter->id }}">
                                                                     {{ $allCenter->ar_name }}</option>
                                                             @endforeach
                                                         </select>
@@ -384,7 +386,7 @@
                 //check if same or not
                 if ($('.total_credit_hidden').val() != $('.total_debit_hidden').val()) {
                     is_valid = false;
-                    alert("@lang('accounting::lang.credit_debit_equal')");
+                    alert("@extends('layouts.app')");
                 }
 
                 //check if all account selected or not
@@ -395,7 +397,7 @@
                     if (credit != 0 || debit != 0) {
                         if ($(tr).find('.account_id').val() == '') {
                             is_valid = false;
-                            alert("@lang('accounting::lang.select_all_accounts')");
+                            alert("@lang('messages.edit')");
                         }
                     }
                 });
@@ -478,12 +480,12 @@
                     ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>@endforeach </select> </td><td><label class="radio-inline"><input value="debit" type="radio" name="type' +
                     tbode_number + '[' +
                     counter +
-                    ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                    ']" checked>@lang('accounting::lang.automatedMigration')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
                     tbode_number + '[' +
                     counter +
-                    ']">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="amount_type' +
+                    ']">@lang('accounting::lang.first_journal')</label></td><td><select class="form-control" name="amount_type' +
                     tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
-                    '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
+                    '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.account')</option><option value="total_before_tax">@lang('accounting::lang.cost_center')</option><option value="tax_amount">@lang('accounting::lang.debit')</option><option value="shipping_charges">@lang('accounting::lang.credit')</option><option value="discount_amount">@lang('accounting::lang.amount')</option></select></td></tr>'
                 )
                 $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
                     ajax: {
@@ -539,12 +541,12 @@
                     ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>@endforeach </select> </td> <td><label class="radio-inline"><input value="debit" type="radio" name="type' +
                     tbode_number + '[' +
                     counter +
-                    ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                    ']" checked>@lang('accounting::lang.' . $journal_entry->account_primary_type)</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
                     tbode_number + '[' +
                     counter +
-                    ']">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="amount_type' +
+                    ']">@lang('accounting::lang.' . $journal_entry->account_sub_type)</label></td><td><select class="form-control" name="amount_type' +
                     tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
-                    '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
+                    '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.debtor')</option><option value="total_before_tax">@lang('accounting::lang.creditor')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.final_total')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.tax_amount')</option></select></td></tr>'
                 )
                 $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
                     ajax: {
@@ -602,12 +604,12 @@
                 ']"><option selected="selected" value="">يرجى الاختيار</option> @foreach ($allCenters as $allCenter)<option value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>@endforeach </select> </td> <td><label class="radio-inline"><input value="debit" type="radio" name="type' +
                 tbode_number + '[' +
                 counter +
-                ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                ']" checked>@lang('accounting::lang.autoMigration.shipping_charges')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
                 tbode_number + '[' +
                 counter +
-                ']">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="amount_type' +
+                ']">@lang('accounting::lang.autoMigration.discount_amount')</label></td><td><select class="form-control" name="amount_type' +
                 tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
-                '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
+                '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.second_journal')</option><option value="total_before_tax">@lang('accounting::lang.account')</option><option value="tax_amount">@lang('accounting::lang.cost_center')</option><option value="shipping_charges">@lang('accounting::lang.debit')</option><option value="discount_amount">@lang('accounting::lang.credit')</option></select></td></tr>'
             )
             $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
                 ajax: {

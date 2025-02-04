@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.journal_entry'))
+@section('company_title', __('accounting::lang.journal_entry'))
 
 @section('content')
 
@@ -44,16 +44,16 @@
                                         $selected_partner_type = '';
                                         $partner = '-';
                                         $partner_type = '-';
-                                        $cost_center_id =null;
+                                        $cost_center_id = null;
 
                                     @endphp
 
                                     @if (isset($accounts_transactions[$i - 1]))
                                         @php
- 
+
                                             $account_id = $accounts_transactions[$i - 1]['accounting_account_id'];
                                             $cost_center_id = $accounts_transactions[$i - 1]['cost_center_id'];
-                                          
+
                                             $debit =
                                                 $accounts_transactions[$i - 1]['type'] == 'debit'
                                                     ? $accounts_transactions[$i - 1]['amount']
@@ -88,12 +88,10 @@
                                                             $contact['supplier_business_name'];
                                                     }
                                                     $partner_type =
-                                                    $selected_partner_type === 'employees'
-                                                        ? __('accounting::lang.employees')
-                                                        : __('accounting::lang.customers_suppliers');
+                                                        $selected_partner_type === 'employees'
+                                                            ? __('accounting::lang.employees')
+                                                            : __('accounting::lang.customers_suppliers');
                                                 }
-
-                                           
                                             }
 
                                         @endphp
@@ -120,12 +118,12 @@
                                             style="background: transparent;border: 0;" value="{{ $partner_type }}">
                                     </th>
                                     <td>
-                                        <select readonly class="form-control cost_center" style="width: 100%;disabled:true;" name="cost_center[{{ $i }}]">
-                                            <option  value="">يرجى الاختيار</option>
+                                        <select readonly class="form-control cost_center" style="width: 100%;disabled:true;"
+                                            name="cost_center[{{ $i }}]">
+                                            <option value="">يرجى الاختيار</option>
                                             @foreach ($allCenters as $allCenter)
-                                                <option @if ($cost_center_id == $allCenter->id)
-                                                    selected
-                                                @endif value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
+                                                <option @if ($cost_center_id == $allCenter->id) selected @endif
+                                                    value="{{ $allCenter->id }}">{{ $allCenter->ar_name }}</option>
                                             @endforeach
                                         </select>
                                     </td>

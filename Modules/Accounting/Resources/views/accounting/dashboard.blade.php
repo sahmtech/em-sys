@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.accounting'))
+@section('company_title', __('accounting::lang.accounting'))
 
 @section('content')
     {{-- @include('accounting::layouts.nav') --}}

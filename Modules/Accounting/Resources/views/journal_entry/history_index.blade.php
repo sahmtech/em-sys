@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.journal_entry') . '-' . __('messages.history_edit'))
+@section('company_title', __('accounting::lang.journal_entry') . '-' . __('messages.history_edit'))
 
 @section('content')
 
