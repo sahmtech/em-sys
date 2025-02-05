@@ -287,6 +287,7 @@ class ApiEssentialsRequestsController extends ApiController
             $res[] = [
                 'id'              => $tmp->id,
                 'name'            => __('request.' . $tmp->type),
+                'type'            => $tmp->type,
                 'required_fields' => $tmp->requestsTypesField->required_fields ?? '',
                 'optional_fields' => $tmp->requestsTypesField->optional_fields ?? '',
             ];
