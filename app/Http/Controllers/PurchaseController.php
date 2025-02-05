@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\AccountTransaction;
 use App\Business;
 use App\BusinessLocation;
+use App\Company;
 use App\Contact;
 use App\CustomerGroup;
 use App\Product;
@@ -238,9 +239,15 @@ class PurchaseController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id);
         $suppliers = Contact::suppliersDropdown($business_id, false, true);
         $orderStatuses = $this->productUtil->orderStatuses();
-
+        $company_id = Session::get('selectedCompanyId');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>     __('purchase.list_purchase'), 'url' =>  action([\App\Http\Controllers\PurchaseController::class, 'index'])],
+        ];
         return view('purchase.index')
-            ->with(compact('business_locations', 'suppliers', 'orderStatuses'));
+            ->with(compact('business_locations', 'suppliers', 'orderStatuses', 'breadcrumbs'));
     }
 
     /**
@@ -299,8 +306,16 @@ class PurchaseController extends Controller
 
         $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
+        $company_id = Session::get('selectedCompanyId');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>  __('purchase.add_purchase'), 'url' =>   action([\App\Http\Controllers\PurchaseController::class, 'create'])],
+        ];
+
         return view('purchase.create')
-            ->with(compact('taxes', 'orderStatuses', 'business_locations', 'currency_details', 'default_purchase_status', 'customer_groups', 'types', 'shortcuts', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'common_settings'));
+            ->with(compact('taxes', 'orderStatuses', 'business_locations', 'currency_details', 'default_purchase_status', 'customer_groups', 'types', 'shortcuts', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'common_settings', 'breadcrumbs'));
     }
 
     /**

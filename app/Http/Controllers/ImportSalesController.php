@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BusinessLocation;
+use App\Company;
 use App\Contact;
 use App\Product;
 use App\TaxRate;
@@ -64,7 +65,7 @@ class ImportSalesController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
 
-        $imported_sales = Transaction::where('business_id', $business_id)->where('company_id',$company_id,)
+        $imported_sales = Transaction::where('business_id', $business_id)->where('company_id', $company_id,)
             ->where('type', 'sell')
             ->whereNotNull('import_batch')
             ->with(['sales_person'])
@@ -80,8 +81,14 @@ class ImportSalesController extends Controller
         }
 
         $import_fields = $this->__importFields();
-
-        return view('import_sales.index')->with(compact('imported_sales_array', 'import_fields'));
+        $company_id = Session::get('selectedCompanyId');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>     __('lang_v1.import_sales'), 'url' =>    action([\App\Http\Controllers\ImportSalesController::class, 'index'])],
+        ];
+        return view('import_sales.index')->with(compact('imported_sales_array', 'import_fields', 'breadcrumbs'));
     }
 
     /**
@@ -189,7 +196,7 @@ class ImportSalesController extends Controller
             ini_set('max_execution_time', 0);
             ini_set('memory_limit', -1);
 
-            $this->__importSales($formatted_sales_data, $business_id, $location_id,$company_id);
+            $this->__importSales($formatted_sales_data, $business_id, $location_id, $company_id);
 
             DB::commit();
 
@@ -216,9 +223,9 @@ class ImportSalesController extends Controller
         return redirect('import-sales')->with('status', $output);
     }
 
-    private function __importSales($formated_data, $business_id, $location_id,$company_id)
+    private function __importSales($formated_data, $business_id, $location_id, $company_id)
     {
-        $import_batch = Transaction::where('business_id', $business_id)->where('company_id',$company_id)->max('import_batch');
+        $import_batch = Transaction::where('business_id', $business_id)->where('company_id', $company_id)->max('import_batch');
 
         if (empty($import_batch)) {
             $import_batch = 1;
@@ -238,7 +245,7 @@ class ImportSalesController extends Controller
                     $product = !empty($variation) ? $variation->product : null;
                 } else {
                     $product = Product::where('business_id', $business_id)
-                        ->where('company_id',$company_id)
+                        ->where('company_id', $company_id)
                         ->where('name', $line_data['product'])
                         ->with(['variations'])
                         ->first();

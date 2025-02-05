@@ -6,6 +6,7 @@ use App\Account;
 use App\AccountTransaction;
 use App\BusinessLocation;
 use App\Business;
+use App\Company;
 use App\Contact;
 use App\ExpenseCategory;
 use App\TaxRate;
@@ -43,8 +44,20 @@ class ExpenseController extends Controller
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->dummyPaymentLine = [
-            'method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
-            'is_return' => 0, 'transaction_no' => '',
+            'method' => 'cash',
+            'amount' => 0,
+            'note' => '',
+            'card_transaction_number' => '',
+            'card_number' => '',
+            'card_type' => '',
+            'card_holder_name' => '',
+            'card_month' => '',
+            'card_year' => '',
+            'card_security' => '',
+            'cheque_number' => '',
+            'bank_account_number' => '',
+            'is_return' => 0,
+            'transaction_no' => '',
         ];
         $this->cashRegisterUtil = $cashRegisterUtil;
     }
@@ -289,8 +302,16 @@ class ExpenseController extends Controller
             ->pluck('name', 'id')
             ->toArray();
 
+
+        $company_id = Session::get('selectedCompanyId');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>   __('lang_v1.list_expenses'), 'url' =>       action([\App\Http\Controllers\ExpenseController::class, 'index'])],
+        ];
         return view('expense.index')
-            ->with(compact('categories', 'business_locations', 'users', 'contacts', 'sub_categories'));
+            ->with(compact('categories', 'business_locations', 'users', 'contacts', 'sub_categories', 'breadcrumbs'));
     }
 
     /**
@@ -339,9 +360,15 @@ class ExpenseController extends Controller
             return view('expense.add_expense_modal')
                 ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'contacts'));
         }
-
+        $company_id = Session::get('selectedCompanyId');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>     __('expense.add_expense'), 'url' =>        action([\App\Http\Controllers\ExpenseController::class, 'create'])],
+        ];
         return view('expense.create')
-            ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'contacts'));
+            ->with(compact('expense_categories', 'business_locations', 'users', 'taxes', 'payment_line', 'payment_types', 'accounts', 'bl_attributes', 'contacts', 'breadcrumbs'));
     }
     public function getUsersByLocation(Request $request)
     {

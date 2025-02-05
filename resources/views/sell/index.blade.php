@@ -5,6 +5,21 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header no-print">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('lang_v1.pills')
         </h1>
     </section>
@@ -31,7 +46,8 @@
             {{-- @can('direct_sell.access') --}}
             @slot('tool')
                 <div class="box-tools">
-                    <a class="btn btn-block btn-primary" href="{{ action([\App\Http\Controllers\SellController::class, 'create']) }}">
+                    <a class="btn btn-block btn-primary"
+                        href="{{ action([\App\Http\Controllers\SellController::class, 'create']) }}">
                         <i class="fa fa-plus"></i> @lang('messages.add')</a>
                 </div>
             @endslot
@@ -108,7 +124,7 @@
 
     <!-- This will be printed -->
     <!-- <section class="invoice print_section" id="receipt_section">
-                                                        </section> -->
+                                                            </section> -->
 
 @stop
 
