@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Essentials\Http\Controllers;
 
 use App\AccessRole;
@@ -43,9 +42,9 @@ class EssentialsRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $can_change_status = auth()->user()->can('essentials.change_HR_status');
+        $can_change_status  = auth()->user()->can('essentials.change_HR_status');
         $can_return_request = auth()->user()->can('essentials.return_essentials_request');
-        $can_show_request = auth()->user()->can('essentials.show_essentials_request');
+        $can_show_request   = auth()->user()->can('essentials.show_essentials_request');
 
         $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')
             ->pluck('id')->toArray();
@@ -53,15 +52,15 @@ class EssentialsRequestController extends Controller
         if (empty($departmentIds)) {
             $output = [
                 'success' => false,
-                'msg' => __('essentials::lang.there_is_no_HR_dep'),
+                'msg'     => __('essentials::lang.there_is_no_HR_dep'),
             ];
             return redirect()->back()->with('status', $output);
         }
-        $roles = DB::table('roles')->where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
-        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
-        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $roles         = DB::table('roles')->where('name', 'LIKE', '%بشرية%')->pluck('id')->toArray();
+        $access_roles  = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests      = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
-        $ownerTypes = ['employee', 'manager', 'worker'];
+        $ownerTypes    = ['employee', 'manager', 'worker'];
 
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes);
     }
@@ -83,34 +82,34 @@ class EssentialsRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $can_change_status = auth()->user()->can('essentials.change_employees_request_status');
+        $can_change_status  = auth()->user()->can('essentials.change_employees_request_status');
         $can_return_request = auth()->user()->can('essentials.return_employees_request');
-        $can_show_request = auth()->user()->can('essentials.show_employees_request');
+        $can_show_request   = auth()->user()->can('essentials.show_employees_request');
 
         $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
                 'success' => false,
-                'msg' => __('essentials::lang.there_is_no_employee_affairs_dep'),
+                'msg'     => __('essentials::lang.there_is_no_employee_affairs_dep'),
             ];
             return redirect()->back()->with('status', $output);
         }
 
         $ownerTypes = ['employee', 'manager'];
-        $roles = DB::table('roles')
+        $roles      = DB::table('roles')
             ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
-        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
-        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $access_roles  = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests      = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.allRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'pending_and_old');
     }
     public function getFilteredRequests($filter = null)
     {
-        $can_change_status = auth()->user()->can('essentials.change_HR_status');
+        $can_change_status  = auth()->user()->can('essentials.change_HR_status');
         $can_return_request = auth()->user()->can('essentials.return_essentials_request');
-        $can_show_request = auth()->user()->can('essentials.show_essentials_request');
+        $can_show_request   = auth()->user()->can('essentials.show_essentials_request');
         return $this->requestUtil->getFilteredRequests('essentials', $filter, $can_change_status, $can_return_request, $can_show_request, false, null);
     }
     public function doneEmployeeAffairsRequests()
@@ -118,25 +117,25 @@ class EssentialsRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $can_change_status = auth()->user()->can('essentials.change_employees_request_status');
+        $can_change_status  = auth()->user()->can('essentials.change_employees_request_status');
         $can_return_request = auth()->user()->can('essentials.return_employees_request');
-        $can_show_request = auth()->user()->can('essentials.show_employees_request');
+        $can_show_request   = auth()->user()->can('essentials.show_employees_request');
 
         $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
                 'success' => false,
-                'msg' => __('essentials::lang.there_is_no_employee_affairs_dep'),
+                'msg'     => __('essentials::lang.there_is_no_employee_affairs_dep'),
             ];
             return redirect()->back()->with('status', $output);
         }
 
         $ownerTypes = ['employee', 'manager'];
-        $roles = DB::table('roles')
+        $roles      = DB::table('roles')
             ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
-        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
-        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $access_roles  = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests      = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.doneRequests', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'done');
     }
@@ -145,25 +144,25 @@ class EssentialsRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $can_change_status = auth()->user()->can('essentials.change_employees_request_status');
+        $can_change_status  = auth()->user()->can('essentials.change_employees_request_status');
         $can_return_request = auth()->user()->can('essentials.return_employees_request');
-        $can_show_request = auth()->user()->can('essentials.show_employees_request');
+        $can_show_request   = auth()->user()->can('essentials.show_employees_request');
 
         $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
         if (empty($departmentIds)) {
             $output = [
                 'success' => false,
-                'msg' => __('essentials::lang.there_is_no_employee_affairs_dep'),
+                'msg'     => __('essentials::lang.there_is_no_employee_affairs_dep'),
             ];
             return redirect()->back()->with('status', $output);
         }
 
         $ownerTypes = ['employee', 'manager'];
-        $roles = DB::table('roles')
+        $roles      = DB::table('roles')
             ->where('name', 'LIKE', '%موظف%')->pluck('id')->toArray();
-        $access_roles = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
-        $requests = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $access_roles  = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests      = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
         $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
 
         return $this->requestUtil->getRequests($departmentIds, $ownerTypes, 'essentials::employee_affairs.requests.pendingRequest', $can_change_status, $can_return_request, $can_show_request, $requestsTypes, [], false, null, 'today');
@@ -188,9 +187,9 @@ class EssentialsRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_admin         = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $classes      = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
         $saleProjects = SalesProject::all()->pluck('name', 'id');
 
@@ -246,16 +245,16 @@ class EssentialsRequestController extends Controller
     public function employee_requests()
     {
 
-        $user = User::where('id', auth()->user()->id)->first();
-        $user_type = $user->user_type;
-        $job_titles = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
+        $user            = User::where('id', auth()->user()->id)->first();
+        $user_type       = $user->user_type;
+        $job_titles      = EssentialsProfession::where('type', 'job_title')->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $business_id = request()->session()->get('user.business_id');
-        $saleProjects = SalesProject::all()->pluck('name', 'id');
+        $nationalities   = EssentialsCountry::nationalityForDropdown();
+        $is_admin        = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id     = request()->session()->get('user.business_id');
+        $saleProjects    = SalesProject::all()->pluck('name', 'id');
         $requestsProcess = null;
-        $all_status = ['approved', 'pending', 'rejected'];
+        $all_status      = ['approved', 'pending', 'rejected'];
         // $allRequestTypes = [];
         // if ($user_type == 'admin' || $user_type == 'department_head' || $user_type == 'manager') {
         //     $allRequestTypes = RequestsType::where('for', 'employee')->where('selfish_service', 1)->pluck('type', 'id');
@@ -263,6 +262,15 @@ class EssentialsRequestController extends Controller
         //     $allRequestTypes = RequestsType::where('for', $user_type)->where('selfish_service', 1)->pluck('type', 'id');
         // }
         $allRequestTypes = RequestsType::pluck('type', 'id');
+
+        if ($user_type === 'admin') {
+            $userRequestTypes = RequestsType::pluck('type', 'id');
+        } elseif ($user_type === 'worker') {
+            $userRequestTypes = RequestsType::where('for', 'worker')->pluck('type', 'id');
+        } else {
+            $userRequestTypes = RequestsType::where('for', 'employee')->pluck('type', 'id');
+        }
+
         $latestProcessesSubQuery = RequestProcess::selectRaw('request_id, MAX(id) as max_id')
             ->groupBy('request_id');
         $companies = Company::pluck('name', 'id');
@@ -295,9 +303,9 @@ class EssentialsRequestController extends Controller
 
         $userDepartment = EssentialsDepartment::pluck('id')->toArray();
 
-        if (!$is_admin) {
+        if (! $is_admin) {
             $requestsProcess = $requestsProcess->where('requests.related_to', $user->id);
-            $userDepartment = [$user->essentials_department_id];
+            $userDepartment  = [$user->essentials_department_id];
         }
 
         if (request()->ajax()) {
@@ -335,11 +343,11 @@ class EssentialsRequestController extends Controller
         }
 
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
-        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
-        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+        $leaveTypes       = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $classes          = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $main_reasons     = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
         return view('essentials::requests.employee_requests')->with(compact(
-            'allRequestTypes',
+            'userRequestTypes',
             'job_titles',
             'specializations',
             'nationalities',
