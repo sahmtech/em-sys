@@ -183,7 +183,7 @@
                                 {!! Form::label('type', __('request.type') . ':*') !!}
                                 {!! Form::select(
                                     'type',
-                                    collect($allRequestTypes)->mapWithKeys(fn($type, $id) => [$id => trans("request.$type")])->toArray(),
+                                    collect($userRequestTypes)->mapWithKeys(fn($type, $id) => [$id => trans("request.$type")])->toArray(),
                                     null,
                                     [
                                         'class' => 'form-control',
