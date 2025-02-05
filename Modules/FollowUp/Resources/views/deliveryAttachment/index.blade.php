@@ -34,17 +34,17 @@
                     <div class="form-group">
                         {!! Form::label('user_type_filter', __('essentials::lang.attach_owner_type') . ':') !!}
                         {!! Form::select(
-                            'user_type_filter',
-                            [
-                                'worker' => __('essentials::lang.worker'),
-                                'employee' => __('essentials::lang.employee'),
-                            ],
-                            null,
-                            [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%',
-                                'placeholder' => __('lang_v1.all'),
-                            ],
+                        'user_type_filter',
+                        [
+                        'worker' => __('essentials::lang.worker'),
+                        'employee' => __('essentials::lang.employee'),
+                        ],
+                        null,
+                        [
+                        'class' => 'form-control select2',
+                        'style' => 'width:100%',
+                        'placeholder' => __('lang_v1.all'),
+                        ],
                         ) !!}
                     </div>
                 </div>

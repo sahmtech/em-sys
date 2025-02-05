@@ -83,7 +83,7 @@ class FollowupDeliveryAttachmentController extends Controller
         $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $workersIds)
             ->whereHas('attachment', function ($query) {
                 $query->where('type', 'Attached');
-            }); 
+            });
 
         $workers_have_docs_Ids = FollowupDeliveryDocument::whereIn('user_id', $workersIds)
             ->whereHas('attachment', function ($query) {
