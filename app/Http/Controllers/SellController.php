@@ -6,6 +6,7 @@ use App\Account;
 use App\BankAccount;
 use App\Business;
 use App\BusinessLocation;
+use App\Company;
 use App\Contact;
 use App\CustomerGroup;
 use App\InvoiceScheme;
@@ -63,8 +64,21 @@ class SellController extends Controller
         $this->productUtil = $productUtil;
 
         $this->dummyPaymentLine = [
-            'method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '', 'transfer_account' => '',
-            'is_return' => 0, 'transaction_no' => '',
+            'method' => '',
+            'amount' => 0,
+            'note' => '',
+            'card_transaction_number' => '',
+            'card_number' => '',
+            'card_type' => '',
+            'card_holder_name' => '',
+            'card_month' => '',
+            'card_year' => '',
+            'card_security' => '',
+            'cheque_number' => '',
+            'bank_account_number' => '',
+            'transfer_account' => '',
+            'is_return' => 0,
+            'transaction_no' => '',
         ];
 
         $this->shipping_status_colors = [
@@ -351,7 +365,7 @@ class SellController extends Controller
                         $html = '<div class="btn-group">
                                     <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                                         data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
+                            __('messages.actions') .
                             '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                         </span>
                                     </button>
@@ -644,9 +658,15 @@ class SellController extends Controller
         if ($is_woocommerce) {
             $sources['woocommerce'] = 'Woocommerce';
         }
-
+        $company_id = Session::get('selectedCompanyId');
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>      __('lang_v1.sells_pills'), 'url' =>     action([\App\Http\Controllers\SellController::class, 'index'])],
+        ];
         return view('sell.index')
-            ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses', 'sources'));
+            ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses', 'sources', 'breadcrumbs'));
     }
 
     /**
@@ -1101,7 +1121,7 @@ class SellController extends Controller
                             ];
                         }
                         $sell_details[$key]->qty_available =
-                        $this->productUtil->calculateComboQuantity($location_id, $combo_variations);
+                            $this->productUtil->calculateComboQuantity($location_id, $combo_variations);
 
                         if ($transaction->status == 'final') {
                             $sell_details[$key]->qty_available = $sell_details[$key]->qty_available + $sell_details[$key]->quantity_ordered;
@@ -1367,8 +1387,8 @@ class SellController extends Controller
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs"
                                     data-toggle="dropdown" aria-expanded="false">' .
-                        __('messages.actions') .
-                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                            __('messages.actions') .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -1429,7 +1449,7 @@ class SellController extends Controller
                             $html .= '<li>
                                         <a href="' . action([\App\Http\Controllers\SellPosController::class, 'copyQuotation'], [$row->id]) . '"
                                         class="copy_quotation"><i class="fas fa-copy"></i>' .
-                            __("lang_v1.copy_quotation") . '</a>
+                                __("lang_v1.copy_quotation") . '</a>
                                     </li>
                                     <li>
                                         <a href="#" data-href="' . action("\App\Http\Controllers\NotificationController@getTemplate", ["transaction_id" => $row->id, "template_for" => "new_quotation"]) . '" class="btn-modal" data-container=".view_modal"><i class="fa fa-envelope" aria-hidden="true"></i>' . __("lang_v1.new_quotation_notification") . '
@@ -1624,8 +1644,16 @@ class SellController extends Controller
 
         try {
             $input = $request->only([
-                'shipping_details', 'shipping_address',
-                'shipping_status', 'delivered_to', 'delivery_person', 'shipping_custom_field_1', 'shipping_custom_field_2', 'shipping_custom_field_3', 'shipping_custom_field_4', 'shipping_custom_field_5',
+                'shipping_details',
+                'shipping_address',
+                'shipping_status',
+                'delivered_to',
+                'delivery_person',
+                'shipping_custom_field_1',
+                'shipping_custom_field_2',
+                'shipping_custom_field_3',
+                'shipping_custom_field_4',
+                'shipping_custom_field_5',
             ]);
 
             $business_id = $request->session()->get('user.business_id');

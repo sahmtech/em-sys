@@ -5,13 +5,28 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header no-print">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('purchase.purchases')
             <small></small>
         </h1>
         <!-- <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-        </ol> -->
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol> -->
     </section>
 
     <!-- Main content -->
