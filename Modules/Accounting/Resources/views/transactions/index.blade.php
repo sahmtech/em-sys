@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('accounting::lang.transactions'))
+@section('company_title', __('accounting::lang.transactions'))
 
 @section('content')
 
@@ -8,6 +8,21 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
+        @if (isset($breadcrumbs))
+            <nav>
+                <ol class="breadcrumb">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if ($breadcrumb['url'])
+                            <li class="breadcrumb-item">
+                                <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['title'] }}</a>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $breadcrumb['title'] }}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            </nav>
+        @endif
         <h1>@lang('accounting::lang.transactions')</h1>
     </section>
 
@@ -155,8 +170,7 @@
                         data: 'staff_note',
                         name: 'staff_note'
                     }
-                ]
-                ,
+                ],
                 "fnDrawCallback": function(oSettings) {
                     __currency_convert_recursively($('#sell_table'));
                 }

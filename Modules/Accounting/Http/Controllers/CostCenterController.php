@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Http\Controllers;
 
 use App\BusinessLocation;
+use App\Company;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,7 @@ class CostCenterController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_cost_center= auth()->user()->can('accounting.cost_center');
+        $can_cost_center = auth()->user()->can('accounting.cost_center');
         if (!($is_admin || $can_cost_center)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -42,7 +43,7 @@ class CostCenterController extends Controller
         $can_costCenter_delete = auth()->user()->can('accounting.costCenter.delete');
         $mainCenters = CostCenter::query()->whereNull('deleted_at')->whereNull('parent_id')->get();
         $allCenters = CostCenter::query()->whereNull('deleted_at')->get();
-        $businessLocations = BusinessLocation::where('business_id', $business_id) ->where('company_id', $company_id)->get();
+        $businessLocations = BusinessLocation::where('business_id', $business_id)->where('company_id', $company_id)->get();
         // $businessLocations = BusinessLocation::query()->get();
         if (request()->ajax()) {
             $costCenters = CostCenter::query()->orderBy('id');
@@ -75,8 +76,13 @@ class CostCenterController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-
-        return view('accounting::cost_center.index', compact('mainCenters', 'allCenters', 'businessLocations'));
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' => __('accounting::lang.cost_center'), 'url' =>  action([\Modules\Accounting\Http\Controllers\CostCenterController::class, 'index'])],
+        ];
+        return view('accounting::cost_center.index', compact('mainCenters', 'allCenters', 'businessLocations', 'breadcrumbs'));
     }
 
     protected function store(Request $request)

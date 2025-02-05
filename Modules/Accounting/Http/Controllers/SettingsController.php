@@ -73,9 +73,15 @@ class SettingsController extends Controller
         $account_types = AccountingAccountType::accounting_primary_type();
 
         $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id, $company_id);
-        $bankAccounts = BankAccount::where('business_id',$business_id)->where('company_id',$company_id)->get();
+        $bankAccounts = BankAccount::where('business_id', $business_id)->where('company_id', $company_id)->get();
 
-        return view('accounting::settings.index')->with(compact('account_sub_types','bankAccounts', 'account_types', 'accounting_settings'));
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>     __('messages.settings'), 'url' =>   action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index'])],
+        ];
+        return view('accounting::settings.index')->with(compact('account_sub_types', 'bankAccounts', 'account_types', 'accounting_settings', 'breadcrumbs'));
     }
 
     public function resetData()
@@ -100,10 +106,10 @@ class SettingsController extends Controller
             ->delete();
 
         AccountingMappingSettingAutoMigration::where('company_id', $company_id)
-        ->delete();
-        
+            ->delete();
+
         AccountingAccTransMappingSettingAutoMigration::where('company_id', $company_id)
-        ->delete();
+            ->delete();
 
 
         AccountingAccTransMapping::where('business_id', $business_id)->where('company_id', $company_id)->delete();
@@ -378,9 +384,8 @@ class SettingsController extends Controller
 
         $payment_types = $this->moduleUtil->payment_types(null, false, $business_id);
 
-        $bankAccounts = BankAccount::where('business_id',$business_id)->where('company_id',$company_id)->get();
+        $bankAccounts = BankAccount::where('business_id', $business_id)->where('company_id', $company_id)->get();
 
         return view('accounting::settings.businessSetting', compact('business', 'bankAccounts', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts',  'modules', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
-       
     }
 }

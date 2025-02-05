@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Company;
 use App\Transaction;
 use App\User;
 use App\Utils\ModuleUtil;
@@ -170,7 +171,14 @@ class AutomatedMigrationController extends Controller
         $mappingSetting_fillter = AccountingMappingSettingAutoMigration::where('company_id', $company_id)->groupby('name')->get();
         $allCenters = CostCenter::query()->get();
 
-        return view('accounting::AutomatedMigration.index', compact('allCenters', 'mappingSettings', 'mappingSetting_fillter'));
+        $company_name = Company::where('id', $company_id)->first()->name;
+        $breadcrumbs = [
+            ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
+            ['title' => $company_name, 'url' => route('accounting.dashboard')],
+            ['title' =>        __('accounting::lang.automatedMigration'), 'url' =>  action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index'])],
+        ];
+
+        return view('accounting::AutomatedMigration.index', compact('allCenters', 'mappingSettings', 'mappingSetting_fillter', 'breadcrumbs'));
     }
 
 
@@ -375,7 +383,7 @@ class AutomatedMigrationController extends Controller
      */
     public function update(Request $request, $id)
     {
-    //    return $request;
+        //    return $request;
         $business_id = request()->session()->get('user.business_id');
         $company_id = Session::get('selectedCompanyId');
         $user_id = request()->session()->get('user.id');
@@ -392,7 +400,7 @@ class AutomatedMigrationController extends Controller
         $amount_type_1 = $request->get('amount_type1');
         $amount_type_2 = $request->get('amount_type2');
         $journal_date = $request->get('journal_date');
-// dd($journal_date);
+        // dd($journal_date);
         $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
 
 
@@ -415,12 +423,12 @@ class AutomatedMigrationController extends Controller
                 $transaction_row['accounting_account_id'] = $account_id;
                 $transaction_row['type'] =  $type_1[$index];
                 $transaction_row['cost_center_id'] =  $cost_center1[$index];
-                
+
                 $transaction_row['created_by'] = $user_id;
                 $transaction_row['company_id'] = $company_id;
                 $transaction_row['ref_no'] = $ref_no;
                 $transaction_row['amount'] = $amount_type_1[$index];
-                $transaction_row['operation_date'] = $journal_date;//$this->util->uf_date($journal_date, true);
+                $transaction_row['operation_date'] = $journal_date; //$this->util->uf_date($journal_date, true);
                 $transaction_row['sub_type'] = 'journal_entry';
                 $transaction_row['journal_entry_number'] = 1;
                 $transaction_row['mapping_setting_id'] = $mappingSetting->id;
@@ -445,7 +453,7 @@ class AutomatedMigrationController extends Controller
                 $transaction_row_['company_id'] = $company_id;
                 $transaction_row_['ref_no'] = $_ref_no;
                 $transaction_row_['amount'] = $amount_type_2[$index];
-                $transaction_row_['operation_date'] =$journal_date;// $this->util->uf_date($journal_date, true);
+                $transaction_row_['operation_date'] = $journal_date; // $this->util->uf_date($journal_date, true);
                 $transaction_row_['sub_type'] = 'journal_entry';
                 $transaction_row_['journal_entry_number'] = 2;
 
