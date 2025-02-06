@@ -1,13 +1,20 @@
 <?php return array (
   'alkoumi/laravel-arabic-numbers' => 
   array (
+    'providers' => 
+    array (
+      0 => 'Alkoumi\\LaravelArabicNumbers\\LaravelArabicNumbersServiceProvider',
+    ),
     'aliases' => 
     array (
       'Numbers' => 'Alkoumi\\LaravelArabicNumbers\\Numbers',
     ),
+  ),
+  'alkoumi/laravel-hijri-date' => 
+  array (
     'providers' => 
     array (
-      0 => 'Alkoumi\\LaravelArabicNumbers\\LaravelArabicNumbersServiceProvider',
+      0 => 'Alkoumi\\LaravelHijriDate\\LaravelHijriDateServiceProvider',
     ),
   ),
   'aloha/twilio' => 
@@ -31,25 +38,25 @@
   ),
   'barryvdh/laravel-debugbar' => 
   array (
-    'aliases' => 
-    array (
-      'Debugbar' => 'Barryvdh\\Debugbar\\Facades\\Debugbar',
-    ),
     'providers' => 
     array (
       0 => 'Barryvdh\\Debugbar\\ServiceProvider',
     ),
+    'aliases' => 
+    array (
+      'Debugbar' => 'Barryvdh\\Debugbar\\Facades\\Debugbar',
+    ),
   ),
   'barryvdh/laravel-dompdf' => 
   array (
-    'aliases' => 
-    array (
-      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
-      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
-    ),
     'providers' => 
     array (
       0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
     ),
   ),
   'consoletvs/charts' => 
@@ -108,13 +115,13 @@
   ),
   'maatwebsite/excel' => 
   array (
-    'aliases' => 
-    array (
-      'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
-    ),
     'providers' => 
     array (
       0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
     ),
   ),
   'milon/barcode' => 
@@ -195,13 +202,13 @@
   ),
   'spatie/laravel-ignition' => 
   array (
-    'aliases' => 
-    array (
-      'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
-    ),
     'providers' => 
     array (
       0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
     ),
   ),
   'spatie/laravel-permission' => 
@@ -224,24 +231,24 @@
   ),
   'srmklive/paypal' => 
   array (
-    'aliases' => 
-    array (
-      'PayPal' => 'Srmklive\\PayPal\\Facades\\PayPal',
-    ),
     'providers' => 
     array (
       0 => 'Srmklive\\PayPal\\Providers\\PayPalServiceProvider',
     ),
+    'aliases' => 
+    array (
+      'PayPal' => 'Srmklive\\PayPal\\Facades\\PayPal',
+    ),
   ),
   'unicodeveloper/laravel-paystack' => 
   array (
-    'aliases' => 
-    array (
-      'Paystack' => 'Unicodeveloper\\Paystack\\Facades\\Paystack',
-    ),
     'providers' => 
     array (
       0 => 'Unicodeveloper\\Paystack\\PaystackServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Paystack' => 'Unicodeveloper\\Paystack\\Facades\\Paystack',
     ),
   ),
   'yajra/laravel-datatables-oracle' => 
