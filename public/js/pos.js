@@ -1719,13 +1719,15 @@ function pos_total_row() {
     $('table#pos_table tbody tr').each(function () {
         order_tax_total +=
             (__read_number($(this).find('input.pos_quantity')) *
-                __read_number($(this).find('input.pos_unit_price')) *
+                (__read_number($(this).find('input.pos_unit_price')) -
+                    __read_number($(this).find('input.row_discount_amount'))) *
                 15) /
             100;
 
         order_tax_total_ +=
             __read_number($(this).find('input.pos_quantity')) *
-            __read_number($(this).find('input.pos_unit_price'));
+            (__read_number($(this).find('input.pos_unit_price')) -
+                __read_number($(this).find('input.row_discount_amount')));
 
         total_quantity = total_quantity + __read_number($(this).find('input.pos_quantity'));
     });
@@ -1763,7 +1765,8 @@ function get_subtotal_for_tax() {
         price_total =
             price_total +
             __read_number($(this).find('input.pos_quantity')) *
-                __read_number($(this).find('input.pos_unit_price'));
+                (__read_number($(this).find('input.pos_unit_price')) -
+                    __read_number($(this).find('input.row_discount_amount')));
     });
 
     //Go through the modifier prices.
@@ -1798,7 +1801,7 @@ function get_subtotal() {
         var modifier_subtotal = modifier_price * modifier_quantity;
         price_total = price_total + modifier_subtotal;
     });
-
+    price_total -= pos_discount(price_total);
     return price_total;
 }
 
@@ -1916,25 +1919,27 @@ function pos_order_tax(price_total, discount) {
         var order_tax_total_ = 0;
         // total_quantity = total_quantity - quantity_;
         $('table#pos_table tbody tr').each(function () {
-            order_tax_total +=
-                (__read_number($(this).find('input.pos_quantity')) *
-                    __read_number($(this).find('input.pos_unit_price')) *
-                    15) /
-                100;
+            // order_tax_total +=
+            //     (__read_number($(this).find('input.pos_quantity')) *
+            //         (__read_number($(this).find('input.pos_unit_price')) -
+            //             __read_number($(this).find('input.row_discount_amount'))) *
+            //         15) /
+            //     100;
 
             order_tax_total_ +=
                 __read_number($(this).find('input.pos_quantity')) *
-                __read_number($(this).find('input.pos_unit_price'));
+                (__read_number($(this).find('input.pos_unit_price')) -
+                    __read_number($(this).find('input.row_discount_amount')));
 
             total_quantity = total_quantity + __read_number($(this).find('input.pos_quantity'));
         });
 
-        var order_tax = price_total - order_tax_total_;
+        var order_tax = (price_total * 15) / 100;
         // var order_tax = __calculate_amount(calculation_type, calculation_amount, total_amount);
     } else {
         var order_tax = 0;
     }
-    
+
     if (business_enable_inline_tax == 1) {
         var order_tax = __calculate_amount(calculation_type, calculation_amount, total_amount);
     }

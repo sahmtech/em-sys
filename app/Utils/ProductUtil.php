@@ -356,8 +356,8 @@ class ProductUtil extends Util
         $product = Product::find($product_id);
 
         //Check if stock is enabled or not.
- 
-            if ($product->enable_stock == 1 && $qty_difference != 0) {
+
+        if ($product->enable_stock == 1 && $qty_difference != 0) {
             $variation = Variation::where('id', $variation_id)
                 ->where('product_id', $product_id)
                 ->first();
@@ -685,7 +685,7 @@ class ProductUtil extends Util
 
         //Calculate total
         $output['final_total'] = $output['total_before_tax'] + $output['tax'] - $output['discount'];
-// dd($output);
+        // dd($output);
         return $output;
     }
 
@@ -1111,7 +1111,7 @@ class ProductUtil extends Util
             $location_id = $key;
             $purchase_total = 0;
             //Check if valid location
-           
+
             if (array_key_exists($location_id, $locations)) {
                 $purchase_lines = [];
 
@@ -1728,7 +1728,7 @@ class ProductUtil extends Util
     public function getProductStockDetails($business_id, $filters, $for)
     {
         $company_id = Session::get('selectedCompanyId');
-     
+
         $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
             ->join('units', 'p.unit_id', '=', 'units.id')
             ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')

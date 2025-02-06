@@ -612,7 +612,7 @@
                         <input type="hidden" name="sell_price_tax" id="sell_price_tax"
                             value="{{ $business_details->sell_price_tax }}">
 
-                            <input type="hidden" name="business_enable_inline_tax" id="business_enable_inline_tax"
+                        <input type="hidden" name="business_enable_inline_tax" id="business_enable_inline_tax"
                             value="{{ session()->get('business.enable_inline_tax') }}">
 
                         <!-- Keeps count of product rows -->
@@ -643,18 +643,18 @@
                                         <th class="text-center">
                                             @lang('sale.unit_price')
                                         </th>
-                                        <th class="text-center">
+                                        {{-- <th class="text-center">
                                             @lang('receipt.discount')
-                                        </th>
+                                        </th> --}}
                                         {{-- <th class="text-center ">
                                             @lang('sale.befor_tax')
                                         </th> --}}
-                                        <th class="text-center ">
+                                        {{-- <th class="text-center ">
                                             @lang('sale.tax')
-                                        </th>
-                                        <th class="text-center ">
+                                        </th> --}}
+                                        {{-- <th class="text-center ">
                                             @lang('sale.price_inc_tax')
-                                        </th>
+                                        </th> --}}
                                         @if (!empty($common_settings['enable_product_warranty']))
                                             <th>@lang('lang_v1.warranty')</th>
                                         @endif
@@ -696,7 +696,7 @@
                                             class="form-control pos_unit_price input_number mousetrap valid" value=""
                                             aria-invalid="false">
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         @php
                                             $discount_type = ['fixed', 'percentage'];
                                             $discount_amount = 0;
@@ -714,8 +714,8 @@
                                             $discount_type,
                                             ['class' => 'form-control row_discount_type_ row_discount_type '],
                                         ) !!}
-                                    </td>
-                                    <td>
+                                    </td> --}}
+                                    {{-- <td>
                                         {!! Form::hidden('products_[0][item_tax]', 0, ['class' => 'item_tax']) !!}
 
                                         {!! Form::select(
@@ -725,14 +725,14 @@
                                             ['class' => 'form-control tax_id', 'id' => 'tax_id_'],
                                             $tax_dropdown['attributes'],
                                         ) !!}
-                                    </td>
-                                    <td>
+                                    </td> --}}
+                                    {{-- <td>
 
                                         <input type="text" id="unit_price_inc_tax_"
                                             name="products_[0][unit_price_inc_tax]"
                                             class="form-control pos_unit_price_inc_tax input_number valid" value="0"
                                             aria-invalid="false">
-                                    </td>
+                                    </td> --}}
 
                                     <td class="text-center">
 
@@ -762,6 +762,13 @@
                                     </td>
                                 </tr>
                             </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {!! Form::label('sale_note', __('customized_invoice.notes')) !!}
+                            {!! Form::textarea('sale_note', null, ['class' => 'form-control', 'rows' => 3]) !!}
                         </div>
                     </div>
                 @endcomponent
@@ -1608,13 +1615,12 @@
                 var selected_tax_id_ = $('#tax_id_').val();
                 let counter = $('#pos_table tr').length - 1;
                 $('#tbody').append(
-                    '<tr><td><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer"id="add_product_" style="    background: transparent; border: 0px;"></button></td>'
-                    // +'<td>{!! Form::text("name' + '[' +counter + ']'+'", ' ', [
+                    '<tr><td><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer"id="add_product_" style="    background: transparent; border: 0px;"></button></td>' +
+                    '<td>{!! Form::text("name' + '[' +counter + ']'+'", ' ', [
                         'class' => 'form-control',
                         'id' => 'name_',
                         'placeholder' => __('product.product_name'),
-                    ]) !!}</td>'
-                    +
+                    ]) !!}</td>' +
                     '<td><input class="form-control valid" id="products_' + '[' + counter + ']' +
                     '[name]' + '" placeholder="@lang('product.product_name')" name="products_' + '[' + counter +
                     ']' + '[name]" type="text" value="" aria-invalid="false"></td>'
