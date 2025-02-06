@@ -2513,7 +2513,7 @@ class SellPosController extends Controller
             $receipt_printer_type
         );
         return view('sell.invoice', [
-            'logo' => $business->logo ?? '',
+            'logo' => $company->logo ?? $business->logo ?? '',
             'invoice' =>  $invoice,
             'seller' =>   $seller,
             'client' => $client,
