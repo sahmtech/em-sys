@@ -1123,8 +1123,11 @@ class TransactionUtil extends Util
         }
 
         //Customer show_customer
-        $customer         = Contact::find($transaction->contact_id);
-        $company_location = BusinessLocation::find($transaction->company_id);
+        $customer = Contact::find($transaction->contact_id);
+
+
+        $company_id = $company_id = Session::get('selectedCompanyId') ?? User::where('id', Auth()->user()->id)?->first()?->company_id ?? 1;
+        $company_location =  $company_id == 2 ? BusinessLocation::where('company_id', 2)?->first() : BusinessLocation::where('company_id', 1)?->first();
 
         $output['customer_info']          = '';
         $output['company_info']           = '';
