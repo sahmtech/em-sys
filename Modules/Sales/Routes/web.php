@@ -12,16 +12,15 @@
 */
 
 use App\Http\Controllers\ContactController;
+use Modules\Sales\Entities\SalesProject;
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
-
 
     Route::prefix('accounting')->group(function () {
         Route::get('contacts/{id}', [ContactController::class, 'show'])->name('contacts-profile');
     });
 
     Route::prefix('sale')->group(function () {
-
 
         Route::patch('/offer/approve/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'approve'])->name('offer.approve');
 
@@ -32,10 +31,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::DELETE('/source/delete/{id}', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'destroy'])->name('sale_source_destroy');
         Route::post('/store_source/update', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'update'])->name('source.update');
 
-
         Route::get('/sales_department_employees', [\Modules\Sales\Http\Controllers\SalesController::class, 'sales_department_employees'])->name('sales_department_employees');
 
-        //requests 
+        //requests
         Route::get('/sales.requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'index'])->name('sales.requests');
         Route::post('/sales.returnReq', [\Modules\Sales\Http\Controllers\RequestController::class, 'returnReq'])->name('sales.returnReq');
         Route::get('/escalate_requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'escalateRequests'])->name('sales.escalate_requests');
@@ -55,12 +53,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::PUT('/updateOfferPrice/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'update'])->name('updateOfferPrice');
         Route::get('/offerContractPriceShow/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice']);
 
-
         Route::get('/accepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'accepted_offer_prices'])->name('accepted_offer_prices');
         Route::get('/unaccepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'unaccepted_offer_prices'])->name('unaccepted_offer_prices');
         Route::get('/under_study_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('under_study_offer_prices');
-
-
 
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'clientAdd'])->name('clientAdd');
         Route::post('/saveQuickClient', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'saveQuickClient'])->name('saveQuickClient');
@@ -94,7 +89,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('sale/changeDraftStatus/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
         Route::get('/changeDraftStatus/{contactId}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeDraftStatus'])->name('changeDraftStatus');
 
-
         Route::get('/clients/create', [\Modules\Sales\Http\Controllers\ClientsController::class, 'create'])->name('sale.clients.create');
         Route::post('/storeCustomer', [\Modules\Sales\Http\Controllers\ClientsController::class, 'store'])->name('sale.storeCustomer');
         Route::post('/storeQualifiedCustomer', [\Modules\Sales\Http\Controllers\ClientsController::class, 'storeQualifiedCustomer'])->name('sale.storeQualifiedCustomer');
@@ -110,13 +104,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeContract', [\Modules\Sales\Http\Controllers\ContractsController::class, 'store'])->name('storeContract');
         Route::get('/getContractValues', [\Modules\Sales\Http\Controllers\ContractsController::class, 'getContractValues'])->name('sale.getContractValues');
         Route::get('/get_projects', [\Modules\Sales\Http\Controllers\ContractsController::class, 'get_projects'])->name('sale.get_projects');
-        Route::get('/fetch-contract-duration/{offerPrice}',  [\Modules\Sales\Http\Controllers\ContractsController::class, 'fetchContractDuration'])->name('fetch-contract-duration');
+        Route::get('/fetch-contract-duration/{offerPrice}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'fetchContractDuration'])->name('fetch-contract-duration');
 
         Route::delete('/cotracts/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'destroy'])->name('contract.destroy');
         Route::get('/offer_view/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'show'])->name('offer.view');
         Route::post('/specializations', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'fetchSpecializations'])->name('specializations');
-
-
 
         Route::get('/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index'])->name('sale.orderOperations');
         Route::get('/orderOperationForUnsupportedWorkers', [\Modules\Sales\Http\Controllers\SaleWorkerController::class, 'orderOperationForUnsupportedWorkers'])->name('sale.orderOperationForUnsupportedWorkers');
@@ -133,6 +125,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/get-contract-details', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'getContractDetails'])->name('get-contract-details');
 
         Route::get('/contract_itmes', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'index'])->name('contract_itmes');
+
         Route::get('/createItme', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'create'])->name('createItem');
         Route::post('/storeItem', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'store'])->name('storeItem');
         Route::get('/contract_itmes/{id}/edit', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'edit'])->name('item.edit');
@@ -152,22 +145,18 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::resource('sales_follow-ups', 'Modules\Sales\Http\Controllers\SalesScheduleController')->except(['show']);
 
-
-
         Route::prefix('saleProjects')->group(function () {
             Route::get('/', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'index'])->name('sale.saleProjects');
             Route::post('/addSaleProject', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'store'])->name('sale.storeSaleProject');
             Route::delete('/destroySaleProject/{id}', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'destroy'])->name('sale.destroySaleProject');
-            Route::get('/{id}/edit',  [\Modules\Sales\Http\Controllers\SalesProjectController::class,  'edit'])->name('sale.editSaleProject');
-            Route::put('/updateSaleProject/{id}',  [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'update'])->name('sale.updateSaleProject');
+            Route::get('/{id}/edit', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'edit'])->name('sale.editSaleProject');
+            Route::put('/updateSaleProject/{id}', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'update'])->name('sale.updateSaleProject');
         });
-
 
         Route::get('sales_costs', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'index'])->name('sales_costs');
         Route::post('/store_cost', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'store'])->name('store_cost');
         Route::DELETE('/sales_costs/delete/{id}', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'destroy'])->name('sales_costs_destroy');
         Route::post('/sales_costs/update', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'update'])->name('cost.update');
-
 
         // Route::get('sales_templates', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'index'])->name('sales_templates');
         // Route::get('create_sales_templates', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'create'])->name('create_sales_templates');
@@ -183,7 +172,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('delete-proposal-media/{id}', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'deleteProposalMedia']);
         Route::resource('proposal-template', 'Modules\Sales\Http\Controllers\SalesTemplateController')->except(['show', 'edit', 'update', 'destroy']);
 
-
         //salary_requests
         Route::get('salary-requests-index', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'index'])->name('salary-requests-index');
         Route::get('/fetch-worker-details/{workerId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'fetchWorkerDetails'])->name('fetch-worker-details');
@@ -194,16 +182,18 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('salary_request/update/{salaryId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'update'])->name('salay_request.update');
         Route::delete('delete-salay-request/{id}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'destroy'])->name('salay_request.destroy');
 
-
-
         // Route::get('/preview-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'preview'])->name('preview.file');
         Route::get('/getwithinTwoMonthExpiryContracts', [\Modules\Sales\Http\Controllers\SalesController::class, 'withinTwoMonthExpiryContracts'])->name('sales.withinTwoMonthExpiryContracts');
         Route::get('/all-workers', [\Modules\Sales\Http\Controllers\SalesController::class, 'get_all_workers'])->name('sales.get_all_workers');
         Route::get('/all-active-workers', [\Modules\Sales\Http\Controllers\SalesController::class, 'get_active_workers'])->name('sales.get_active_workers');
         Route::get('/all-inactive-workers', [\Modules\Sales\Http\Controllers\SalesController::class, 'get_inactive_workers'])->name('sales.get_inactive_workers');
 
-
         Route::get('/download-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'])->name('download.file');
         Route::get('/download-contract/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'print'])->name('download.contract');
+    });
+
+    Route::get('/get-sales-projects/{contactId}', function ($contactId) {
+        $salesProjects = SalesProject::where('contact_id', $contactId)->pluck('name', 'id');
+        return response()->json($salesProjects);
     });
 });
