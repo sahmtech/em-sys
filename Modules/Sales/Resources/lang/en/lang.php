@@ -452,5 +452,6 @@ return [
     'template_name' => 'Template Name',
     'edit_templates' => 'Edit Template',
     'delete_templates' => 'Delete Template',
+    'monthly_cost' => 'Monthly Cost',
 
 ];

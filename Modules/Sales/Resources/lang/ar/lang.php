@@ -499,7 +499,8 @@ return [
     'editable' => 'قابلة للتعديل',
     'approve_offer' => 'تعميد',
     'status' => 'الحالة',
-    'approve_offer_price' => 'تعميد عرض السعر'
+    'approve_offer_price' => 'تعميد عرض السعر',
+    'monthly_cost' =>'التكلفة الشهرية',
 
 
 ];
