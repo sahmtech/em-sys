@@ -3,29 +3,17 @@
 
 @section('content')
 
-<!-- Toastr CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
-
-<!-- Toastr JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
 <section class="content-header">
     <h1>
         <span>@lang('sales::lang.contract_itmes')</span>
     </h1>
 </section>
-@if(session('output'))
-<script>
-    var output = @json(session('output'));
-        
-        if (output.success) {
-            toastr.success(output.msg);
-        }
-</script>
-@endif
+
 
 <!-- Main content -->
 <section class="content">
+    
     @component('components.widget', ['class' => 'box-primary'])
     @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_contract_item"))
     @slot('tool')

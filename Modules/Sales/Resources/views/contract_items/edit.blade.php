@@ -28,6 +28,7 @@
           'class' => 'form-control',
           'id' => 'contactSelect',
           'style' => 'height:40px',
+          // 'disabled'  =>'disabled',
           'required',
           'placeholder' => __('sales::lang.contact_name'),
           ]) !!}
@@ -42,7 +43,6 @@
           'class' => 'form-control',
           'id' => 'projectSelect',
           'style' => 'height:40px',
-          'required',
           'placeholder' => __('sales::lang.project_name'),
           ]) !!}
         </div>
@@ -54,7 +54,7 @@
           {!! Form::select('profession', $professions, $item->profession_id, [
           'class' => 'form-control select2',
           'id' => 'professionSearch',
-          'required',
+          // 'required',
           'style' => 'height:40px',
           'placeholder' => __('sales::lang.profession'),
           ]) !!}
