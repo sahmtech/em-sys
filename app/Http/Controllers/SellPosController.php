@@ -2488,7 +2488,8 @@ class SellPosController extends Controller
         );
 
 
-        $location_details = BusinessLocation::find($transaction->location_id);
+        // $location_details = BusinessLocation::find($transaction->location_id);
+        $location_details = $company_id == 2 ? BusinessLocation::where('company_id', 2)?->first() : BusinessLocation::where('company_id', 1)?->first();
 
         $businessUtil = new BusinessUtil();
         $invoice_layout_id = $location_details->invoice_layout_id;
@@ -2497,7 +2498,6 @@ class SellPosController extends Controller
 
         $fromDate = $transaction->custom_field_1;
         $toDate = $transaction->custom_field_2;
-
 
 
 
