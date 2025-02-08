@@ -28,6 +28,7 @@
 namespace App\Http\Controllers;
 
 use App\Account;
+use App\BankAccount;
 use App\Brands;
 use App\Business;
 use App\BusinessLocation;
@@ -2430,18 +2431,19 @@ class SellPosController extends Controller
 
             $discountAmount = round($transaction_sell_line->line_discount_amount * $transaction_sell_line->quantity, 2);
             $total_discount += $discountAmount;
-            $priceBeforeDiscount = round($transaction_sell_line->unit_price_before_discount * $transaction_sell_line->quantity, 2);
-            $priceAfterDiscount = $priceBeforeDiscount - $discountAmount;
+            // $priceBeforeDiscount = round($transaction_sell_line->unit_price_before_discount * $transaction_sell_line->quantity, 2);
+            // $priceAfterDiscount = $priceBeforeDiscount - $discountAmount;
             // $taxAmount = round($transaction_sell_line->tax_percent * $priceAfterDiscount / 100, 2);
+            // $unit_price = $transaction_sell_line->unit_price_before_discount / $transaction_sell_line->quantity;
             $invoiceItems[] = new InvoiceItem(
                 $transaction_sell_line->product_id,
                 $transaction_sell_line->product_name,
                 $transaction_sell_line->quantity,
-                $priceBeforeDiscount,
-                $discountAmount,
+                $transaction_sell_line->unit_price,
                 0,
+                $transaction_sell_line->item_tax,
                 $transaction_sell_line->tax_percent ?? 15,
-                $priceAfterDiscount + 0,
+                $transaction_sell_line->unit_price_inc_tax *  $transaction_sell_line->quantity,
             );
         }
         // return $transaction_sell_lines;
@@ -2471,20 +2473,41 @@ class SellPosController extends Controller
         );
 
         $contact = Contact::where('id', $transaction->contact_id)->first();
+        $client_address = '';
+        if ($contact->country) {
+            $client_address .= $contact->country . ', ';
+        } else {
+            $client_address .= 'Saudi Arabia, ';
+        }
+        if ($company->city) {
+            $client_address .= $contact->city . ', ';
+        }
         $client = new Client(
             $contact->supplier_business_name,
             $contact->tax_number,
             $contact->city ?? '',
-            $contact->country ?? 'SA',
+            $contact->country ?? 'Saudi Arabia',
             $contact->postal_number,
+            Str::substr($client_address, 0, -2)
         );
         // dd($company);
+        $seller_address = '';
+        if ($contact->country) {
+            $seller_address .= $contact->country . ', ';
+        } else {
+            $seller_address .= 'Saudi Arabia, ';
+        }
+        if ($company->city) {
+            $seller_address .= $contact->city . ', ';
+        }
+
         $seller = new Seller(
             $company->name,
             $company->tax_number_1,
             $company->city ?? '',
-            $contact->country ?? 'SA',
+            $contact->country ?? 'Saudi Arabia',
             $contact->postal_number,
+            Str::substr($seller_address, 0, -2)
         );
 
 
@@ -2493,7 +2516,7 @@ class SellPosController extends Controller
 
         $businessUtil = new BusinessUtil();
         $invoice_layout_id = $location_details->invoice_layout_id;
-        $invoice_layout = $businessUtil->invoiceLayout($business_id, $invoice_layout_id);
+        $invoice_layout = $businessUtil->invoiceLayout(1, 1);
         $footer_text = $invoice_layout->footer_text ?? '';
 
         $fromDate = $transaction->custom_field_1;
@@ -2512,13 +2535,15 @@ class SellPosController extends Controller
             $location_details,
             $receipt_printer_type
         );
+        $bank = BankAccount::with('bank')->where('company_id', $company_id)->first();
+        // dd($bank);
         return view('sell.invoice', [
             'logo' => $company->logo ?? $business->logo ?? '',
             'invoice' =>  $invoice,
             'seller' =>   $seller,
             'client' => $client,
             'invoiceTypeCode' =>  $business->invoice_type,
-            'footer_text' => $footer_text,
+            'bank' => $bank,
             'fromDate' => $fromDate,
             'toDate' => $toDate,
             'notest' =>   $notest,
