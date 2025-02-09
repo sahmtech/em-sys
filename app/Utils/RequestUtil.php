@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Utils;
 
 use App\AccessRole;
 use App\AccessRoleCompany;
 use App\AccessRoleRequest;
 use App\Company;
+use App\Http\Controllers\InteractiveServicesController;
 use App\Request as UserRequest;
 use App\RequestAttachment;
 use App\RequestProcess;
@@ -22,6 +22,7 @@ use Modules\CEOManagment\Entities\RequestProcedureTask;
 use Modules\CEOManagment\Entities\RequestsType;
 use Modules\CEOManagment\Entities\Task;
 use Modules\CEOManagment\Entities\WkProcedure;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
@@ -38,8 +39,6 @@ use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
-use App\Http\Controllers\InteractiveServicesController;
-use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 
 class RequestUtil extends Util
 {
@@ -49,9 +48,9 @@ class RequestUtil extends Util
     protected $interactiveServicesController;
     public function __construct(ModuleUtil $moduleUtil, InteractiveServicesController $interactiveServicesController)
     {
-        $this->moduleUtil = $moduleUtil;
+        $this->moduleUtil                    = $moduleUtil;
         $this->interactiveServicesController = $interactiveServicesController;
-        $this->statuses   = [
+        $this->statuses                      = [
             'approved' => [
                 'name'  => __('request.approved'),
                 'class' => 'bg-green',
@@ -188,9 +187,9 @@ class RequestUtil extends Util
                         $query->where('name', 'LIKE', '%تشغيل%')
                             ->where('name', 'LIKE', '%أعمال%');
                     })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%شركات%');
+                });
             })
                 ->pluck('id')->toArray();
 
@@ -201,9 +200,9 @@ class RequestUtil extends Util
                             $query->where('name', 'LIKE', '%تشغيل%')
                                 ->where('name', 'LIKE', '%أعمال%');
                         })->orWhere(function ($query) {
-                            $query->where('name', 'LIKE', '%تشغيل%')
-                                ->where('name', 'LIKE', '%شركات%');
-                        });
+                        $query->where('name', 'LIKE', '%تشغيل%')
+                            ->where('name', 'LIKE', '%شركات%');
+                    });
                 })->pluck('id')->toArray();
             $ownerTypes = ['employee', 'manager', 'worker'];
         }
@@ -418,7 +417,7 @@ class RequestUtil extends Util
                                 if ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
                                     if ($is_admin || $can_change_status) {
                                         $status = '<span class="label ' . $statuses[$row->status]['class'] . '">'
-                                            . __($statuses[$row->status]['name']) . '</span>';
+                                        . __($statuses[$row->status]['name']) . '</span>';
                                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                                     }
                                 }
@@ -668,9 +667,9 @@ class RequestUtil extends Util
                         $query->where('name', 'LIKE', '%تشغيل%')
                             ->where('name', 'LIKE', '%أعمال%');
                     })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%شركات%');
+                });
             })
                 ->pluck('id')->toArray();
         }
@@ -1012,6 +1011,7 @@ class RequestUtil extends Util
 
             'process.id as process_id',
             'process.status',
+            
             'process.is_transfered_from_GM',
             'process.status as status_now',
             'process.note as note',
@@ -1086,6 +1086,7 @@ class RequestUtil extends Util
         }
         //  $todayDate = Carbon::now()->toDateString();
         $todayDate = Carbon::now()->format('Y-m-d');
+        // dd($condition);
         if ($condition && $condition == 'today') {
             error_log($todayDate);
             $requestsProcess->where('process.status', 'pending')->whereDate('process.created_at', $todayDate);
@@ -1210,7 +1211,7 @@ class RequestUtil extends Util
                                 if ($row->status == 'pending' && (in_array($row->department_id, $departmentIds) || in_array($row->superior_department_id, $departmentIds))) {
                                     if ($is_admin || $can_change_status) {
                                         $status = '<span class="label ' . $statuses[$row->status]['class'] . '">'
-                                            . __($statuses[$row->status]['name']) . '</span>';
+                                        . __($statuses[$row->status]['name']) . '</span>';
                                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                                     }
                                 }
@@ -1311,7 +1312,7 @@ class RequestUtil extends Util
                         if ($row->final_status == 'pending') {
                             $statusLabel        = __('request.tranfered_from_GM');
                             $changeStatusButton = '<button type="button" class="btn btn-warning change_after_transfer" data-request-id="' . $row->id . '" data-toggle="modal" data-target="#changeAfterTransferModal">'
-                                . trans('request.change_status') . '</button>';
+                            . trans('request.change_status') . '</button>';
                         } else {
                             $changeStatusButton = trans('request.' . $row->final_status);
                         }
@@ -1357,10 +1358,10 @@ class RequestUtil extends Util
         $breadcrumbs = null;
         if ($view == 'accounting::requests.allRequest') {
             $company_name = Company::where('id', $company_id)->first()->name;
-            $breadcrumbs = [
+            $breadcrumbs  = [
                 ['title' => __('accounting::lang.companies'), 'url' => route('accountingLanding')],
                 ['title' => $company_name, 'url' => route('accounting.dashboard')],
-                ['title' =>  __('accounting::lang.requests'), 'url' => route('accounting.requests')],
+                ['title' => __('accounting::lang.requests'), 'url' => route('accounting.requests')],
             ];
         }
         return view($view)->with(compact(
@@ -1431,8 +1432,6 @@ class RequestUtil extends Util
 
             $success = 1;
 
-
-
             foreach ($request->user_id as $userId) {
                 error_log($userId);
                 $count_of_users = count($request->user_id);
@@ -1441,11 +1440,7 @@ class RequestUtil extends Util
                     continue;
                 }
 
-
-
                 $isExists = UserRequest::where('related_to', $userId)->where('request_type_id', $request->type)->where('status', 'pending')->first();
-
-
 
                 if ($isExists && count($request->user_id) == 1) {
                     $output = [
@@ -1600,7 +1595,7 @@ class RequestUtil extends Util
                         if ($userType == 'worker') {
 
                             $procedure = WkProcedure::where('business_id', $business_id)
-                                //     ->where('request_type_id', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
+                            //     ->where('request_type_id', $request->type)->where('start', 1)->whereIn('department_id', $departmentIds)->first();
                                 ->where('request_type_id', $request->type)->where('start', 1)->first();
 
                             // if ($createdBy_type == 'manager' || $createdBy_type == 'admin') {
@@ -1774,8 +1769,6 @@ class RequestUtil extends Util
                     continue;
                 }
             }
-
-
 
             if ($success) {
                 $this->makeToDo($Request, $business_id);
@@ -2049,35 +2042,35 @@ class RequestUtil extends Util
                     }
 
                     //make mouqeem api calls
-                    $exit_type_ids = RequestsType::where('type', 'exitRequest')->pluck('id')->toArray();
+                    $exit_type_ids          = RequestsType::where('type', 'exitRequest')->pluck('id')->toArray();
                     $exit_re_entry_type_ids = RequestsType::where('type', 'returnRequest')->pluck('id')->toArray();
-                    $user_id = $requestProcess->request->related_to;
+                    $user_id                = $requestProcess->request->related_to;
                     if (in_array($requestProcess->request->request_type_id, $exit_type_ids)) {
                         $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
-                        $res = $this->interactiveServicesController->issueFinalExitVisa((string) $id_proof_number);
+                        $res             = $this->interactiveServicesController->issueFinalExitVisa((string) $id_proof_number);
                         if ($res['success'] == 1) {
                             EssentailsEmployeeOperation::create([
                                 'operation_type' => 'final_visa',
-                                'employee_id' => $user_id,
-                                'created_by' => auth()->user()->id,
+                                'employee_id'    => $user_id,
+                                'created_by'     => auth()->user()->id,
                             ]);
                             user::where('id', $user_id)->update([
-                                'status' => 'inactive',
-                                'sub_status' => 'final_visa'
+                                'status'     => 'inactive',
+                                'sub_status' => 'final_visa',
                             ]);
                         }
                     }
                     if (in_array($requestProcess->request->request_type_id, $exit_re_entry_type_ids)) {
-                        $duration = $requestProcess->request->duration ?? 10;
+                        $duration        = $requestProcess->request->duration ?? 10;
                         $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
-                        $res = $this->interactiveServicesController->issueExitReEntryVisa((string) $id_proof_number, $duration);
+                        $res             = $this->interactiveServicesController->issueExitReEntryVisa((string) $id_proof_number, $duration);
                         if ($res['success'] == 1) {
                             EssentailsEmployeeOperation::create([
                                 'operation_type' => 'return_visa',
-                                'duration' => $res['data']['visaDuration'],
-                                'employee_id' => $user_id,
-                                'file_path' => $res['file_path'],
-                                'created_by' => auth()->user()->id,
+                                'duration'       => $res['data']['visaDuration'],
+                                'employee_id'    => $user_id,
+                                'file_path'      => $res['file_path'],
+                                'created_by'     => auth()->user()->id,
                             ]);
                         }
                     }
@@ -3058,14 +3051,14 @@ class RequestUtil extends Util
                             return $allRequestTypes[$row->request_type_id];
                         }
                     })->addColumn('view', function ($row) use ($is_admin, $can_show_request) {
-                        $buttonsHtml = '';
+                    $buttonsHtml = '';
 
-                        if ($is_admin || $can_show_request) {
-                            $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
-                            $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
-                        }
-                        return $buttonsHtml;
-                    })
+                    if ($is_admin || $can_show_request) {
+                        $buttonsHtml .= '<button class="btn btn-success btn-sm btn-view-request-details" data-request-id="' . $row->id . '">' . trans('request.view_request_details') . '</button>';
+                        $buttonsHtml .= '<button class="btn btn-xs btn-view-activities" style="background-color: #6c757d; color: white;" data-request-id="' . $row->id . '">' . trans('request.view_activities') . '</button>';
+                    }
+                    return $buttonsHtml;
+                })
                     ->rawColumns(['view'])
                     ->make(true);
             }

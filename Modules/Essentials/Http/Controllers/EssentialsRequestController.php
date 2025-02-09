@@ -76,6 +76,175 @@ class EssentialsRequestController extends Controller
         return $this->requestUtil->storeRequest($request, $departmentIds);
     }
 
+    public function essential_done_requests()
+    {
+        $business_id = request()
+            ->session()
+            ->get('user.business_id');
+
+        $can_change_status  = auth()->user()->can('essentials.change_HR_status');
+        $can_return_request = auth()->user()->can('essentials.return_essentials_request');
+        $can_show_request   = auth()->user()->can('essentials.show_essentials_request');
+
+        $departmentIds = EssentialsDepartment::
+            // where(
+            //     'business_id',
+            //     $business_id
+            // )
+            //     ->
+            where('name', 'LIKE', '%الموارد%')
+            ->Orwhere('name', 'LIKE', '%التأمين%')
+            ->Orwhere('name', 'LIKE', '%شؤون%')
+            ->Orwhere('name', 'LIKE', '%الحكومية%')
+            ->Orwhere('name', 'LIKE', '%الرواتب%')
+
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg'     => __('essentials::lang.there_is_no_essential_dep'),
+            ];
+
+            return redirect()
+                ->back()
+                ->with('status', $output);
+        }
+
+        $ownerTypes = ['worker'];
+        $roles      = DB::table('roles')
+            ->where('name', 'LIKE', '%الموارد%')->pluck('id')->toArray();
+        $access_roles  = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests      = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+
+        return $this->requestUtil->getRequests(
+            $departmentIds,
+            $ownerTypes,
+            'essentials::requests.done_requests',
+            $can_change_status,
+            $can_return_request,
+            $can_show_request,
+            $requestsTypes,
+            [],
+            false,
+            null,
+            'done'
+        );
+    }
+
+    public function essential_all_requests()
+    {
+        $business_id = request()
+            ->session()
+            ->get('user.business_id');
+        $can_change_status  = auth()->user()->can('essentials.change_HR_status');
+        $can_return_request = auth()->user()->can('essentials.return_essentials_request');
+        $can_show_request   = auth()->user()->can('essentials.show_essentials_request');
+
+        $departmentIds = EssentialsDepartment::
+            // where(
+            //     'business_id',
+            //     $business_id
+            // )
+            //     ->
+            where('name', 'LIKE', '%الموارد%')
+            ->Orwhere('name', 'LIKE', '%التأمين%')
+            ->Orwhere('name', 'LIKE', '%شؤون%')
+            ->Orwhere('name', 'LIKE', '%الحكومية%')
+            ->Orwhere('name', 'LIKE', '%الرواتب%')->pluck('id')
+            ->toArray();
+
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg'     => __('essentials::lang.there_is_no_essential_dep'),
+            ];
+
+            return redirect()
+                ->back()
+                ->with('status', $output);
+        }
+
+        $ownerTypes = ['worker'];
+        $roles      = DB::table('roles')
+            ->where('name', 'LIKE', '%الموارد%')->pluck('id')->toArray();
+        $access_roles  = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests      = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+
+        return $this->requestUtil->getRequests(
+            $departmentIds,
+            $ownerTypes,
+            'essentials::requests.allRequest',
+            $can_change_status,
+            $can_return_request,
+            $can_show_request,
+            $requestsTypes,
+            [],
+            false,
+            null,
+            'pending_and_old'
+        );
+    }
+
+    public function essential_pending_requests()
+    {
+
+        $business_id = request()
+            ->session()
+            ->get('user.business_id');
+        $can_change_status  = auth()->user()->can('essentials.change_HR_status');
+        $can_return_request = auth()->user()->can('essentials.return_essentials_request');
+        $can_show_request   = auth()->user()->can('essentials.show_essentials_request');
+
+        $departmentIds = EssentialsDepartment::
+            // where(
+            //     'business_id',
+            //     $business_id
+            // )
+            //     ->
+            where('name', 'LIKE', '%الموارد%')
+            ->Orwhere('name', 'LIKE', '%التأمين%')
+            ->Orwhere('name', 'LIKE', '%شؤون%')
+            ->Orwhere('name', 'LIKE', '%الحكومية%')
+            ->Orwhere('name', 'LIKE', '%الرواتب%')->pluck('id')
+            ->toArray();
+
+        if (empty($departmentIds)) {
+            $output = [
+                'success' => false,
+                'msg'     => __('essentials::lang.there_is_no_essential_dep'),
+            ];
+
+            return redirect()
+                ->back()
+                ->with('status', $output);
+        }
+
+        $ownerTypes = ['worker'];
+        $roles      = DB::table('roles')
+            ->where('name', 'LIKE', '%الموارد%')->pluck('id')->toArray();
+        $access_roles  = AccessRole::whereIn('role_id', $roles)->pluck('id')->toArray();
+        $requests      = AccessRoleRequest::whereIn('access_role_id', $access_roles)->pluck('request_id')->toArray();
+        $requestsTypes = RequestsType::whereIn('id', $requests)->pluck('id')->toArray();
+
+        return $this->requestUtil->getRequests(
+            $departmentIds,
+            $ownerTypes,
+            'essentials::requests.pending_requests',
+            $can_change_status,
+            $can_return_request,
+            $can_show_request,
+            $requestsTypes,
+            [],
+            false,
+            null,
+            'today'
+        );
+    }
+
     //////// Employee Affairs //////////
     public function employee_affairs_all_requests()
     {
