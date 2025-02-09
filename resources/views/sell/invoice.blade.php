@@ -255,10 +255,34 @@
         .invoice-details td:last-child {
             width: 30%;
         }
+
+        .print-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .print-button:hover {
+            background-color: #555;
+        }
+
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <button onclick="window.print()" class="print-button">طباعة الفاتورة - Print Invoice</button>
+
     <div class="invoice-box">
         <div class="header">
             <div class="header_1">
@@ -589,12 +613,12 @@
         <table class="invoice-summary">
             <tr>
                 <th class="left-align">{{ __('customized_invoice.bank', [], 'en') }}</th>
-                <td class="center-align">{{ number_format($invoice->price, 2) }}</td>
+                <td class="center-align">{{ $bank->bank->name }}</td>
                 <th class="rtl-text">{{ __('customized_invoice.bank', [], 'ar') }}</th>
             </tr>
             <tr>
                 <th class="left-align">{{ __('customized_invoice.account', [], 'en') }}</th>
-                <td class="center-align">{{ number_format($invoice->order_discount, 2) }}</td>
+                <td class="center-align">{{ $bank->account_number }}</td>
                 <th class="rtl-text">{{ __('customized_invoice.account', [], 'ar') }}</th>
             </tr>
             {{-- <tr>
@@ -604,12 +628,12 @@
         </tr> --}}
             <tr>
                 <th class="left-align">{{ __('customized_invoice.iban', [], 'en') }}</th>
-                <td class="center-align">{{ number_format($invoice->tax, 2) }}</td>
+                <td class="center-align">{{ $bank->ibn }}</td>
                 <th class="rtl-text">{{ __('customized_invoice.iban', [], 'ar') }}</th>
             </tr>
             <tr>
                 <th class="left-align">{{ __('customized_invoice.beneficiary', [], 'en') }}</th>
-                <td class="center-align">{{ number_format($invoice->total, 2) }}</td>
+                <td class="center-align">{{ $seller->registration_name }}</td>
                 <th class="rtl-text">{{ __('customized_invoice.beneficiary', [], 'ar') }}</th>
             </tr>
 
