@@ -10,6 +10,7 @@ class Seller
     public $country;
     public $tax_number;
     public $postal_number;
+    public $address;
 
 
     public function __construct(
@@ -19,6 +20,7 @@ class Seller
         string $city = null,
         string $country = 'SA',
         string $postal_number = null,
+        string $address = null,
     ) {
 
         $this->registration_name        = $registration_name;
@@ -26,5 +28,6 @@ class Seller
         $this->city                     = $city;
         $this->country                  = $country;
         $this->postal_number            = $postal_number;
+        $this->address                  = $address;
     }
 }

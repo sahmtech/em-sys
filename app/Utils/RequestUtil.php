@@ -38,16 +38,19 @@ use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
+use App\Http\Controllers\InteractiveServicesController;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 
 class RequestUtil extends Util
 {
 
     protected $moduleUtil;
     protected $statuses;
-
-    public function __construct(ModuleUtil $moduleUtil)
+    protected $interactiveServicesController;
+    public function __construct(ModuleUtil $moduleUtil, InteractiveServicesController $interactiveServicesController)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->interactiveServicesController = $interactiveServicesController;
         $this->statuses   = [
             'approved' => [
                 'name'  => __('request.approved'),
@@ -2043,6 +2046,40 @@ class RequestUtil extends Util
 
                         $leaveBalance->amount -= $daysDifference;
                         $leaveBalance->save();
+                    }
+
+                    //make mouqeem api calls
+                    $exit_type_ids = RequestsType::where('type', 'exitRequest')->pluck('id')->toArray();
+                    $exit_re_entry_type_ids = RequestsType::where('type', 'returnRequest')->pluck('id')->toArray();
+                    $user_id = $requestProcess->request->related_to;
+                    if (in_array($requestProcess->request->request_type_id, $exit_type_ids)) {
+                        $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
+                        $res = $this->interactiveServicesController->issueFinalExitVisa((string) $id_proof_number);
+                        if ($res['success'] == 1) {
+                            EssentailsEmployeeOperation::create([
+                                'operation_type' => 'final_visa',
+                                'employee_id' => $user_id,
+                                'created_by' => auth()->user()->id,
+                            ]);
+                            user::where('id', $user_id)->update([
+                                'status' => 'inactive',
+                                'sub_status' => 'final_visa'
+                            ]);
+                        }
+                    }
+                    if (in_array($requestProcess->request->request_type_id, $exit_re_entry_type_ids)) {
+                        $duration = $requestProcess->request->duration ?? 10;
+                        $id_proof_number = User::where('id', $user_id)->first()->id_proof_number;
+                        $res = $this->interactiveServicesController->issueExitReEntryVisa((string) $id_proof_number, $duration);
+                        if ($res['success'] == 1) {
+                            EssentailsEmployeeOperation::create([
+                                'operation_type' => 'return_visa',
+                                'duration' => $res['data']['visaDuration'],
+                                'employee_id' => $user_id,
+                                'file_path' => $res['file_path'],
+                                'created_by' => auth()->user()->id,
+                            ]);
+                        }
                     }
                 } else {
 
