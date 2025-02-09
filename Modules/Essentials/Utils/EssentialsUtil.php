@@ -314,6 +314,7 @@ class EssentialsUtil extends Util
         //Get clock in
         $clock_in = EssentialsAttendance::where('business_id', $data['business_id'])
             ->where('user_id', $data['user_id'])
+            ->whereDate('clock_in_time', Carbon::now()->toDateString())
             ->whereNull('clock_out_time')
             ->first();
         $clock_out_time = is_object($data['clock_out_time']) ? $data['clock_out_time']->toDateTimeString() : $data['clock_out_time'];
