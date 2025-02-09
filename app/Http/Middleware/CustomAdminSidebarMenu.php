@@ -1707,19 +1707,21 @@ class CustomAdminSidebarMenu
                 }
             //
 
+            
+
+            if ($is_admin || auth()->user()->can('essentials.add_Violations') || auth()->user()->can('essentials.add_Main_Violations')){
             $menu->dropdown(
                 __('essentials::lang.violations'),
                 function ($sub) use ($is_admin) {
-
-                    if ($is_admin) {
+                    if ($is_admin || auth()->user()->can('essentials.add_Violations')) {
                         $sub->url(
                             route('violations'),
                             __('essentials::lang.violations'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'violations'],
                         );
                     }
-
-                    if ($is_admin) {
+        
+                    if ($is_admin || auth()->user()->can('essentials.add_Main_Violations')) {
                         $sub->url(
                             route('main-violations'),
                             __('essentials::lang.main-violations'),
@@ -1728,8 +1730,10 @@ class CustomAdminSidebarMenu
                     }
                 },
                 ['icon' => 'fa fas fa-plus-circle']
-
             );
+        }
+        
+        
 
             if ($is_admin || auth()->user()->can('essentials.view_payroll_checkpoint')) {
                 $menu->url(
