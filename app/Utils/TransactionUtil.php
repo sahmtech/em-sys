@@ -347,6 +347,7 @@ class TransactionUtil extends Util
                                         'unit_price_inc_tax'         => $this_price,
                                         'parent_sell_line_id'        => $product['transaction_sell_lines_id'],
                                         'children_type'              => 'modifier',
+
                                     ]);
                                 }
                             }
@@ -382,7 +383,7 @@ class TransactionUtil extends Util
                         $line_discount_amount = $line_discount_amount / $multiplier;
                     }
                 }
-
+                // dump($product);
                 $line = [
                     'product_id'                 => $product['product_id'],
                     'variation_id'               => $product['variation_id'],
@@ -434,7 +435,7 @@ class TransactionUtil extends Util
                     }
                     $modifiers_array[] = $sell_line_modifiers;
                 }
-
+                // dd($line);
                 $lines_formatted[] = new TransactionSellLine($line);
 
                 $sell_line_warranties[] = ! empty($product['warranty_id']) ? $product['warranty_id'] : 0;
