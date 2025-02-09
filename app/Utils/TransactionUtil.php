@@ -1700,7 +1700,8 @@ class TransactionUtil extends Util
                     $qr_code_details[] = $is_label_enabled ? $output['total_label'] . ' ' . $output['total'] : $output['total'];
                 }
                 if (in_array('total_tax', $qr_code_fields)) {
-                    $total_order_tax           = $transaction->tax_amount + $total_line_taxes;
+                    // $total_order_tax           = $transaction->tax_amount + $total_line_taxes;
+                    $total_order_tax           = $transaction->tax_amount;
                     $total_order_tax_formatted = $this->num_f($total_order_tax, $show_currency, $business_details);
                     $qr_code_details[]         = $is_label_enabled ? __('sale.tax') . ': ' . $total_order_tax_formatted : $total_order_tax_formatted;
                 }
