@@ -290,7 +290,7 @@
                         </div>
                     @endif
 
- --}}
+                        --}}
 
                     <div class="col-md-3">
                         <div class="form-group">
@@ -661,6 +661,9 @@
                                         <th class="text-center">
                                             @lang('sale.subtotal')
                                         </th>
+                                        <th class="text-center">
+                                            @lang('customized_invoice.notes')
+                                        </th>
                                         <th class="text-center"><i class="fas fa-times" aria-hidden="true"></i></th>
                                     </tr>
                                 </thead>
@@ -741,6 +744,11 @@
                                         <span class="display_currency pos_line_total_text " id="pos_line_total_text_"
                                             data-currency_symbol="true"></span>
                                     </td>
+                                    <td class="text-center">
+
+                                        <input class="form-control valid" id="products_" name="products_[0][sell_line_note]"
+                                            type="text" value="" aria-invalid="false">
+                                    </td>
                                     <td class="text-center v-center">
                                         <i class="fa fa-times text-danger pos_remove_row cursor-pointer"
                                             aria-hidden="true"></i>
@@ -772,6 +780,7 @@
                         </div>
                     </div>
                 @endcomponent
+
                 @component('components.widget', ['class' => 'box-solid'])
                     <div class="col-md-3  @if ($sale_type == 'sales_order') hide @endif">
                         <div class="form-group">

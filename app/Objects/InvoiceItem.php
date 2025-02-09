@@ -21,6 +21,8 @@ class InvoiceItem
 
     public $total;
 
+    public $notes;
+
     public $sub_total;
 
     public $discount_reason;
@@ -36,6 +38,8 @@ class InvoiceItem
 
 
 
+
+
     public function __construct(
         int     $id,
         string  $product_name,
@@ -45,6 +49,7 @@ class InvoiceItem
         float   $tax,
         float   $tax_percent,
         float   $total,
+        string  $notes,
         string  $discount_reason = null,
         string  $tax_exemption_reason = null,
         string  $tax_exemption_code = null,
@@ -58,6 +63,7 @@ class InvoiceItem
         $this->tax                      = $tax;
         $this->tax_percent              = $tax_percent;
         $this->total                    = $total;
+        $this->notes                    = $notes;
         $this->sub_total                = $total - $tax;
         $this->discount_reason          = $discount_reason;
         $this->tax_exemption_reason     = $tax_exemption_reason;
