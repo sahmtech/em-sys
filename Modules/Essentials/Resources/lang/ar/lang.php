@@ -2056,5 +2056,6 @@ return [
     'appointment_date_start_from'                         => 'تاريخ بداية التعيين',
     'appointment_date_end_at'                             => 'تاريخ نهاية التعيين',
     'attach_owner_type'                                   => 'نوع صاحب المرفق',
+    'there_is_no_essential_dep'                           => 'لا يوجد إدارة  الموارد البشرية  في الهيكل التنظيمي ',
 
 ];

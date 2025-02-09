@@ -548,6 +548,8 @@ class EssentialsCardsController extends Controller
     }
     public function work_cards_pending_requests()
     {
+        
+
         $business_id = request()
             ->session()
             ->get('user.business_id');

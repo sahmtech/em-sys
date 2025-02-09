@@ -340,9 +340,9 @@
         </div>
     </div>
     @endcomponent
-    @include('essentials::layouts.nav_requests_status_for_cards')
+    @include('essentials::layouts.nav_requests_status_for_essentials')
     @component('components.widget', ['class' => 'box-primary'])
-    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.workcards_add_requests'))
+    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.add_HR_requests'))
     @slot('tool')
     <div class="box-tools">
 
@@ -357,12 +357,12 @@
     <div class="table-responsive">
         <div style="margin-bottom: 10px;">
             @if (auth()->user()->hasRole('Admin#1') ||
-            auth()->user()->can('essentials.workcards_requests_change_status'))
+            auth()->user()->can('essentials.change_HR_status'))
             <button type="button" class="btn btn-warning change_status2">
                 @lang('request.change_status')
             </button>
             @endif
-            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_workcards_request'))
+            @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_HR_request'))
             <button class="btn btn-danger btn-sm btn-return2">
                 {{ trans('request.return_the_request') }}
             </button>
@@ -1343,7 +1343,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('work_cards_all_requests') }}",
+                    url: "{{ route('essential_done_requests') }}",
                     data: function(d) {
                         d.status = $('#status_filter').val();
                         d.type = $('#type_filter').val();
@@ -1574,6 +1574,7 @@
 
 
             });
+
             $('#changeAfterTransferModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget);
                 var requestId = button.data('request-id');
@@ -1582,7 +1583,6 @@
                 var modal = $(this);
                 modal.find('#request_id').val(requestId);
             });
-
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
 

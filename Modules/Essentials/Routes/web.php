@@ -658,6 +658,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/payrolls_checkpoint/{from}', [App\Http\Controllers\PayrollController::class, 'payrolls_checkpoint'])->name('hrm.payrolls_checkpoint');
         Route::get('/show_payrolls_checkpoint/{id}/{from}', [App\Http\Controllers\PayrollController::class, 'show_payrolls_checkpoint'])->name('payrolls_checkpoint.show');
         Route::get('/clear_payrolls_checkpoint/{id}/{from}', [App\Http\Controllers\PayrollController::class, 'clear_payrolls_checkpoint'])->name('payrolls_checkpoint.clear');
+
+        Route::get('/essential_done_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'essential_done_requests'])->name('essential_done_requests');
+        Route::get('/essential_all_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'essential_all_requests'])->name('essential_all_requests');
+        Route::get('/essential_pending_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'essential_pending_requests'])->name('essential_pending_requests');
+
     });
 
     Route::prefix('movment')->group(function () {

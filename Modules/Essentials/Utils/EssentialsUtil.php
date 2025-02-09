@@ -6,6 +6,7 @@ use App\BusinessLocationPolygonMarker;
 use App\Transaction;
 use App\User;
 use App\Utils\Util;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -117,6 +118,9 @@ class EssentialsUtil extends Util
         foreach ($user_shifts as $shift) {
             error_log($shift);
             error_log("************************");
+            if ($shift->type == 'flexible_shift') {
+                return $shift->essentials_shift_id;
+            }
             if (!empty($shift->start_time)) {
                 $clock_in_start =  \Carbon::parse($shift->start_time)->subMinutes($grace_before_checkin);
                 $clock_out_end =  \Carbon::parse($shift->end_time)->addMinutes($grace_after_checkout);
@@ -127,7 +131,7 @@ class EssentialsUtil extends Util
                 }
 
                 //Check allocated shift time
-                if ((\Carbon::parse($clock_in_time)->between($clock_in_start, $clock_out_end)) || $shift->type == 'flexible_shift') {
+                if ((\Carbon::parse($clock_in_time)->between($clock_in_start, $clock_out_end))) {
                     return $shift->essentials_shift_id;
                 }
             }
@@ -251,6 +255,7 @@ class EssentialsUtil extends Util
         //Check if already clocked in
         $count = EssentialsAttendance::where('business_id', $data['business_id'])
             ->where('user_id', $data['user_id'])
+            ->whereDate('clock_in_time', Carbon::now()->toDateString())
             ->whereNull('clock_out_time')
             ->count();
         if ($count == 0) {
@@ -263,9 +268,9 @@ class EssentialsUtil extends Util
             $grace_after_checkin = !empty($settings['grace_after_checkin']) ? (int) $settings['grace_after_checkin'] : 0;
             $clock_in_start =  \Carbon::parse($shift->start_time)->subMinutes($grace_before_checkin);
             $clock_in_end =  \Carbon::parse($shift->start_time)->addMinutes($grace_after_checkin);
-            $between = $data['clock_in_time']->between($clock_in_start, $clock_in_end);
-            $after_start = $data['clock_in_time']->greaterThan($clock_in_end);
-            $differenceInMinutes = $data['clock_in_time']->diffInMinutes($clock_in_end);
+            $between = \Carbon::parse($data['clock_in_time'])->between($clock_in_start, $clock_in_end);
+            $after_start = \Carbon::parse($data['clock_in_time'])->greaterThan($clock_in_end);
+            $differenceInMinutes = \Carbon::parse($data['clock_in_time'])->diffInMinutes(\Carbon::parse($clock_in_end));
 
             $is_on_site = $this->checkPointInPolygon($data['clock_in_lat'], $data['clock_in_lng']);
             if ($between &&  $is_on_site) {

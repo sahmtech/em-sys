@@ -800,4 +800,5 @@ return [
     'appointment_date_start_from'                        => 'appointment start date',
     'appointment_date_end_at'                            => 'appointment end date',
     'attach_owner_type'                                  => 'Attachment Owner Type',
+    'there_is_no_essential_dep'                          => 'There is no human resources department in the organizational structure',
 ];
