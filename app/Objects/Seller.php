@@ -11,6 +11,7 @@ class Seller
     public $tax_number;
     public $postal_number;
     public $address;
+    public $crn;
 
 
     public function __construct(
@@ -21,6 +22,7 @@ class Seller
         string $country = 'SA',
         string $postal_number = null,
         string $address = null,
+        string $crn = null,
     ) {
 
         $this->registration_name        = $registration_name;
@@ -29,5 +31,6 @@ class Seller
         $this->country                  = $country;
         $this->postal_number            = $postal_number;
         $this->address                  = $address;
+        $this->crn                      = $crn;
     }
 }
