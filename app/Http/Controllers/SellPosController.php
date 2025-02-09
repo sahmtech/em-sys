@@ -31,6 +31,7 @@ use App\Account;
 use App\BankAccount;
 use App\Brands;
 use App\Business;
+use App\BusinessDocument;
 use App\BusinessLocation;
 use App\Category;
 use App\Company;
@@ -349,9 +350,13 @@ class SellPosController extends Controller
         }
 
         foreach ($_products['products'] as $item) {
+            foreach ($input['products_'] as $tmpProduct) {
+                if (!empty($tmpProduct['sell_line_note'])) {
+                    $item['sell_line_note'] = $tmpProduct['sell_line_note'];
+                }
+            }
             array_push($input['products'], $item->toArray());
         }
-
         //Check if there is a open register, if no then redirect to Create Register screen.
         if (!$is_direct_sale && $this->cashRegisterUtil->countOpenedRegister() == 0) {
             return redirect()->action([\App\Http\Controllers\CashRegisterController::class, 'create']);
@@ -414,7 +419,6 @@ class SellPosController extends Controller
                 'discount_amount' => $input['discount_amount'],
             ];
             $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
-
 
             DB::beginTransaction();
 
@@ -524,7 +528,6 @@ class SellPosController extends Controller
 
             //Upload Shipping documents
             Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
-
             $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
 
             $change_return['amount'] = $input['change_return'] ?? 0;
@@ -2435,6 +2438,7 @@ class SellPosController extends Controller
             // $priceAfterDiscount = $priceBeforeDiscount - $discountAmount;
             // $taxAmount = round($transaction_sell_line->tax_percent * $priceAfterDiscount / 100, 2);
             // $unit_price = $transaction_sell_line->unit_price_before_discount / $transaction_sell_line->quantity;
+            // dd($transaction_sell_line);
             $invoiceItems[] = new InvoiceItem(
                 $transaction_sell_line->product_id,
                 $transaction_sell_line->product_name,
@@ -2444,6 +2448,7 @@ class SellPosController extends Controller
                 $transaction_sell_line->item_tax,
                 $transaction_sell_line->tax_percent ?? 15,
                 $transaction_sell_line->unit_price_inc_tax *  $transaction_sell_line->quantity,
+                $transaction_sell_line->sell_line_note ?? '',
             );
         }
         // return $transaction_sell_lines;
@@ -2501,13 +2506,18 @@ class SellPosController extends Controller
             $seller_address .= $contact->city . ', ';
         }
 
+        $crn = BusinessDocument::where('business_id', $company_id == 2 ? 2 : 1)->where('licence_type', 'COMMERCIALREGISTER')?->first()?->licence_number ?? '';
+
+
+
         $seller = new Seller(
             $company->name,
-            $company->tax_number_1,
+            $business->tax_number_1 ?? $company->tax_number_1 ?? '',
             $company->city ?? '',
             $contact->country ?? 'Saudi Arabia',
             $contact->postal_number,
-            Str::substr($seller_address, 0, -2)
+            Str::substr($seller_address, 0, -2),
+            $crn,
         );
 
 

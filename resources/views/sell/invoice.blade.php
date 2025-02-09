@@ -403,7 +403,7 @@
                     <tr>
                         <td class="colored_background">
                             {{ __('customized_invoice.commercial_registration_number', [], 'en') }}:</td>
-                        <td class="center-align">{{ $seller->registration_number ?? '' }}</td>
+                        <td class="center-align">{{ $seller->crn ?? '' }}</td>
                         <td class="rtl-text colored_background">
                             {{ __('customized_invoice.commercial_registration_number', [], 'ar') }}:</td>
                     </tr>
@@ -508,6 +508,9 @@
                     <th colspan="2" class="center-align no_bottom_border">
                         {{ __('customized_invoice.total_row_amount', [], 'en') }}
                     </th>
+                    <th colspan="2" class="center-align no_bottom_border">
+                        {{ __('customized_invoice.notes', [], 'en') }}
+                    </th>
                 </tr>
                 <tr>
                     <th colspan="2" class="center-align no_top_border">
@@ -539,6 +542,8 @@
                         {{ __('customized_invoice.total_row_tax', [], 'ar') }}</th> --}}
                     <th colspan="2" class="center-align no_top_border">
                         {{ __('customized_invoice.total_row_amount', [], 'ar') }}</th>
+                    <th colspan="2" class="center-align no_top_border">
+                        {{ __('customized_invoice.notes', [], 'ar') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -561,6 +566,8 @@
                         </td>
                         <td colspan="2" class="center-align">
                             {{ number_format($item->total, 2) }}</td>
+                        <td colspan="2" class="center-align">
+                            {{ $item->notes }}</td>
                     </tr>
                 @endforeach
             </tbody>
