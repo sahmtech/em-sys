@@ -2537,6 +2537,7 @@ class SellPosController extends Controller
         );
         $bank = BankAccount::with('bank')->where('company_id', $company_id)->first();
         // dd($bank);
+        return $receipt_details;
         return view('sell.invoice', [
             'logo' => $company->logo ?? $business->logo ?? '',
             'invoice' =>  $invoice,
