@@ -26,8 +26,35 @@
             align-items: center;
         }
 
+        .header_1,
+        .header_2,
+        .header_3 {
+
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header_1 {
+            width: 40%;
+            /* border: solid red; */
+            justify-content: start;
+        }
+
+        .header_2 {
+            width: 20%;
+            /* border: solid green; */
+            justify-content: center;
+        }
+
+        .header_3 {
+            width: 40%;
+            /* border: solid blue; */
+            justify-content: end;
+        }
+
         .logo img {
-            max-width: 150px;
+            max-width: 120px;
         }
 
         .qr-code img {
@@ -36,18 +63,24 @@
 
         .title {
             text-align: center;
-            margin: 20px 0;
+            width: 100%;
+        }
+
+        .title-headers {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
 
         .title h1 {
-            font-size: 35px;
+            font-size: 30px;
             color: #333;
             margin: 5px 0;
             font-weight: bold;
         }
 
         .title h2 {
-            font-size: 30px;
+            font-size: 25px;
             color: #666;
             margin: 5px 0;
             font-weight: bold;
@@ -77,8 +110,11 @@
         }
 
         .invoice-details {
-            width: 50%;
+            margin: 0;
+            padding: 0;
         }
+
+
 
         .invoice-details th,
         .invoice-details td,
@@ -225,53 +261,62 @@
 <body>
     <div class="invoice-box">
         <div class="header">
+            <div class="header_1">
+                <div class="title">
+                    <div class="title-headers">
+                        <h2>{{ __('customized_invoice.tax_invoice', [], 'en') }}</h2>
+                        <h1>{{ __('customized_invoice.tax_invoice') }}</h1>
 
-            <div class="title">
-                <h1>{{ __('customized_invoice.tax_invoice') }}</h1>
-                <h2>{{ __('customized_invoice.tax_invoice', [], 'en') }}</h2>
-            </div>
-            <div class="logo">
-                <img src="{{ asset('uploads/business_logos/' . $logo) }}" alt="Logo">
-            </div>
-        </div>
-        <div class="section-title">
-            <span>{{ __('customized_invoice.invoice_information', [], 'en') }}</span>
-            <span class="rtl-text">{{ __('customized_invoice.invoice_information', [], 'ar') }}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <table class="invoice-details">
-                <tr>
-                    <td class="colored_background">{{ __('customized_invoice.invoice_number', [], 'en') }}:</td>
-                    <td class="center-align">{{ $invoice->invoice_number ?? '' }}</td>
-                    <td class="rtl-text colored_background">{{ __('customized_invoice.invoice_number', [], 'ar') }}</td>
-                </tr>
-                <tr>
-                    <td class="colored_background">{{ __('customized_invoice.invoice_issue_date', [], 'en') }}:</td>
-                    <td class="center-align">{{ $invoice->invoice_date ?? '' }}</td>
-                    <td class="rtl-text colored_background">{{ __('customized_invoice.invoice_issue_date', [], 'ar') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="colored_background">{{ __('customized_invoice.from_date', [], 'en') }}:</td>
-                    <td class="center-align">{{ $fromDate ?? '' }}</td>
-                    <td class="rtl-text colored_background">{{ __('customized_invoice.from_date', [], 'ar') }}</td>
-                </tr>
-                <tr>
-                    <td class="colored_background">{{ __('customized_invoice.to_date', [], 'en') }}:</td>
-                    <td class="center-align">{{ $toDate ?? '' }}</td>
-                    <td class="rtl-text colored_background">{{ __('customized_invoice.to_date', [], 'ar') }}</td>
-                </tr>
-            </table>
-            @if (isset($Qr))
-                <div class="qr-code">
-                    {!! $Qr !!}
+                    </div>
+
+                    <div class="section-title">
+                        <span>{{ __('customized_invoice.invoice_information', [], 'en') }}</span>
+                        <span class="rtl-text">{{ __('customized_invoice.invoice_information', [], 'ar') }}</span>
+                    </div>
+                    <table class="invoice-details">
+                        <tr>
+                            <td class="colored_background">{{ __('customized_invoice.invoice_number', [], 'en') }}:
+                            </td>
+                            <td class="center-align">{{ $invoice->invoice_number ?? '' }}</td>
+                            <td class="rtl-text colored_background">
+                                {{ __('customized_invoice.invoice_number', [], 'ar') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="colored_background">
+                                {{ __('customized_invoice.invoice_issue_date', [], 'en') }}:
+                            </td>
+                            <td class="center-align">{{ $invoice->invoice_date ?? '' }}</td>
+                            <td class="rtl-text colored_background">
+                                {{ __('customized_invoice.invoice_issue_date', [], 'ar') }}
+                            </td>
+                        </tr>
+
+                    </table>
+
                 </div>
-            @endif
-            @if (!empty($receipt_details->qr_code_text))
-                <img class="center-block mt-5"
-                    src="data:image/png;base64,{{ DNS2D::getBarcodePNG($receipt_details->qr_code_text, 'QRCODE', 3, 3, [39, 48, 54]) }}">
-            @endif
+            </div>
+            <div class="header_2">
+                <div class="logo">
+                    <img src="{{ asset('uploads/business_logos/' . $logo) }}" alt="Logo">
+                </div>
+            </div>
+            <div class="header_3">
+                @if (isset($Qr))
+                    <div class="qr-code">
+                        {!! $Qr !!}
+                    </div>
+                @endif
+                @if (!empty($receipt_details->qr_code_text))
+                    <img class="center-block mt-5 qr-code"
+                        src="data:image/png;base64,{{ DNS2D::getBarcodePNG($receipt_details->qr_code_text, 'QRCODE', 3, 3, [39, 48, 54]) }}">
+                @endif
+            </div>
+
+
+
         </div>
+        <hr />
+
         <div style="display: flex; justify-content: space-between;">
             <div style="width: 48%;">
                 <div class="section-title">
@@ -291,6 +336,13 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="colored_background">{{ __('customized_invoice.address', [], 'en') }}:</td>
+                        <td class="center-align">{{ $seller->address ?? '' }}</td>
+                        <td class="rtl-text colored_background">
+                            {{ __('customized_invoice.address', [], 'ar') }}:
+                        </td>
+                    </tr>
+                    {{-- <tr>
                         <td class="colored_background">{{ __('customized_invoice.building_number', [], 'en') }}:</td>
                         <td class="center-align">{{ $seller->building_number ?? '' }}</td>
                         <td class="rtl-text colored_background">
@@ -317,7 +369,7 @@
                         <td class="colored_background">{{ __('customized_invoice.country', [], 'en') }}:</td>
                         <td class="center-align">Saudi Arabia</td>
                         <td class="rtl-text colored_background">{{ __('customized_invoice.country', [], 'ar') }}:</td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <td class="colored_background">{{ __('customized_invoice.postal_code', [], 'en') }}:</td>
                         <td class="center-align">{{ $seller->postal_number ?? '' }}</td>
@@ -351,6 +403,13 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="colored_background">{{ __('customized_invoice.address', [], 'en') }}:</td>
+                        <td class="center-align">{{ $client->address ?? '' }}</td>
+                        <td class="rtl-text colored_background">
+                            {{ __('customized_invoice.address', [], 'ar') }}:
+                        </td>
+                    </tr>
+                    {{-- <tr>
                         <td class="colored_background">{{ __('customized_invoice.building_number', [], 'en') }}:</td>
                         <td class="center-align">{{ $client->building_number ?? '' }}</td>
                         <td class="rtl-text colored_background">
@@ -377,7 +436,7 @@
                         <td class="colored_background">{{ __('customized_invoice.country', [], 'en') }}:</td>
                         <td class="center-align">Saudi Arabia</td>
                         <td class="rtl-text colored_background">{{ __('customized_invoice.country', [], 'ar') }}:</td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <td class="colored_background">{{ __('customized_invoice.postal_code', [], 'en') }}:</td>
                         <td class="center-align">{{ $client->postal_number ?? '' }}</td>
@@ -409,11 +468,11 @@
                     {{-- <th colspan="1" class="center-align no_bottom_border">
                         {{ __('customized_invoice.tax_category', [], 'en') }}
                     </th> --}}
-                    {{-- <th colspan="2" class="center-align no_bottom_border">
-                        {{ __('customized_invoice.tax_rate', [], 'en') }}</th> --}}
-                    {{-- <th colspan="2" class="center-align no_bottom_border">
+                    <th colspan="2" class="center-align no_bottom_border">
+                        {{ __('customized_invoice.tax_rate', [], 'en') }}</th>
+                    <th colspan="2" class="center-align no_bottom_border">
                         {{ __('customized_invoice.tax_amount', [], 'en') }}
-                    </th> --}}
+                    </th>
                     {{-- <th colspan="2" class="center-align no_bottom_border">
                         {{ __('customized_invoice.total_amount', [], 'en') }}
                     </th> --}}
@@ -440,12 +499,12 @@
                     {{-- <th colspan="1" class="center-align no_top_border">
                         {{ __('customized_invoice.tax_category', [], 'ar') }}
                     </th> --}}
-                    {{-- <th colspan="2" class="center-align no_top_border">
+                    <th colspan="2" class="center-align no_top_border">
                         {{ __('customized_invoice.tax_rate', [], 'ar') }}
-                    </th> --}}
-                    {{-- <th colspan="2" class="center-align no_top_border">
+                    </th>
+                    <th colspan="2" class="center-align no_top_border">
                         {{ __('customized_invoice.tax_amount', [], 'ar') }}
-                    </th> --}}
+                    </th>
                     {{-- <th colspan="2" class="center-align no_top_border">
                         {{ __('customized_invoice.total_amount', [], 'ar') }}
                     </th> --}}
@@ -466,16 +525,16 @@
                             {{ $item->product_name }}<br>{{ $notest[$item->id] ?? '' }}
                         </td>
                         <td colspan="2" class="center-align">
-                            {{ number_format($item->price / $item->quantity, 2) }}</td>
+                            {{ number_format($item->price, 2) }}</td>
                         {{-- <td colspan="2" class="center-align">
                             {{ number_format($item->discount / $item->quantity, 2) }}</td> --}}
                         {{-- <td colspan="1" class="center-align">{{ $item->tax_category_code }}</td> --}}
-                        {{-- <td colspan="2" class="center-align">{{ $item->tax_percent }}%</td> --}}
-                        {{-- <td colspan="2" class="center-align">{{ number_format($item->tax, 2) }}</td> --}}
+                        <td colspan="2" class="center-align">{{ $item->tax_percent }}%</td>
+                        <td colspan="2" class="center-align">{{ number_format($item->tax, 2) }}</td>
                         {{-- <td colspan="2" class="center-align">{{ number_format($item->total, 2) }}</td> --}}
                         <td colspan="1" class="center-align">{{ $item->quantity }}</td>
-                        {{-- <td colspan="2" class="center-align">{{ number_format($item->tax, 2) }}
-                        </td> --}}
+                        {{-- <td colspan="2" class="center-align">{{ number_format($item->total_tax, 2) }} --}}
+                        </td>
                         <td colspan="2" class="center-align">
                             {{ number_format($item->total, 2) }}</td>
                     </tr>
@@ -490,7 +549,7 @@
         <table class="invoice-summary">
             <tr>
                 <th class="left-align">{{ __('customized_invoice.total_excluding_vat', [], 'en') }}</th>
-                <td class="center-align">{{ number_format($invoice->price - $invoice->discount, 2) }}</td>
+                <td class="center-align">{{ number_format($invoice->price, 2) }}</td>
                 <th class="rtl-text">{{ __('customized_invoice.total_excluding_vat', [], 'ar') }}</th>
             </tr>
             <tr>
@@ -519,8 +578,44 @@
                 <th class="rtl-text">{{ __('customized_invoice.notes', [], 'ar') }}</th>
             </tr>
         </table>
+        <hr />
+
     </div>
-    {!! $footer_text !!}
+    <div class="invoice-box">
+        <div class="section-title">
+            <span>{{ __('customized_invoice.bank_payment', [], 'en') }}</span>
+            <span class="rtl-text">{{ __('customized_invoice.bank_payment', [], 'ar') }}</span>
+        </div>
+        <table class="invoice-summary">
+            <tr>
+                <th class="left-align">{{ __('customized_invoice.bank', [], 'en') }}</th>
+                <td class="center-align">{{ number_format($invoice->price, 2) }}</td>
+                <th class="rtl-text">{{ __('customized_invoice.bank', [], 'ar') }}</th>
+            </tr>
+            <tr>
+                <th class="left-align">{{ __('customized_invoice.account', [], 'en') }}</th>
+                <td class="center-align">{{ number_format($invoice->order_discount, 2) }}</td>
+                <th class="rtl-text">{{ __('customized_invoice.account', [], 'ar') }}</th>
+            </tr>
+            {{-- <tr>
+            <th class="left-align">{{ __('customized_invoice.order_discount', [], 'en') }}</th>
+            <td class="center-align">{{ number_format($invoice->order_discount, 2) }}</td>
+            <th class="rtl-text">{{ __('customized_invoice.order_discount', [], 'ar') }}</th>
+        </tr> --}}
+            <tr>
+                <th class="left-align">{{ __('customized_invoice.iban', [], 'en') }}</th>
+                <td class="center-align">{{ number_format($invoice->tax, 2) }}</td>
+                <th class="rtl-text">{{ __('customized_invoice.iban', [], 'ar') }}</th>
+            </tr>
+            <tr>
+                <th class="left-align">{{ __('customized_invoice.beneficiary', [], 'en') }}</th>
+                <td class="center-align">{{ number_format($invoice->total, 2) }}</td>
+                <th class="rtl-text">{{ __('customized_invoice.beneficiary', [], 'ar') }}</th>
+            </tr>
+
+        </table>
+        {{-- {!! $footer_text !!} --}}
+    </div>
     </div>
 </body>
 

@@ -40,4 +40,10 @@ return [
     // 'order_discount' => 'Order Discount',
     'refund_invoice' => 'Debit Note',
     'notes' => 'Notes',
+    'address' => 'Address',
+    'bank_payment' => 'Please remit the amount due to our bank account as per the below details:',
+    'bank' => 'Bank',
+    'account' => 'Account',
+    'iban' => 'IBAN',
+    'beneficiary' => 'Beneficiary Name',
 ];
