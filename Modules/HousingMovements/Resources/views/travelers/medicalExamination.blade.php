@@ -3,56 +3,60 @@
 
 @section('content')
 
-    <section class="content-header">
-        <h1>
-            <span>@lang('housingmovements::lang.medicalExamination')</span>
-        </h1>
-    </section>
+<section class="content-header">
+    <h1>
+        <span>@lang('housingmovements::lang.medicalExamination')</span>
+    </h1>
+</section>
 
-    <!-- Main content -->
-    <section class="content">
-        @include('housingmovements::layouts.nav_trevelers')
-       
-
-        <div class="row">
-            <div class="col-md-12">
-                @component('components.widget', ['class' => 'box-primary'])
-                  
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="medicalExamination_table">
-                            <thead>
-                                <tr>
-                                    {{-- <th>
-                                        <input type="checkbox" id="select-all">
-                                    </th> --}}
-                                    <th>#</th>
-                                    <th>@lang('housingmovements::lang.worker_name')</th>
-                                    <th>@lang('housingmovements::lang.medicalExamination')</th>
-                                 
-                                    <th>@lang('messages.action')</th>
-                                </tr>
-                            </thead>
+<!-- Main content -->
+<section class="content">
+    @include('housingmovements::layouts.nav_trevelers')
 
 
+    <div class="row">
+        <div class="col-md-12">
+            @component('components.widget', ['class' => 'box-primary'])
 
-                        </table>
-                      
-                    </div>
-                 
-                @endcomponent
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="medicalExamination_table">
+                    <thead>
+                        <tr>
+                            {{-- <th>
+                                <input type="checkbox" id="select-all">
+                            </th> --}}
+                            <th>#</th>
+                            <th style="width: 20%;">@lang('housingmovements::lang.worker_name')</th>
+                            <th>@lang('housingmovements::lang.passport_number')</th>
+                            <th style="width: 15%;">@lang('housingmovements::lang.company')</th>
+                            <th style="width: 15%;">@lang('housingmovements::lang.unified_number')</th>
+                            <th>@lang('housingmovements::lang.arrival_date')</th>
+                            <th>@lang('housingmovements::lang.medicalExamination')</th>
+
+                            <th>@lang('messages.action')</th>
+                        </tr>
+                    </thead>
+
+
+
+                </table>
+
             </div>
 
-
-
-          
-
+            @endcomponent
         </div>
 
-   
-    </section>
-    <!-- /.content -->
-    {{-- <div class="col-md-8 selectedDiv" style="display:none;">
-    </div> --}}
+
+
+
+
+    </div>
+
+
+</section>
+<!-- /.content -->
+{{-- <div class="col-md-8 selectedDiv" style="display:none;">
+</div> --}}
 @endsection
 
 @section('javascript')
@@ -78,7 +82,24 @@
                 },
                 {
                     data: 'full_name',
+                    searchable: false
+
                 },
+                {
+                    data: 'passport_number',
+                },
+                
+                {
+                    data: 'company',
+                },
+                {
+                    data: 'unified_number',
+                },
+               
+                {
+                    data: 'arrival_date',
+                },
+                
                 {
                     data: 'medical_examination',
                     render: function(data, type, row) {

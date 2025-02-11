@@ -119,6 +119,7 @@
                     {
                         "data": "full_name"
                     },
+                    
                     {
                         "data": "profile_image",
                         "render": function(data, type, row) {
@@ -138,11 +139,23 @@
                     {
                         "data": "project"
                     },
+                    
 
 
                     {
                         "data": "location"
                     },
+                    
+                    {
+                        "data": "passport_number"
+                    },
+                    {
+                        "data": "profession"
+                    },
+                    {
+                        "data": "nationality"
+                    },
+
                     {
                         "data": "medical_examination",
                         "render": function(data, type, row) {
@@ -154,15 +167,6 @@
                     {
                         "data": "arrival_date",
 
-                    },
-                    {
-                        "data": "passport_number"
-                    },
-                    {
-                        "data": "profession"
-                    },
-                    {
-                        "data": "nationality"
                     },
                     {
                         "data": "worker_documents",
