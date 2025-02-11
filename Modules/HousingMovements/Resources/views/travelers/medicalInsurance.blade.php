@@ -28,10 +28,11 @@
                             <th>#</th>
                             <th>@lang('housingmovements::lang.worker_name')</th>
                             <th>@lang('housingmovements::lang.border_no')</th>
-                            <th style="width: 15%;">@lang('housingmovements::lang.company')</th>
                             <th style="width: 15%;">@lang('housingmovements::lang.passport_number')</th>
-                            <th>@lang('housingmovements::lang.arrival_date')</th>
+                            <th style="width: 15%;">@lang('housingmovements::lang.company')</th>
+                            <th style="width: 15%;">@lang('housingmovements::lang.unified_number')</th>
                             <th>@lang('housingmovements::lang.medicalInsurance')</th>
+                            <th>@lang('housingmovements::lang.arrival_date')</th>
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
@@ -169,16 +170,15 @@
                     data:'border_no',
                 },
                 {
+                    data: 'passport_number',
+                },
+               
+                {
                     data: 'company',
                 },
                 {
-                    data: 'passport_number',
+                    data: 'unified_number',
                 },
-                {
-                    data: 'arrival_date',
-                },
-                 
-                
                 
                 {
                     data: 'has_insurance',
@@ -186,6 +186,9 @@
                         console.log(data);
                         return data === 1 ? '@lang('housingmovements::lang.has_insurance')' : '@lang('housingmovements::lang.not_yet')';
                     }
+                },
+                {
+                    data: 'arrival_date',
                 },
                 {
                     data: 'action', 

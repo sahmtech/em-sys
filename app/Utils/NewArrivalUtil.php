@@ -288,6 +288,21 @@ class NewArrivalUtil extends Util
                     $company = Company::find($worker->company);
                     return $company?->name ?? '';
                 })
+                ->addColumn('unified_number', function ($worker) {
+                    $company = Company::find($worker->company);
+                
+                    // Check if company exists and has documents
+                    if ($company && $company->documents) {
+                        foreach ($company->documents as $document) {
+                            if ($document->licence_type == 'COMMERCIALREGISTER') {
+                                return $document->unified_number ?? '';  // If unified_number is null, return an empty string
+                            }
+                        }
+                    }
+                    return '';  // Return an empty string if no matching document or company
+                })
+                
+                
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -367,6 +382,19 @@ class NewArrivalUtil extends Util
                     $company = Company::find($worker->company);
                     return $company?->name ?? '';
                 })
+                ->addColumn('unified_number', function ($worker) {
+                    $company = Company::find($worker->company);
+                
+                    // Check if company exists and has documents
+                    if ($company && $company->documents) {
+                        foreach ($company->documents as $document) {
+                            if ($document->licence_type == 'COMMERCIALREGISTER') {
+                                return $document->unified_number ?? '';  // If unified_number is null, return an empty string
+                            }
+                        }
+                    }
+                    return '';  // Return an empty string if no matching document or company
+                })
                 ->addColumn('passport_number', function ($worker) {
                     $ir_proposed_labor = IrProposedLabor::find($worker->proposal_worker_id);
                     return $ir_proposed_labor->passport_number  ?? '';
@@ -445,6 +473,20 @@ class NewArrivalUtil extends Util
         
                 ->editColumn('company_name', function ($row) {
                     return optional($row->user->company)->name ?? '';
+                })
+
+                ->addColumn('unified_number', function ($row) {
+                    $company = Company::find($row->user->company_id);
+                
+                    // Check if company exists and has documents
+                    if ($company && $company->documents) {
+                        foreach ($company->documents as $document) {
+                            if ($document->licence_type == 'COMMERCIALREGISTER') {
+                                return $document->unified_number ?? '';  // If unified_number is null, return an empty string
+                            }
+                        }
+                    }
+                    return '';  // Return an empty string if no matching document or company
                 })
         
                 ->editColumn('fixnumber', function ($row) {
@@ -625,9 +667,23 @@ class NewArrivalUtil extends Util
                     
                     return $worker->border_no ?? '';
                 })
+               
                 ->addColumn('company', function ($worker) {
                     
                     return $worker?->company->name ?? '';
+                })
+                ->addColumn('unified_number', function ($worker) {
+                    $company = Company::find($worker->company_id);
+                
+                    // Check if company exists and has documents
+                    if ($company && $company->documents) {
+                        foreach ($company->documents as $document) {
+                            if ($document->licence_type == 'COMMERCIALREGISTER') {
+                                return $document->unified_number ?? '';  // If unified_number is null, return an empty string
+                            }
+                        }
+                    }
+                    return '';  // Return an empty string if no matching document or company
                 })
                 ->make(true);
         }
@@ -857,11 +913,12 @@ class NewArrivalUtil extends Util
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $workers = User::with(['proposal_worker'])->whereIn('id', $userIds)
+        $workers = User::with(['proposal_worker','company'])->whereIn('id', $userIds)
             ->whereNotNull('proposal_worker_id')->whereNot('status', 'inactive')
             ->select([
                 'id',
                 'border_no',
+                'company_id',
                 'residency_print', 'id_proof_number',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ]) ->latest('created_at');
@@ -875,6 +932,23 @@ class NewArrivalUtil extends Util
                         return '<button onclick="add_eqama(' . $worker->id . ')" class="btn btn-warning">' . __('housingmovements::lang.add_eqama') . '</button>';
                     }
                 })
+                ->addColumn('company', function ($worker) {
+                    
+                    return $worker?->company->name ?? '';
+                })
+                ->addColumn('unified_number', function ($worker) {
+                    $company = Company::find($worker->company_id);
+                
+                    // Check if company exists and has documents
+                    if ($company && $company->documents) {
+                        foreach ($company->documents as $document) {
+                            if ($document->licence_type == 'COMMERCIALREGISTER') {
+                                return $document->unified_number ?? '';  // If unified_number is null, return an empty string
+                            }
+                        }
+                    }
+                    return '';  // Return an empty string if no matching document or company
+                })
                 ->addColumn('action', function ($worker) {
                     if ($worker->id_proof_number) {
                         if ($worker->residency_print) {
@@ -884,6 +958,7 @@ class NewArrivalUtil extends Util
                         }
                     }
                 })
+           
                 ->rawColumns(['action', 'id_proof_number','border_no'])
                 ->make(true);
         }
@@ -954,16 +1029,41 @@ class NewArrivalUtil extends Util
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $workers = User::with(['proposal_worker.worker_documents'])->whereIn('id', $userIds)
+        $workers = User::with(['proposal_worker.worker_documents','company'])->whereIn('id', $userIds)
             ->whereNotNull('proposal_worker_id')->whereNotNull('id_proof_number')->whereNot('status', 'inactive')
             ->select([
                 'id', 'proposal_worker_id',
                 'residency_delivery',
+                'border_no',
+                'company_id',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ]) ->latest('created_at');
         //  return $workers->get();
         if (request()->ajax()) {
             return Datatables::of($workers)
+
+            ->addColumn('border_no', function ($worker) {
+                    
+                return $worker?->border_no ?? '';
+            })
+           
+            ->addColumn('company', function ($worker) {
+                    
+                return $worker?->company->name ?? '';
+            })
+            ->addColumn('unified_number', function ($worker) {
+                $company = Company::find($worker->company_id);
+            
+                // Check if company exists and has documents
+                if ($company && $company->documents) {
+                    foreach ($company->documents as $document) {
+                        if ($document->licence_type == 'COMMERCIALREGISTER') {
+                            return $document->unified_number ?? '';  // If unified_number is null, return an empty string
+                        }
+                    }
+                }
+                return '';  // Return an empty string if no matching document or company
+            })
                 ->addColumn('action', function ($worker) {
 
                     $actionButton = '<button onclick="delivery_residency(' . $worker->id . ')" class="btn btn-primary">' . __('housingmovements::lang.residencyDelivery') . '</button>';

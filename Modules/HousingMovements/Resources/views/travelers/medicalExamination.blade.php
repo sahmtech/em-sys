@@ -27,8 +27,9 @@
                             </th> --}}
                             <th>#</th>
                             <th style="width: 20%;">@lang('housingmovements::lang.worker_name')</th>
-                            <th style="width: 15%;">@lang('housingmovements::lang.company')</th>
                             <th>@lang('housingmovements::lang.passport_number')</th>
+                            <th style="width: 15%;">@lang('housingmovements::lang.company')</th>
+                            <th style="width: 15%;">@lang('housingmovements::lang.unified_number')</th>
                             <th>@lang('housingmovements::lang.arrival_date')</th>
                             <th>@lang('housingmovements::lang.medicalExamination')</th>
 
@@ -84,13 +85,17 @@
                     searchable: false
 
                 },
+                {
+                    data: 'passport_number',
+                },
                 
                 {
                     data: 'company',
                 },
                 {
-                    data: 'passport_number',
+                    data: 'unified_number',
                 },
+               
                 {
                     data: 'arrival_date',
                 },
