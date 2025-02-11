@@ -59,5 +59,6 @@ return [
     'Sales Person'                                 => 'مندوب المبيعات',
     'Commission Agent'                             => 'وكيل العمولة',
     'Customer RP'                                  => 'رصيد العميل',
+    'add_attachment'                               => 'إضافة مرفق',
 
 ];

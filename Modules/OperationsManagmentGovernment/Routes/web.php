@@ -1,5 +1,7 @@
 <?php
 
+use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +20,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/', 'OperationsManagmentGovernmentController@index');
         Route::get('/dashboard', [Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])->name('operationsmanagmentgovernment.dashboard');
         Route::get('/requests', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index'])->name('operationsmanagmentgovernment.view_requests');
+        Route::get('/projects_documents', [ProjectDocumentController::class, 'index'])->name('projects_documents');
+        Route::get('/documents-create', [ProjectDocumentController::class, 'create'])->name('documents-create');
+        Route::post('/documents-store', [ProjectDocumentController::class, 'store'])->name('documents-store');
+
         Route::post('/storeOperationsManagmentGovernmentRequest', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'store'])->name('storeOperationsManagmentGovernmentRequest');
     });
 });
