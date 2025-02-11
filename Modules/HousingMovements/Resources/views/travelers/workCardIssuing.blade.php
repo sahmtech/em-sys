@@ -3,184 +3,211 @@
 
 @section('content')
 
-    <section class="content-header">
-        <h1>
-            <span>@lang('housingmovements::lang.workCardIssuing')</span>
-        </h1>
-    </section>
+<section class="content-header">
+    <h1>
+        <span>@lang('housingmovements::lang.workCardIssuing')</span>
+    </h1>
+</section>
+@push('styles')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+<style>
+    /* Match Select2 width with Bootstrap .col-md-4 */
+    .col-md-4 .select2-container {
+        width: 100% !important;
+    }
 
-    <!-- Main content -->
-    <section class="content">
-        @include('housingmovements::layouts.nav_trevelers')
+    /* Style select2 to look like Bootstrap form-control */
+    .select2-container .select2-selection--single {
+        height: 40px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 5px !important;
+        padding: 6px 12px !important;
+        font-size: 16px !important;
+    }
 
+    .select2-container .select2-selection__rendered {
+        line-height: 28px !important;
+    }
 
-        @component('components.widget', ['class' => 'box-primary'])
-            @slot('tool')
-                <div class="box-tools">
-                    <a class="btn btn-block btn-primary" href="#" data-toggle="modal" data-target="#createWorkCardModal">
-                        <i class="fa fa-plus"></i> @lang('essentials::lang.create_work_cards')</a>
-                </div>
-            @endslot
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 38px !important;
+        right: 10px !important;
+    }
+</style>
+@endpush
 
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped ajax_view" id="card_table">
-                    <thead>
-
-                        <tr>
-
-                            <th>@lang('essentials::lang.card_no')</th>
-                            <th>@lang('essentials::lang.company_name')</th>
-                            <th>@lang('essentials::lang.worker_name')</th>
-                            <th>@lang('essentials::lang.nationality')</th>
-                            <th>@lang('essentials::lang.border_number')</th>
-                            <th>@lang('essentials::lang.project')</th>
-                            <th>@lang('essentials::lang.responsible_client')</th>
-                            <th>@lang('essentials::lang.workcard_duration')</th>
-                            <th>@lang('essentials::lang.work_card_fees')</th>
-                            <th>@lang('essentials::lang.passport_fees')</th>
-                            <th>@lang('essentials::lang.other_fees')</th>
-                            <th>@lang('essentials::lang.pay_number')</th>
+<!-- Main content -->
+<section class="content">
+    @include('housingmovements::layouts.nav_trevelers')
 
 
+    @component('components.widget', ['class' => 'box-primary'])
+    @slot('tool')
+    <div class="box-tools">
+        <a class="btn btn-block btn-primary" href="#" data-toggle="modal" data-target="#createWorkCardModal">
+            <i class="fa fa-plus"></i> @lang('essentials::lang.create_work_cards')</a>
+    </div>
+    @endslot
 
-                        </tr>
 
-                    </thead>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped ajax_view" id="card_table">
+            <thead>
 
-                </table>
+                <tr>
+
+                    <th>@lang('essentials::lang.card_no')</th>
+                    <th>@lang('essentials::lang.company_name')</th>
+                    <th>@lang('essentials::lang.worker_name')</th>
+                    <th>@lang('essentials::lang.nationality')</th>
+                    <th>@lang('essentials::lang.border_number')</th>
+                    <th>@lang('essentials::lang.project')</th>
+                    <th>@lang('essentials::lang.responsible_client')</th>
+                    <th>@lang('essentials::lang.workcard_duration')</th>
+                    <th>@lang('essentials::lang.work_card_fees')</th>
+                    <th>@lang('essentials::lang.passport_fees')</th>
+                    <th>@lang('essentials::lang.other_fees')</th>
+                    <th>@lang('essentials::lang.pay_number')</th>
+
+
+
+                </tr>
+
+            </thead>
+
+        </table>
+    </div>
+    @endcomponent
+
+
+</section>
+
+<div class="modal fade" id="createWorkCardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">@lang('essentials::lang.create_work_cards')</h4>
             </div>
-        @endcomponent
 
-
-    </section>
-
-    <div class="modal fade" id="createWorkCardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">@lang('essentials::lang.create_work_cards')</h4>
-                </div>
-
-                <!-- Modal Body -->
-                {!! Form::open(['url' => route('storeWorkCard'), 'method' => 'post', 'id' => 'workCardForm']) !!}
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Employee Selector -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('employee_id', __('essentials::lang.choose_card_owner') . ':*') !!}
-                                <select name="employee_id" id="employee_id" class="form-control" required
-                                    onchange="updateBorderNo()">
-                                    <option value="">@lang('lang_v1.all')</option>
-                                    @foreach ($employees as $id => $details)
-                                        <option value="{{ $id }}" data-border_no="{{ $details['border_no'] }}">
-                                            {{ $details['name'] }}</option>
-                                    @endforeach
-                                </select>
-
-                            </div>
+            <!-- Modal Body -->
+            {!! Form::open(['url' => route('storeWorkCard'), 'method' => 'post', 'id' => 'workCardForm']) !!}
+            <div class="modal-body">
+                <div class="row">
+                     <!-- Employee Selector -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('employee_id', __('essentials::lang.choose_card_owner') . ':*') !!}
+                            <select style="width: 100%" name="employee_id" id="employee_id" class="form-control select2" required
+                                onchange="updateBorderNo()">
+                                <option value="">{{ __('lang_v1.all') }}</option>
+                                @foreach ($employees as $id => $details)
+                                <option value="{{ $id }}" data-border_no="{{ $details['border_no'] }}">
+                                    {{ $details['name'] }}
+                                </option>
+                                @endforeach
+                            </select>
                         </div>
+                    </div>
 
-                        <input type="hidden" id="border_no" name="border_no" value="">
+                    <input type="hidden" id="border_no" name="border_no" value="">
 
 
-                        <!-- Business Selector -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('company_id', __('essentials::lang.business') . ':') !!}
-                                {!! Form::select('company_id', $companies, null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.business'),
-                                    'id' => 'company_id',
-                                ]) !!}
-                            </div>
+                    <!-- Business Selector -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('company_id', __('essentials::lang.business') . ':') !!}
+                            {!! Form::select('company_id', $companies, null, [
+                            'class' => 'form-control',
+                            'style' => ' height: 40px',
+                            'placeholder' => __('essentials::lang.business'),
+                            'id' => 'company_id',
+                            ]) !!}
                         </div>
+                    </div>
 
-                        <!-- Work Card Duration -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('workcard_duration', __('essentials::lang.work_card_duration') . ':*') !!}
-                                {!! Form::select('workcard_duration_input', $durationOptions, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'workcard_duration_input',
-                                    'required',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.work_card_duration'),
-                                ]) !!}
-                            </div>
+                    <!-- Work Card Duration -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('workcard_duration', __('essentials::lang.work_card_duration') . ':*') !!}
+                            {!! Form::select('workcard_duration_input', $durationOptions, null, [
+                            'class' => 'form-control',
+                            'id' => 'workcard_duration_input',
+                            'required',
+                            'style' => ' height: 40px',
+                            'placeholder' => __('essentials::lang.work_card_duration'),
+                            ]) !!}
                         </div>
+                    </div>
 
-                        <!-- Passport Fees -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('fees', __('essentials::lang.passport_fees') . ':*') !!}
-                                {!! Form::select('passport_fees_input', [], null, [
-                                    'class' => 'form-control',
-                                    'id' => 'fees_input',
-                                    'required',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.passport_fees'),
-                                ]) !!}
-                            </div>
+                    <!-- Passport Fees -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('fees', __('essentials::lang.passport_fees') . ':*') !!}
+                            {!! Form::select('passport_fees_input', [], null, [
+                            'class' => 'form-control',
+                            'id' => 'fees_input',
+                            'required',
+                            'style' => ' height: 40px',
+                            'placeholder' => __('essentials::lang.passport_fees'),
+                            ]) !!}
                         </div>
+                    </div>
 
-                        <!-- Work Card Fees -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('work_card_fees', __('essentials::lang.work_card_fees') . ':*') !!}
-                                {!! Form::text('work_card_fees', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('essentials::lang.work_card_fees'),
-                                    'id' => 'work_card_fees',
-                                    'style' => ' height: 40px',
-                                    'required',
-                                ]) !!}
-                            </div>
+                    <!-- Work Card Fees -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('work_card_fees', __('essentials::lang.work_card_fees') . ':*') !!}
+                            {!! Form::text('work_card_fees', null, [
+                            'class' => 'form-control',
+                            'placeholder' => __('essentials::lang.work_card_fees'),
+                            'id' => 'work_card_fees',
+                            'style' => ' height: 40px',
+                            'required',
+                            ]) !!}
                         </div>
+                    </div>
 
-                        <!-- Other Fees -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('other_fees', __('essentials::lang.other_fees') . ':') !!}
-                                {!! Form::text('other_fees', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.other_fees'),
-                                    'id' => 'other_fees',
-                                ]) !!}
-                            </div>
+                    <!-- Other Fees -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('other_fees', __('essentials::lang.other_fees') . ':') !!}
+                            {!! Form::text('other_fees', null, [
+                            'class' => 'form-control',
+                            'style' => ' height: 40px',
+                            'placeholder' => __('essentials::lang.other_fees'),
+                            'id' => 'other_fees',
+                            ]) !!}
                         </div>
+                    </div>
 
-                        <!-- Payment Number -->
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('pay_number', __('essentials::lang.pay_number') . ':') !!}
-                                {!! Form::text('Payment_number', null, [
-                                    'class' => 'form-control',
-                                    'id' => 'Payment_number',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.pay_number'),
-                                ]) !!}
-                                <div id="error-message" style="color: red; display: none;">You cannot enter more than 14
-                                    numbers</div>
-                            </div>
+                    <!-- Payment Number -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('pay_number', __('essentials::lang.pay_number') . ':') !!}
+                            {!! Form::text('Payment_number', null, [
+                            'class' => 'form-control',
+                            'id' => 'Payment_number',
+                            'style' => ' height: 40px',
+                            'placeholder' => __('essentials::lang.pay_number'),
+                            ]) !!}
+                            <div id="error-message" style="color: red; display: none;">You cannot enter more than 14
+                                numbers</div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="saveButton">@lang('messages.save')</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
-                </div>
-                {!! Form::close() !!}
             </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" id="saveButton">@lang('messages.save')</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
+            </div>
+            {!! Form::close() !!}
         </div>
     </div>
+</div>
 @endsection
 
 
@@ -188,8 +215,8 @@
 
 
 
-    <script type="text/javascript">
-        var translations = {
+<script type="text/javascript">
+    var translations = {
             months: @json(__('essentials::lang.months')),
             management: @json(__('essentials::lang.management'))
         };
@@ -225,6 +252,7 @@
                     {
                         data: 'user',
                         name: 'user'
+                        
                     },
                     {
                         data: 'nationality',
@@ -408,14 +436,34 @@
 
 
         });
-    </script>
+</script>
 
-    <script>
-        function updateBorderNo() {
+<script>
+    function updateBorderNo() {
             var selected = document.getElementById('employee_id');
             var borderNo = selected.options[selected.selectedIndex].dataset.border_no;
             document.getElementById('border_no').value = borderNo || '';
         }
-    </script>
 
+
+       
+</script>
+
+@push('styles')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+@endpush
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#employee_id').select2({
+            placeholder: "{{ __('lang_v1.all') }}",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+@endpush
 @endsection

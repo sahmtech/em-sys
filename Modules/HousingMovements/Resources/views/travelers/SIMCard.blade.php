@@ -26,8 +26,9 @@
                                     </th> --}}
                                     <th>#</th>
                                     <th>@lang('housingmovements::lang.worker_name')</th>
+                                    <th>@lang('housingmovements::lang.border_no')</th>
+                                    <th>@lang('housingmovements::lang.company')</th>
                                     <th>@lang('housingmovements::lang.contact_number')</th>
-
                                     <th>@lang('housingmovements::lang.cell_phone_company')</th>
                                 </tr>
                             </thead>
@@ -129,7 +130,16 @@
                     },
                     {
                         data: 'full_name',
+                        searchable: false
+
                     },
+                    {
+                        data: 'border_no',
+                    },
+                    {
+                        data: 'company',
+                    },
+                    
                     {
                         data: 'contact_number',
                     },

@@ -77,7 +77,7 @@ class NewArrivalUtil extends Util
 
         // ->whereNotNull('visa_id')
             ->where('interviewStatus', 'acceptable')
-            ->where('arrival_status', 0);
+            ->where('arrival_status', 0) ->latest('created_at');
 
         // return $workers->get();
 
@@ -186,7 +186,7 @@ class NewArrivalUtil extends Util
         // ->whereNotNull('visa_id')
             ->where('interviewStatus', 'acceptable')
             ->where('arrival_status', 1)
-            ->where('housed_status', 0);
+            ->where('housed_status', 0) ->latest('created_at');
 
         if (! empty($request->input('project_name_filter'))) {
             $workers->whereHas('transactionSellLine.transaction.salesContract.project', function ($query) use ($request) {
@@ -223,6 +223,7 @@ class NewArrivalUtil extends Util
                 ->editColumn('arrival_date', function ($row) {
                     return $row->arrival_date ?? '';
                 })
+                
 
                 ->editColumn('profession', function ($row) {
                     return $row->transactionSellLine?->service?->profession?->name ?? '';
@@ -253,14 +254,19 @@ class NewArrivalUtil extends Util
     {
 
         $workers = IrProposedLabor::with(['worker_documents'])
-            ->whereNotNull('visa_id')
+            // ->whereNotNull('visa_id')
             ->where('interviewStatus', 'acceptable')
             ->where('arrival_status', 1)
             ->select([
                 'id',
+                'passport_number',
+                'arrival_date',
                 'medical_examination',
+                'company_id as company',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
+            ]) ->latest('created_at');
+
+            // dd($workers->get());
 
         if (request()->ajax()) {
             return Datatables::of($workers)
@@ -277,6 +283,10 @@ class NewArrivalUtil extends Util
                         }
                     }
                     return $buttonHtml;
+                })
+                ->addColumn('company', function ($worker) {
+                    $company = Company::find($worker->company);
+                    return $company?->name ?? '';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -332,9 +342,12 @@ class NewArrivalUtil extends Util
             ->whereIn('id', $userIds)
             ->select([
                 'id',
+                'border_no',
+                'company_id as company',
                 'has_insurance',
+                'proposal_worker_id',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
+            ])->latest('created_at');
 
         if (request()->ajax()) {
             return Datatables::of($workers)
@@ -346,6 +359,23 @@ class NewArrivalUtil extends Util
                     }
                 })
                 ->rawColumns(['action'])
+                ->addColumn('border_no', function ($worker) {
+                    
+                    return $worker->border_no ?? '';
+                })
+                ->addColumn('company', function ($worker) {
+                    $company = Company::find($worker->company);
+                    return $company?->name ?? '';
+                })
+                ->addColumn('passport_number', function ($worker) {
+                    $ir_proposed_labor = IrProposedLabor::find($worker->proposal_worker_id);
+                    return $ir_proposed_labor->passport_number  ?? '';
+                })
+
+                ->addColumn('arrival_date', function ($worker) {
+                    $ir_proposed_labor = IrProposedLabor::find($worker->proposal_worker_id);
+                    return $ir_proposed_labor->arrival_date  ?? '';
+                })
                 ->make(true);
         }
 
@@ -404,7 +434,7 @@ class NewArrivalUtil extends Util
                 'work_card_fees as work_card_fees',
                 'other_fees',
                 'Payment_number as Payment_number'
-            );
+            ) ->latest('created_at');
 
         $all_users              = User::select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
@@ -570,14 +600,16 @@ class NewArrivalUtil extends Util
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $workers = User::with(['proposal_worker'])->whereIn('id', $userIds)
+        $workers = User::with(['proposal_worker','company'])->whereIn('id', $userIds)
             ->whereNotNull('proposal_worker_id')->whereNot('status', 'inactive')
             ->select([
                 'id',
                 'contact_number',
+                'border_no',
+                'company_id',
                 'has_SIM', 'cell_phone_company',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
+            ]) ->latest('created_at');
 
         if (request()->ajax()) {
             return Datatables::of($workers)
@@ -589,6 +621,14 @@ class NewArrivalUtil extends Util
                     }
                 })
                 ->rawColumns(['action'])
+                ->addColumn('border_no', function ($worker) {
+                    
+                    return $worker->border_no ?? '';
+                })
+                ->addColumn('company', function ($worker) {
+                    
+                    return $worker?->company->name ?? '';
+                })
                 ->make(true);
         }
 
@@ -616,6 +656,7 @@ class NewArrivalUtil extends Util
 
     public function bankAccounts($view)
     {
+        
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin    = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -642,7 +683,7 @@ class NewArrivalUtil extends Util
                 'id',
                 'bank_details',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
+            ]) ->latest('created_at');
 
         if (request()->ajax()) {
             return Datatables::of($workers)
@@ -820,9 +861,10 @@ class NewArrivalUtil extends Util
             ->whereNotNull('proposal_worker_id')->whereNot('status', 'inactive')
             ->select([
                 'id',
+                'border_no',
                 'residency_print', 'id_proof_number',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
+            ]) ->latest('created_at');
 
         if (request()->ajax()) {
             return Datatables::of($workers)
@@ -842,7 +884,7 @@ class NewArrivalUtil extends Util
                         }
                     }
                 })
-                ->rawColumns(['action', 'id_proof_number'])
+                ->rawColumns(['action', 'id_proof_number','border_no'])
                 ->make(true);
         }
 
@@ -918,7 +960,7 @@ class NewArrivalUtil extends Util
                 'id', 'proposal_worker_id',
                 'residency_delivery',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
+            ]) ->latest('created_at');
         //  return $workers->get();
         if (request()->ajax()) {
             return Datatables::of($workers)
@@ -1010,7 +1052,7 @@ class NewArrivalUtil extends Util
                 'requests.note', 'requests.created_at',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"), 'users.border_no',
                 'users.company_id',
-            ]);
+            ]) ->latest('created_at');
 
     // dd($requests->get());
 
@@ -1031,7 +1073,7 @@ class NewArrivalUtil extends Util
                 
 
                 ->editColumn('company_id', function ($row) {
-                    return Company::find($row->company_id)?->name ?? 'no';
+                    return Company::find($row->company_id)?->name ?? '';
                 })
                 
 

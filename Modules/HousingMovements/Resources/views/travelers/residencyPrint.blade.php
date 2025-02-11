@@ -26,6 +26,7 @@
                                     </th> --}}
                                     <th>#</th>
                                     <th>@lang('housingmovements::lang.worker_name')</th>
+                                    <th>@lang('housingmovements::lang.border_no')</th>  
                                     <th>@lang('housingmovements::lang.eqama_number')</th>
                                     <th>@lang('housingmovements::lang.residencyPrint')</th>
                                 </tr>
@@ -107,10 +108,16 @@
                     },
                     {
                         data: 'full_name',
+                        searchable: false
+                        
+                    },
+                    {
+                        data: 'border_no',
                     },
                     {
                         data: 'id_proof_number',
                     },
+                    
                     {
                         data: 'action',
                         name: 'action',
