@@ -67,7 +67,7 @@
         /* Set maximum width */
         width: 80%;
         /* Set relative width */
-        font-size: 18px;
+        font-size: 14px;
         /* Optional: change font size for readability */
     }
 </style>
