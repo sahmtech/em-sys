@@ -503,7 +503,7 @@ class CustomAdminSidebarMenu
                 ],
             );
 
-            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_report')) {
 
                 $menu->url(
                     action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController::class, 'index']),
@@ -512,7 +512,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_diagram')) {
 
                 $menu->url(
                     action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController::class, 'blueprintIndex']),

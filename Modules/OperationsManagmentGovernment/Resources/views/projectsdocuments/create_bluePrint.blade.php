@@ -1,20 +1,18 @@
 <style>
-    
+    /* Placeholder visibility */
+    .custom-input::placeholder {
+        color: #6c757d;
+        /* Slightly muted color for placeholder */
+    }
 
-/* Placeholder visibility */
-.custom-input::placeholder {
-    color: #6c757d; /* Slightly muted color for placeholder */
-    font-style: italic; /* Make placeholder text italic */
-}
-
-/* Custom select input with placeholder */
+    /* Custom select input with placeholder */
 
 
     /* General Input Styling */
     .custom-input,
     .custom-input-file,
     .custom-textarea {
-        border-radius: 8px;
+        border-radius: 5px;
         border: 1px solid #ccc;
         padding: 10px;
         font-size: 16px;
@@ -163,13 +161,14 @@
                             <div class="row single-field mb-3">
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        {!! Form::label('name[]', __('followup::lang.doc_name'), ['class' =>
+                                        {!! Form::label('name[]',
+                                        __('operationsmanagmentgovernment::lang.project_document'), ['class' =>
                                         'form-label']) !!}
                                         <span class="text-danger" style="font-size: 10px;"> *</span>
                                         {!! Form::text('name[]', null, [
                                         'class' => 'form-control custom-input rounded-3',
                                         'required',
-                                        'placeholder' => __('followup::lang.doc_name'),
+                                        'placeholder' => __('operationsmanagmentgovernment::lang.project_document'),
                                         ]) !!}
                                     </div>
                                 </div>

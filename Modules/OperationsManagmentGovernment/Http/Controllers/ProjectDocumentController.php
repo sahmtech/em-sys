@@ -23,6 +23,7 @@ class ProjectDocumentController extends Controller
     }
     public function index(Request $request)
     {
+
         // Fetch sales projects with attachments and created_by details
         $sales_projects_data = ProjectDocument::with('salesProject', 'attachments', 'created_by')
             ->where('document_type', 'report')
@@ -31,6 +32,7 @@ class ProjectDocumentController extends Controller
 
         // Check if the request is an AJAX request (for DataTable)
         if ($request->ajax()) {
+
             return DataTables::of($sales_projects_data)
             // Format project name
                 ->editColumn('name', function ($row) {
@@ -59,9 +61,12 @@ class ProjectDocumentController extends Controller
                 })
             // Add action column for Edit/Delete buttons (if needed)
                 ->addColumn('action', function ($row) {
-                    return '<button class="btn btn-danger btn-sm delete_document_button" data-href="' . route('projects_documents.destroy', ['id' => $row->id]) . '" style="padding: 8px 12px; margin: 4px;">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>';
+                    if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('operationsmanagmentgovernment.delete_project_report')) {
+                        return '<button class="btn btn-danger btn-sm delete_document_button" data-href="' . route('projects_documents.destroy', ['id' => $row->id]) . '" style="padding: 8px 12px; margin: 4px;">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>';
+                    }
+                    return '';
                 })
 
             // Enable raw HTML in 'action' and 'attachments' columns
@@ -111,11 +116,14 @@ class ProjectDocumentController extends Controller
                 })
 
             // Add action column for Edit/Delete buttons (if needed)
-                ->addColumn('action', function ($row) {
-                    return '<button class="btn btn-danger btn-sm delete_document_button" data-href="' . route('projects_documents.destroy', ['id' => $row->id]) . '">
-            <i class="fas fa-trash"></i> حذف
-        </button>';
 
+                ->addColumn('action', function ($row) {
+                    if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('operationsmanagmentgovernment.delete_project_report')) {
+                        return '<button class="btn btn-danger btn-sm delete_document_button" data-href="' . route('projects_documents.destroy', ['id' => $row->id]) . '" style="padding: 8px 12px; margin: 4px;">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>';
+                    }
+                    return '';
                 })
             // Enable raw HTML in 'action' and 'attachments' columns
                 ->rawColumns(['action', 'attachments'])
@@ -163,7 +171,6 @@ class ProjectDocumentController extends Controller
 
         try {
             // dd($request->all());
-            // إدخال البيانات في جدول project_documents بدون استخدام Model
             $projectDocumentId = DB::table('projects_documents')->insertGetId([
                 'sales_project_id' => $request->sales_project_id,
                 'document_type'    => 'report',
@@ -173,21 +180,16 @@ class ProjectDocumentController extends Controller
                 'updated_at'       => now(),
             ]);
 
-            // التحقق من وجود مرفقات
             if ($request->hasFile('attachment')) {
                 $attachments = [];
-                                                  // الحصول على مصفوفة الأسماء من الـ Request
-                $names = $request->input('name'); // أو $request->name
+                $names       = $request->input('name');
 
                 foreach ($request->file('attachment') as $index => $file) {
-                    // إنشاء اسم عشوائي للملف
                     $filename = Str::random(10) . '-' . $file->getClientOriginalName();
-                    $path     = $file->storeAs('documents', $filename, 'public'); // تخزين الملف في `storage/app/public/documents`
+                    $path     = $file->storeAs('documents', $filename, 'public');
 
-                    // الحصول على الاسم المقابل للمرفق الحالي من مصفوفة الأسماء
                     $fileNameForAttachment = isset($names[$index]) ? $names[$index] : $filename;
 
-                    // تجهيز بيانات الإدراج للمرفق
                     $attachments[] = [
                         'project_document_id' => $projectDocumentId,
                         'file_name'           => $fileNameForAttachment,
@@ -197,7 +199,6 @@ class ProjectDocumentController extends Controller
                     ];
                 }
 
-                // إدراج المرفقات دفعة واحدة في جدول project_document_attachments
                 DB::table('project_document_attachments')->insert($attachments);
             }
 
@@ -221,7 +222,6 @@ class ProjectDocumentController extends Controller
     public function storeBluePrint(Request $request)
     {
         DB::beginTransaction();
-
         try {
             // dd($request->all());
             // إدخال البيانات في جدول project_documents بدون استخدام Model
@@ -234,21 +234,16 @@ class ProjectDocumentController extends Controller
                 'updated_at'       => now(),
             ]);
 
-            // التحقق من وجود مرفقات
             if ($request->hasFile('attachment')) {
                 $attachments = [];
-                                                  // الحصول على مصفوفة الأسماء من الـ Request
-                $names = $request->input('name'); // أو $request->name
+                $names       = $request->input('name');
 
                 foreach ($request->file('attachment') as $index => $file) {
-                    // إنشاء اسم عشوائي للملف
                     $filename = Str::random(10) . '-' . $file->getClientOriginalName();
-                    $path     = $file->storeAs('documents', $filename, 'public'); // تخزين الملف في `storage/app/public/documents`
+                    $path     = $file->storeAs('documents', $filename, 'public');
 
-                    // الحصول على الاسم المقابل للمرفق الحالي من مصفوفة الأسماء
                     $fileNameForAttachment = isset($names[$index]) ? $names[$index] : $filename;
 
-                    // تجهيز بيانات الإدراج للمرفق
                     $attachments[] = [
                         'project_document_id' => $projectDocumentId,
                         'file_name'           => $fileNameForAttachment,
@@ -258,7 +253,6 @@ class ProjectDocumentController extends Controller
                     ];
                 }
 
-                // إدراج المرفقات دفعة واحدة في جدول project_document_attachments
                 DB::table('project_document_attachments')->insert($attachments);
             }
 
@@ -268,7 +262,6 @@ class ProjectDocumentController extends Controller
             ];
             DB::commit();
             return redirect()->back()->with('success', $output['msg']);
-
         } catch (\Exception $e) {
             DB::rollBack();
             $output = [

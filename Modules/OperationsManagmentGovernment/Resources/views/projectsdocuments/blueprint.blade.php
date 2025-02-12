@@ -27,15 +27,7 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="row">
-        {{-- Filters Section (Uncomment if needed) --}}
-        {{--
-        <div class="col-md-12">
-            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-            @endcomponent
-        </div>
-        --}}
-    </div>
+
 
     <div class="row">
         <div class="col-md-12">
@@ -94,7 +86,6 @@
     </div>
 </section>
 @endsection
-
 @section('javascript')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
@@ -114,15 +105,12 @@
                 { data: 'name' },
                 { data: 'created_by' },
                 { data: 'note' },
-                {
-                    data: 'attachments',
-                   
-                },
+                { data: 'attachments' },
                 { data: 'action' }
             ]
         });
 
-        // Handle File Preview
+        // File Preview Handler
         $(document).on('click', '.preview-file', function(e) {
             e.preventDefault();
             var fileUrl = $(this).data('file-url');
@@ -136,77 +124,101 @@
             }
 
             var fileExtension = fileUrl.split('.').pop().toLowerCase();
-            var content = '';
-
-            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                content = `<img src="${fileUrl}" class="img-fluid" />`;
-            } else if (fileExtension === 'pdf') {
-                content = `<iframe src="${fileUrl}" width="100%" height="600px" style="border: none;"></iframe>`;
-            } else {
-                content = `<a href="${fileUrl}" target="_blank" class="btn btn-secondary">
-                            @lang('messages.download_file')
-                           </a>`;
-            }
+            var content = generateFilePreviewContent(fileUrl, fileExtension);
 
             modal.find('#fileContent').html(content);
             modal.modal('show');
         });
 
-        // Delete Document
+        // Delete Document Handler
         $(document).on('click', '.delete_document_button', function() {
-    var href = $(this).data('href');
-    Swal.fire({
-        title: "هل أنت متأكد؟",
-        text: "هل أنت متأكد أنك تريد حذف هذا المستند؟",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "نعم ، احذف",
-        cancelButtonText: "تراجع",
-        width: '500px',  // Set the width to a larger value to make the dialog bigger
-        padding: '10px',  // Optional: adjust padding for more space inside the dialog
-        customClass: {
-            popup: 'large-popup'  // Optionally add a custom class for further styling
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                method: "DELETE",
-                url: href,
-                dataType: "json",
-                success: function(result) {
-                    if (result.success) {
-                        toastr.success(result.msg);
-                        document_table.ajax.reload();
-                    } else {
-                        toastr.error(result.msg);
-                    }
-                }
-            });
-        }
-    });
-});
-
-        // Edit Document (If needed)
-        $(document).on('click', '.edit_document_button', function() {
             var href = $(this).data('href');
-            $.ajax({
-                method: "GET",
-                url: href,
-                dataType: "json",
-                success: function(result) {
-                    if (result.success) {
-                        toastr.success(result.msg);
-                        document_table.ajax.reload();
-                    } else {
-                        toastr.error(result.msg);
-                    }
+            Swal.fire({
+                title: "هل أنت متأكد؟",
+                text: "هل أنت متأكد أنك تريد حذف هذا المستند؟",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "نعم ، احذف",
+                cancelButtonText: "تراجع",
+                width: '500px',
+                padding: '10px',
+                customClass: {
+                    popup: 'large-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDocumentDeletion(href);
                 }
             });
         });
+
+        // Edit Document Handler
+        $(document).on('click', '.edit_document_button', function() {
+            var href = $(this).data('href');
+            handleDocumentEdit(href);
+        });
+
+        // Toastr Notifications
+        showToastrMessages();
     });
 
+    // Generate File Preview Content
+    function generateFilePreviewContent(fileUrl, fileExtension) {
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            return `<img src="${fileUrl}" class="img-fluid" />`;
+        } else if (fileExtension === 'pdf') {
+            return `<iframe src="${fileUrl}" width="100%" height="600px" style="border: none;"></iframe>`;
+        } else {
+            return `<a href="${fileUrl}" target="_blank" class="btn btn-secondary">
+                        @lang('messages.download_file')
+                    </a>`;
+        }
+    }
 
+    // Handle Document Deletion
+    function handleDocumentDeletion(href) {
+        $.ajax({
+            method: "DELETE",
+            url: href,
+            dataType: "json",
+            success: function(result) {
+                if (result.success) {
+                    toastr.success(result.msg);
+                    $('#document_table').DataTable().ajax.reload();
+                } else {
+                    toastr.error(result.msg);
+                }
+            }
+        });
+    }
+
+    // Handle Document Edit
+    function handleDocumentEdit(href) {
+        $.ajax({
+            method: "GET",
+            url: href,
+            dataType: "json",
+            success: function(result) {
+                if (result.success) {
+                    toastr.success(result.msg);
+                    $('#document_table').DataTable().ajax.reload();
+                } else {
+                    toastr.error(result.msg);
+                }
+            }
+        });
+    }
+
+    // Show Toastr Messages
+    function showToastrMessages() {
+        @if(session('success'))
+            toastr.success("{{ session('success') }}");
+        @endif
+        
+        @if(session('error'))
+            toastr.error("{{ session('error') }}");
+        @endif
+    }
 </script>
-
 @endsection

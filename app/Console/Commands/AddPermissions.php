@@ -13,17 +13,23 @@ class AddPermissions extends Command
     public function handle()
     {
         $permissions = [
-            'essentials.add_Violations',
-            'essentials.edit_Violations',
-            'essentials.add_Main_Violations',
-            'essentials.edit_Main_Violations',
-            'essentials.delete_Main_Violations',
-            'essentials.delete_Violations',
+
+            // Project Diagram
+
+            'operationsmanagmentgovernment.project_diagram',
+
+            'operationsmanagmentgovernment.add_project_diagram',
+            'operationsmanagmentgovernment.delete_project_diagram',
+            'operationsmanagmentgovernment.view_project_diagram',
+            'operationsmanagmentgovernment.project_report',
+            'operationsmanagmentgovernment.view_project_report',
+            'operationsmanagmentgovernment.add_project_report',
+            'operationsmanagmentgovernment.delete_project_report',
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(
-                ['name' => $permission, 'guard_name' => 'web'],              
+                ['name' => $permission, 'guard_name' => 'web'],
                 ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
             );
 
