@@ -1,6 +1,5 @@
 @extends('layouts.app')
-@section('title', __('operationsmanagmentgovernment::lang.project_report'))
-
+@section('title', __('operationsmanagmentgovernment::lang.project_diagram'))
 <style>
     a.btn.btn-primary:hover {
         background-color: #0056b3;
@@ -18,41 +17,11 @@
         font-size: 18px;
         /* Optional: change font size for readability */
     }
-    <style>.btn {
-        padding: 8px 15px;
-        margin: 5px;
-        font-size: 14px;
-        border-radius: 4px;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-
-    .btn-danger {
-        background-color: #dc3545;
-        border-color: #dc3545;
-    }
-
-    .text-muted {
-        color: #6c757d;
-    }
-
-    /* Custom styling for the large SweetAlert popup */
-    .large-popup {
-        max-width: 500px;
-        /* Set maximum width */
-        width: 80%;
-        /* Set relative width */
-        font-size: 18px;
-        /* Optional: change font size for readability */
-    }
 </style>
 @section('content')
 <section class="content-header">
     <h1>
-        <span>@lang('operationsmanagmentgovernment::lang.project_report')</span>
+        <span>@lang('operationsmanagmentgovernment::lang.project_diagram')</span>
     </h1>
 </section>
 
@@ -74,9 +43,9 @@
             @slot('tool')
             <div class="box-tools">
                 <a class="btn btn-primary pull-right m-5 btn-modal"
-                    href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController@create') }}"
-                    data-href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController@create') }}"
-                    data-container="#add_document_model">
+                    href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController@createBluePrint') }}"
+                    data-href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController@createBluePrint') }}"
+                    data-container="#add_document_BluePrint_model">
                     <i class="fas fa-plus"></i> @lang('messages.add')
                 </a>
             </div>
@@ -96,7 +65,7 @@
                 </table>
             </div>
 
-            <div class="modal fade" id="add_document_model" tabindex="-1" role="dialog"></div>
+            <div class="modal fade" id="add_document_BluePrint_model" tabindex="-1" role="dialog"></div>
             <div class="modal fade" id="edit_document_model" tabindex="-1" role="dialog"></div>
             @endcomponent
         </div>
@@ -135,7 +104,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('projects_documents') }}',
+                url: '{{ route('projects_documents.blueprint') }}',
                 data: function(d) {
                     d.carTypeSelect = $('#carTypeSelect').val();
                     d.driver_select = $('#driver_select').val();
@@ -147,7 +116,7 @@
                 { data: 'note' },
                 {
                     data: 'attachments',
-                    
+                   
                 },
                 { data: 'action' }
             ]

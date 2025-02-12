@@ -11,6 +11,8 @@ return [
     'project_document' => 'مستند المشروع',
     'projects_documents' => 'مستندات المشروع',
     'project_report' => 'تقرير المشروع',
+    'project_diagram' => 'مخطط المشروع',
+    'add_project_diagram' => 'إضافة مخطط المشروع',
     'add_project_report' => 'إضافة تقرير المشروع',
     'select_project' => 'اختر المشروع',
 

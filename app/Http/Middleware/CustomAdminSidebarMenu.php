@@ -512,6 +512,15 @@ class CustomAdminSidebarMenu
                 );
             }
 
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController::class, 'blueprintIndex']),
+                    __('operationsmanagmentgovernment::lang.project_diagram'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'projects_documents_blueprint')]
+                );
+            }
+
 
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
 
