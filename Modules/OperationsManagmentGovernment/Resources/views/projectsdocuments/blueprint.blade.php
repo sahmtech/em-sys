@@ -2,7 +2,6 @@
 @section('title', __('operationsmanagmentgovernment::lang.project_diagram'))
 <style>
     a.btn.btn-primary:hover {
-        background-color: #0056b3;
         cursor: pointer;
         /* لون أغمق عند التمرير */
         text-decoration: none;

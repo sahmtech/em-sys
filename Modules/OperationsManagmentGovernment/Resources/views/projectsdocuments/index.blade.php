@@ -2,6 +2,11 @@
 @section('title', __('operationsmanagmentgovernment::lang.project_report'))
 
 <style>
+    .close {
+        color: red !important;
+        font-size: 14px;
+    }
+
     /* Custom styling for the select element */
     .custom-select {
         padding: 10px;
@@ -23,7 +28,6 @@
     }
 
     a.btn.btn-primary:hover {
-        background-color: #0056b3;
         cursor: pointer;
         /* لون أغمق عند التمرير */
         text-decoration: none;
@@ -46,10 +50,7 @@
         border-radius: 4px;
     }
 
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
+
 
     .btn-danger {
         background-color: #dc3545;
