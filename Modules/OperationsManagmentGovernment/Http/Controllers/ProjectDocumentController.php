@@ -38,11 +38,11 @@ class ProjectDocumentController extends Controller
                 ->editColumn('name', function ($row) {
                     return $row?->salesProject?->name ?? '';
                 })
-            // Format created_by column by fetching the user's first name
                 ->editColumn('created_by', function ($row) {
                     $user = User::find($row?->created_by);
-                    return $user->first_name ?? '';
+                    return $user ? trim($user->first_name . ' ' . $user->mid_name . ' ' . $user->last_name) : '';
                 })
+
             // Format note column
                 ->editColumn('note', function ($row) {
                     return $row->note ?? '';
@@ -96,7 +96,7 @@ class ProjectDocumentController extends Controller
             // Format created_by column by fetching the user's first name
                 ->editColumn('created_by', function ($row) {
                     $user = User::find($row?->created_by);
-                    return $user->first_name ?? '';
+                    return $user ? trim($user->first_name . ' ' . $user->mid_name . ' ' . $user->last_name) : '';
                 })
             // Format note column
                 ->editColumn('note', function ($row) {
