@@ -42,8 +42,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/dashboard', [Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])->name('operationsmanagmentgovernment.dashboard');
         Route::get('/requests', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index'])->name('operationsmanagmentgovernment.view_requests');
         Route::get('/projects_documents', [ProjectDocumentController::class, 'index'])->name('projects_documents');
+
+        Route::get('/projects_documents_blueprint', [ProjectDocumentController::class, 'blueprintIndex'])->name('projects_documents.blueprint');
+
         Route::get('/documents-create', [ProjectDocumentController::class, 'create'])->name('documents-create');
+        Route::get('/documents-createBluePrint', [ProjectDocumentController::class, 'createBluePrint'])->name('documents-createBluePrint');
         Route::post('/documents-store', [ProjectDocumentController::class, 'store'])->name('documents-store');
+        Route::post('/documents-storeBluePrint', [ProjectDocumentController::class, 'storeBluePrint'])->name('documents-storeBluePrint');
+
+
+        Route::delete('projects_documents_destroy/{id}', [ProjectDocumentController::class, 'destroy'])->name('projects_documents.destroy');
+        Route::post('/projects_documents_edit/{id}', [ProjectDocumentController::class, 'update'])->name('projects_documents.edit');
 
         Route::post('/storeOperationsManagmentGovernmentRequest', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'store'])->name('storeOperationsManagmentGovernmentRequest');
     });

@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -17,36 +16,16 @@ class DataController extends Controller
         return [
 
             [
-                'group_name' => __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'),
+                'group_name'        => __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'),
                 'group_permissions' => [
                     [
-                        'value' => 'operationsmanagmentgovernment.OperationsManagmentGovernment_dashboard',
-                        'label' => __('operationsmanagmentgovernment::lang.OperationsManagmentGovernment_dashboard'),
+                        'value'   => 'operationsmanagmentgovernment.OperationsManagmentGovernment_dashboard',
+                        'label'   => __('operationsmanagmentgovernment::lang.OperationsManagmentGovernment_dashboard'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'operationsmanagmentgovernment.view_requests',
-                        'label' => __('operationsmanagmentgovernment::lang.view_requests'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'operationsmanagmentgovernment.change_request_status',
-                        'label' => __('operationsmanagmentgovernment::lang.change_request_status'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'operationsmanagmentgovernment.return_request',
-                        'label' => __('operationsmanagmentgovernment::lang.return_request'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'operationsmanagmentgovernment.show_request',
-                        'label' => __('operationsmanagmentgovernment::lang.show_request'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'operationsmanagmentgovernment.add_request',
-                        'label' => __('operationsmanagmentgovernment::lang.add_request'),
+                        'value'   => 'operationsmanagmentgovernment.view_requests',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_requests'),
                         'default' => false,
                     ],
                     [
@@ -55,8 +34,74 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                ]
-            ]
+                    [
+                        'value'   => 'operationsmanagmentgovernment.change_request_status',
+                        'label'   => __('operationsmanagmentgovernment::lang.change_request_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.return_request',
+                        'label'   => __('operationsmanagmentgovernment::lang.return_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.show_request',
+                        'label'   => __('operationsmanagmentgovernment::lang.show_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_request',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_request'),
+                        'default' => false,
+                    ],
+
+                    // Project Diagram
+                    [
+                        'value'   => 'operationsmanagmentgovernment.project_diagram',
+                        'label'   => __('operationsmanagmentgovernment::lang.project_diagram'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_project_diagram',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_project_diagram'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_project_diagram',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_project_diagram'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_project_diagram',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_project_diagram'),
+                        'default' => false,
+                    ],
+
+                    // Project Report
+                    [
+                        'value'   => 'operationsmanagmentgovernment.project_report',
+                        'label'   => __('operationsmanagmentgovernment::lang.project_report'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_project_report',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_project_report'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_project_report',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_project_report'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_project_report',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_project_report'),
+                        'default' => false,
+                    ],
+
+                ],
+            ],
         ];
     }
 

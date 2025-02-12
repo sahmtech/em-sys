@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('projects_documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sales_project_id')->constrained('sales_projects')->onDelete('cascade');
+
             $table->unsignedInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
 
 
 
-
-            $table->foreignId('created_by')->constrained('users')->onDelete('set null');
             $table->enum('document_type', ['blueprint', 'report']);
             $table->string('note')->nullable();
             $table->softDeletes();

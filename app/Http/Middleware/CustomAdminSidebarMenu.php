@@ -503,12 +503,21 @@ class CustomAdminSidebarMenu
                 ],
             );
 
-            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_report')) {
 
                 $menu->url(
                     action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController::class, 'index']),
                     __('operationsmanagmentgovernment::lang.project_report'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'projects_documents')]
+                );
+            }
+
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_diagram')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController::class, 'blueprintIndex']),
+                    __('operationsmanagmentgovernment::lang.project_diagram'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'projects_documents_blueprint')]
                 );
             }
 
