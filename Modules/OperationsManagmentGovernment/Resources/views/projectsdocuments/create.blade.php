@@ -1,7 +1,7 @@
 <div class="modal-dialog modal-lg" id="add_document_model" role="document">
     <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+        <div class="modal-header bg-primary text-white" style="background-color: white">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: red;">
                 <span aria-hidden="true">&times;</span>
             </button>
             <h4 class="modal-title">
@@ -36,7 +36,8 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="form-group">
-                                {!! Form::label('name[]', __('operationsmanagmentgovernment::lang.project_document')) !!}
+                                {!! Form::label('name[]', __('operationsmanagmentgovernment::lang.project_document'))
+                                !!}
                                 <span class="text-danger">*</span>
                                 {!! Form::text('name[]', null, [
                                 'class' => 'form-control',
