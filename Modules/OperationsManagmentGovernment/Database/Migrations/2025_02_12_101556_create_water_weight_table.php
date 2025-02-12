@@ -19,7 +19,7 @@ return new class extends Migration
             $table->Integer('driver_id')->unsigned()->nullable();
             $table->Integer('contact_id')->unsigned();
             $table->string('plate_number')->nullable();
-            $table->string('project_id')->nullable();
+            $table->Integer('project_id')->nullable();
             $table->string('water_droping_location')->nullable();
             $table->enum('weight_type', ['6_tons', '18_tons', '34_tons'])->default('6_tons');
             $table->string('sample_result')->nullable();
