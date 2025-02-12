@@ -18,10 +18,7 @@ return new class extends Migration
             $table->foreignId('sales_project_id')->constrained('sales_projects')->onDelete('cascade');
             $table->unsignedInteger('created_by')->nullable();
 
-
-
-
-            $table->foreignId('created_by')->constrained('users')->onDelete('set null');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->enum('document_type', ['blueprint', 'report']);
             $table->string('note')->nullable();
             $table->softDeletes();
