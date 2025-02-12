@@ -21,6 +21,24 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/', 'OperationsManagmentGovernmentController@index');
         //water
         Route::get('/water', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'water'])->name('operationsmanagmentgovernment.water');
+        Route::post('/store_water', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'store_water'])->name('operationsmanagmentgovernment.water_weight.store');
+        Route::get(
+            'operationsmanagmentgovernment/water_weight/edit/{id}',
+            'Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController@edit_water'
+        )
+            ->name('operationsmanagmentgovernment.water_weight.edit');
+
+        Route::put(
+            'operationsmanagmentgovernment/water_weight/update/{id}',
+            'Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController@update_water'
+        )
+            ->name('operationsmanagmentgovernment.water_weight.update');
+        Route::delete(
+            'operationsmanagmentgovernment/water_weight/delete/{id}',
+            'Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController@delete_water'
+        )
+            ->name('operationsmanagmentgovernment.water_weight.delete');
+
         Route::get('/dashboard', [Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])->name('operationsmanagmentgovernment.dashboard');
         Route::get('/requests', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index'])->name('operationsmanagmentgovernment.view_requests');
         Route::get('/projects_documents', [ProjectDocumentController::class, 'index'])->name('projects_documents');

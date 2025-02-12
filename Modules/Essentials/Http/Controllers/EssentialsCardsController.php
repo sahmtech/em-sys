@@ -548,7 +548,7 @@ class EssentialsCardsController extends Controller
     }
     public function work_cards_pending_requests()
     {
-        
+
 
         $business_id = request()
             ->session()
@@ -2020,6 +2020,7 @@ class EssentialsCardsController extends Controller
                         }
 
 
+                        //renew eqama here
                         $output = [
                             'success' => 1,
                             'msg' => __('essentials::lang.card_renew_sucessfully'),

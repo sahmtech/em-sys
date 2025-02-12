@@ -2,9 +2,17 @@
 
 namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 
+use App\Company;
+use App\Contact;
+use App\User;
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\OperationsManagmentGovernment\Entities\WaterWeight;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\DB;
+use Modules\Sales\Entities\SalesProject;
 
 class OperationsManagmentGovernmentController extends Controller
 {
@@ -19,8 +27,75 @@ class OperationsManagmentGovernmentController extends Controller
 
     public function water()
     {
-        return view('operationsmanagmentgovernment::water.index');
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $can_index_water_weight = auth()->user()->can('operationsmanagmentgovernment.water_weight');
+
+        if (!($is_admin || $can_index_water_weight)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $WaterWeights = WaterWeight::all();
+        $companies = Company::all();
+        $projects = SalesProject::pluck('name', 'id')->toArray();
+        $projectIds = SalesProject::pluck('id');
+        $query     = User::whereIn('assigned_to', $projectIds);
+        $all_users = $query->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $drivers    = $all_users->pluck('full_name', 'id');
+
+        if (request()->ajax()) {
+            return DataTables::of($WaterWeights)
+                ->editColumn('company', function ($row) {
+                    return $row->Company?->name ?? '-';
+                })
+                ->editColumn('project', function ($row) {
+                    $tmp = SalesProject::Where('id', $row->project_id)->first()?->name ?? '';
+                    return $tmp ?? '-';
+                })
+                ->editColumn('driver', function ($row) {
+                    $tmp = User::where('id', $row->driver_id)->first();
+                    return  $tmp?->first_name . ' ' .  $tmp?->last_ame ?? '';
+                })
+                ->editColumn('plate_number', function ($row) {
+                    return $row->plate_number ?? '-';
+                })
+                ->editColumn('weight_type', function ($row) {
+                    return __('operationsmanagmentgovernment::lang.' . $row->weight_type);
+                })
+                ->editColumn('sample_result', function ($row) {
+                    return $row->sample_result ?? '-';
+                })
+                ->editColumn('date', function ($row) {
+                    return $row->date ? \Carbon\Carbon::parse($row->date)->format('Y-m-d') : '-';
+                })
+                ->editColumn('created_by', function ($row) {
+                    $tmp = User::where('id', $row->created_by)->first();
+                    return  $tmp?->first_name . ' ' .  $tmp?->last_ame ?? '';
+                })
+                ->addColumn('action', function ($row) use ($is_admin) {
+                    $html = '';
+                    if ($is_admin) {
+                        $html   .= '<button data-id="' . $row->id . '" 
+                        class="btn btn-xs btn-info open-edit-modal">
+                        <i class="fas fa-edit"></i> ' . __("messages.edit") . '
+                    </button> ';
+                        $html .= '<button data-href="' . route('operationsmanagmentgovernment.water_weight.delete', ['id' => $row->id]) . '" 
+                                     class="btn btn-xs btn-danger delete_water_weight_button"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</button>';
+                    }
+                    return $html;
+                })
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'projects', 'drivers'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -30,6 +105,121 @@ class OperationsManagmentGovernmentController extends Controller
     {
         return view('operationsmanagmentgovernment::create');
     }
+
+
+    public function store_water(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $waterWeight = WaterWeight::create([
+                'company_id' => $request->input('company_id'),
+                'driver_id' => $request->input('driver_id'),
+                'contact_id' => $request->input('contact_id'),
+                'plate_number' => $request->input('plate_number'),
+                'project_id' => $request->input('project_id'),
+                'water_droping_location' => $request->input('water_droping_location'),
+                'weight_type' => $request->input('weight_type'),
+                'sample_result' => $request->input('sample_result'),
+                'date' => $request->input('date'),
+                'created_by' => auth()->id(),
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('operationsmanagmentgovernment::lang.added_success'),
+                ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
+        }
+    }
+
+
+    public function edit_water($id)
+    {
+        $waterWeight = WaterWeight::findOrFail($id);
+
+        return response()->json([
+            'id' => $waterWeight->id,
+            'company_id' => $waterWeight->company_id,
+            'project_id' => $waterWeight->project_id,
+            'driver_id' => $waterWeight->driver_id,
+            'plate_number' => $waterWeight->plate_number,
+            'weight_type' => $waterWeight->weight_type,
+            'water_droping_location' => $waterWeight->water_droping_location,
+            'sample_result' => $waterWeight->sample_result,
+            'date' => $waterWeight->date
+        ]);
+    }
+
+
+    public function update_water(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $waterWeight = WaterWeight::findOrFail($id);
+            $waterWeight->update([
+                'company_id' => $request->input('company_id'),
+                'driver_id' => $request->input('driver_id'),
+                'contact_id' => $request->input('contact_id'),
+                'plate_number' => $request->input('plate_number'),
+                'weight_type' => $request->input('weight_type'),
+                'sample_result' => $request->input('sample_result'),
+                'date' => $request->input('date'),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('operationsmanagmentgovernment.water')
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('operationsmanagmentgovernment::lang.updated_success'),
+                ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
+        }
+    }
+
+    public function delete_water($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $waterWeight = WaterWeight::findOrFail($id);
+            $waterWeight->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'msg' => __('operationsmanagmentgovernment::lang.deleted_success'),
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
+        }
+    }
+
 
     /**
      * Store a newly created resource in storage.
