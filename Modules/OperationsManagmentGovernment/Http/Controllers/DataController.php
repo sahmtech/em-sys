@@ -49,6 +49,11 @@ class DataController extends Controller
                         'label' => __('operationsmanagmentgovernment::lang.add_request'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'operationsmanagmentgovernment.water_reports',
+                        'label' => __('operationsmanagmentgovernment::lang.water_reports'),
+                        'default' => false,
+                    ],
 
                 ]
             ]

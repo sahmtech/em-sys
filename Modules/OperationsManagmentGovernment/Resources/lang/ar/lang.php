@@ -8,7 +8,7 @@ return [
     'return_request' => 'إرجاع الطلب',
     'change_request_status' => 'تغيير حالة الطلب',
     'add_request' => 'إضافة طلب',
-    '' => '',
+    'water_reports' => 'تقارير وايتات المياه',
 
 
     // ''=>'',

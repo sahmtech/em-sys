@@ -17,6 +17,11 @@ class OperationsManagmentGovernmentController extends Controller
         return view('operationsmanagmentgovernment::index');
     }
 
+    public function water()
+    {
+        return view('operationsmanagmentgovernment::water.index');
+    }
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
