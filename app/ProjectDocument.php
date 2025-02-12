@@ -2,16 +2,16 @@
 namespace App;
 
 use App\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Sales\Entities\SalesProject;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProjectDocument extends Model
 {
     use HasFactory, SoftDeletes;
 
-    // protected $table = 'projects_documents';
+    protected $table = 'projects_documents';
 
     protected $guarded = ['id'];
 
@@ -24,6 +24,7 @@ class ProjectDocument extends Model
     {
         return $this->belongsTo(SalesProject::class);
     }
+   
 
     public function created_by()
     {
