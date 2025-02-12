@@ -506,6 +506,16 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
 
                 $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController::class, 'index']),
+                    __('operationsmanagmentgovernment::lang.project_report'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'projects_documents')]
+                );
+            }
+
+
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
+
+                $menu->url(
                     action([\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index']),
                     __('operationsmanagmentgovernment::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests')]

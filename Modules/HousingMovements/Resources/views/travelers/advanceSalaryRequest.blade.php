@@ -11,6 +11,9 @@
     #requests_table {
         font-size: 12px;
     }
+    table.dataTable thead th {
+        vertical-align: middle;
+    }
 </style>
 
 

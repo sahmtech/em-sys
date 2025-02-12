@@ -344,5 +344,6 @@ return [
     'deal_timesheet' => 'اعتماد التايم شيت',
     'import_new_arrival_workers' => 'إضافة وصول جديد للعمال',
     'buys_beds' => 'عدد الأسرة المشغولة',
+    'unified_number' => 'الرقم الموحد',
 
 ];

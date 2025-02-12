@@ -28,6 +28,7 @@
                                     <th>@lang('housingmovements::lang.worker_name')</th>
                                     <th>@lang('housingmovements::lang.border_no')</th>
                                     <th>@lang('housingmovements::lang.company')</th>
+                                    <th>@lang('housingmovements::lang.unified_number')</th>
                                     <th>@lang('housingmovements::lang.contact_number')</th>
                                     <th>@lang('housingmovements::lang.cell_phone_company')</th>
                                 </tr>
@@ -136,8 +137,12 @@
                     {
                         data: 'border_no',
                     },
+                    
                     {
                         data: 'company',
+                    },
+                    {
+                        data:'unified_number',
                     },
                     
                     {

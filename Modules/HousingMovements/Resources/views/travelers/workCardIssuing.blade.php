@@ -33,6 +33,9 @@
         height: 38px !important;
         right: 10px !important;
     }
+    table.dataTable thead th {
+        vertical-align: middle;
+    }
 </style>
 @endpush
 
@@ -56,11 +59,12 @@
 
                 <tr>
 
-                    <th>@lang('essentials::lang.card_no')</th>
+                    <th style="width: 7%;">@lang('essentials::lang.card_no')</th>
                     <th>@lang('essentials::lang.company_name')</th>
+                    <th>@lang('essentials::lang.unified_number')</th>
                     <th>@lang('essentials::lang.worker_name')</th>
-                    <th>@lang('essentials::lang.nationality')</th>
                     <th>@lang('essentials::lang.border_number')</th>
+                    <th>@lang('essentials::lang.nationality')</th>
                     <th>@lang('essentials::lang.project')</th>
                     <th>@lang('essentials::lang.responsible_client')</th>
                     <th>@lang('essentials::lang.workcard_duration')</th>
@@ -247,6 +251,10 @@
                         data: 'company_name',
                         name: 'company_name'
                     },
+                    {
+                        data: 'unified_number',
+                        name: 'unified_number'
+                    },
 
 
                     {
@@ -254,13 +262,14 @@
                         name: 'user'
                         
                     },
-                    {
-                        data: 'nationality',
-                        name: 'nationality'
-                    },
+                   
                     {
                         data: 'proof_number',
                         name: 'proof_number'
+                    },
+                    {
+                        data: 'nationality',
+                        name: 'nationality'
                     },
                     // {
                     //     data: 'assigned_to',

@@ -79,7 +79,7 @@ class FollowupDocumentController extends Controller
      */
     public function create()
     {
-        return view('followup::document.create');
+        return view('followup::document.crreate');
     }
 
     /**

@@ -56,4 +56,6 @@ return [
     'Sales Person'                                 => 'Sales Person',
     'Commission Agent'                             => 'Commission Agent',
     'Customer RP'                                  => 'Customer RP',
+    'add_attachment'                               => ' Add Attachment',
+
 ];

@@ -9,6 +9,11 @@ return [
     'change_request_status' => 'تغيير حالة الطلب',
     'add_request' => 'إضافة طلب',
     'water_reports' => 'تقارير وايتات المياه',
+    'project_document' => 'مستند المشروع',
+    'projects_documents' => 'مستندات المشروع',
+    'project_report' => 'تقرير المشروع',
+    'add_project_report' => 'إضافة تقرير المشروع',
+    'select_project' => 'اختر المشروع',
 
 
     // ''=>'',
