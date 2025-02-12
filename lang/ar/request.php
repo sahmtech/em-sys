@@ -312,5 +312,6 @@ return [
     'pending_requests_government_relations'               => 'إدارة العلاقات الحكومية',
     'pending_requests_personnel_affairs'                  => 'قسم شؤون الموظفين',
     'pending_requests_payroll'                            => 'قسم الرواتب',
+    'description'                                         => 'الوصف',
 
 ];

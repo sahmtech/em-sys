@@ -312,5 +312,6 @@ return [
     'pending_requests_government_relations'               => 'Pending requests in Government Relations Management',
     'pending_requests_personnel_affairs'                  => 'Pending requests in Personnel Affairs Department',
     'pending_requests_payroll'                            => 'Pending requests in Payroll Department',
+    'description'                                         => 'Description',
 
 ];
