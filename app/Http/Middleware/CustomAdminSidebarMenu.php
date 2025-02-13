@@ -521,6 +521,17 @@ class CustomAdminSidebarMenu
                 );
             }
 
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_diagram')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController::class, 'index']),
+                    __('operationsmanagmentgovernment::lang.project_departments'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'project_department')]
+                );
+            }
+
+            
+
 
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
 

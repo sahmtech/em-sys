@@ -1,5 +1,6 @@
 <?php
 
+use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController;
 use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController;
 
 /*
@@ -28,10 +29,18 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/documents-store', [ProjectDocumentController::class, 'store'])->name('documents-store');
         Route::post('/documents-storeBluePrint', [ProjectDocumentController::class, 'storeBluePrint'])->name('documents-storeBluePrint');
 
-        
         Route::delete('projects_documents_destroy/{id}', [ProjectDocumentController::class, 'destroy'])->name('projects_documents.destroy');
         Route::post('/projects_documents_edit/{id}', [ProjectDocumentController::class, 'update'])->name('projects_documents.edit');
 
         Route::post('/storeOperationsManagmentGovernmentRequest', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'store'])->name('storeOperationsManagmentGovernmentRequest');
+
+        // project_departments
+        // Route::resource('project_departments', ProjectDepartmentController::class);
+        Route::get('/project_departments-create', [ProjectDepartmentController::class, 'create'])->name('project_departments-create');
+        Route::post('/project_departments-store', [ProjectDepartmentController::class, 'store'])->name('project_departments-store');
+        Route::get('/project_departments', [ProjectDepartmentController::class, 'index'])->name('project_departments');
+        Route::delete('project_departments_destroy/{id}', [ProjectDepartmentController::class, 'destroy'])->name('project_departments.destroy');
+
+
     });
 });
