@@ -82,6 +82,16 @@
                             <div class="row">
 
                                 <div class="form-group col-md-6">
+                                    {!! Form::label('contact_id', __('operationsmanagmentgovernment::lang.contact') . ':*') !!}
+                                    {!! Form::select('contact_id', $contacts, null, [
+                                        'class' => 'form-control select2',
+                                        'placeholder' => __('messages.select'),
+                                        'required',
+                                        'id' => 'contact_select',
+                                    ]) !!}
+                                </div>
+
+                                <div class="form-group col-md-6">
                                     {!! Form::label('project_id', __('operationsmanagmentgovernment::lang.project') . ':*') !!}
                                     {!! Form::select('project_id', $projects, null, [
                                         'class' => 'form-control select2',
@@ -159,7 +169,14 @@
                             <input type="hidden" id="water_weight_id" name="water_weight_id">
                             <div class="row">
 
-
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('contact_id', __('operationsmanagmentgovernment::lang.contact') . ':*') !!}
+                                    {!! Form::select('contact_id', $contacts, null, [
+                                        'class' => 'form-control select2',
+                                        'required',
+                                        'id' => 'edit_contact_id',
+                                    ]) !!}
+                                </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('project_id', __('operationsmanagmentgovernment::lang.project') . ':*') !!}
                                     {!! Form::select('project_id', $projects, null, [
