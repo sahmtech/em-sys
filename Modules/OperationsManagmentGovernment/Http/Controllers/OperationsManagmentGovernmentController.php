@@ -189,7 +189,7 @@ class OperationsManagmentGovernmentController extends Controller
                 ]);
         } catch (Exception $e) {
             DB::rollBack();
-
+            dd('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             return redirect()->back()
                 ->with('status', [
                     'success' => false,
