@@ -12,6 +12,8 @@ use Illuminate\Routing\Controller;
 use Modules\OperationsManagmentGovernment\Entities\WaterWeight;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
+use Modules\OperationsManagmentGovernment\Entities\ContactActivity;
+use Modules\OperationsManagmentGovernment\Entities\ContactActivityPermission;
 use Modules\Sales\Entities\SalesProject;
 
 class OperationsManagmentGovernmentController extends Controller
@@ -23,6 +25,62 @@ class OperationsManagmentGovernmentController extends Controller
     public function index()
     {
         return view('operationsmanagmentgovernment::index');
+    }
+
+    public function permissions()
+    {
+        $contacts = Contact::query();
+        $activities = ContactActivity::all()->pluck('name', 'id'); // Get all activities
+
+        if (request()->ajax()) {
+            return DataTables::of($contacts)
+                ->addColumn('id', function ($row) {
+                    return $row->id;
+                })
+                ->addColumn('name', function ($row) {
+                    return $row->supplier_business_name;
+                })
+                ->addColumn('action', function ($row) {
+                    return '<button class="btn btn-xs btn-primary open-permissions-modal" data-id="' . $row->id . '" data-url="' . route('operationsmanagmentgovernment.get_contact_permissions', ['id' => $row->id]) . '">' . __('messages.edit') . '</button>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('operationsmanagmentgovernment::permissions.index', compact('activities'));
+    }
+
+    public function get_contact_permissions($id)
+    {
+        $permissions = ContactActivityPermission::where('contact_id', $id)->pluck('activity_id')->toArray();
+        $all_activities = ContactActivity::all()->pluck('name', 'id')->toArray();
+
+        return response()->json(['permissions' => $permissions ?: [], 'all_activities' => $all_activities]);
+    }
+
+    public function update_permissions(Request $request, $id)
+    {
+        ContactActivityPermission::where('contact_id', $id)->delete();
+
+        if ($request->has('activities')) {
+            foreach ($request->activities as $activity_id) {
+                ContactActivityPermission::create([
+                    'contact_id' => $id,
+                    'activity_id' => $activity_id,
+                ]);
+            }
+        }
+
+        return response()->json(['success' => true, 'msg' => __('lang_v1.added_success')]);
+    }
+
+
+
+
+    public function zone()
+    {
+
+        return view('operationsmanagmentgovernment::zone.index');
     }
 
     public function water()
@@ -41,11 +99,6 @@ class OperationsManagmentGovernmentController extends Controller
         $companies = Company::all();
         $projects = SalesProject::pluck('name', 'id')->toArray();
         $projectIds = SalesProject::pluck('id');
-        $query     = User::whereIn('assigned_to', $projectIds);
-        $all_users = $query->where('status', '!=', 'inactive')->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
-        $drivers    = $all_users->pluck('full_name', 'id');
-
         if (request()->ajax()) {
             return DataTables::of($WaterWeights)
                 ->editColumn('company', function ($row) {
@@ -56,8 +109,7 @@ class OperationsManagmentGovernmentController extends Controller
                     return $tmp ?? '-';
                 })
                 ->editColumn('driver', function ($row) {
-                    $tmp = User::where('id', $row->driver_id)->first();
-                    return  $tmp?->first_name . ' ' .  $tmp?->last_ame ?? '';
+                    return $row->driver;
                 })
                 ->editColumn('plate_number', function ($row) {
                     return $row->plate_number ?? '-';
@@ -92,7 +144,7 @@ class OperationsManagmentGovernmentController extends Controller
                 ->make(true);
         }
 
-        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'projects', 'drivers'));
+        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'projects'));
     }
 
 
@@ -113,8 +165,8 @@ class OperationsManagmentGovernmentController extends Controller
             DB::beginTransaction();
 
             $waterWeight = WaterWeight::create([
-                'company_id' => $request->input('company_id'),
-                'driver_id' => $request->input('driver_id'),
+                'company_id' => 1,
+                'driver' => $request->input('driver'),
                 'contact_id' => $request->input('contact_id'),
                 'plate_number' => $request->input('plate_number'),
                 'project_id' => $request->input('project_id'),
@@ -152,7 +204,7 @@ class OperationsManagmentGovernmentController extends Controller
             'id' => $waterWeight->id,
             'company_id' => $waterWeight->company_id,
             'project_id' => $waterWeight->project_id,
-            'driver_id' => $waterWeight->driver_id,
+            'driver' => $waterWeight->driver,
             'plate_number' => $waterWeight->plate_number,
             'weight_type' => $waterWeight->weight_type,
             'water_droping_location' => $waterWeight->water_droping_location,
@@ -169,8 +221,7 @@ class OperationsManagmentGovernmentController extends Controller
 
             $waterWeight = WaterWeight::findOrFail($id);
             $waterWeight->update([
-                'company_id' => $request->input('company_id'),
-                'driver_id' => $request->input('driver_id'),
+                'driver' => $request->input('driver'),
                 'contact_id' => $request->input('contact_id'),
                 'plate_number' => $request->input('plate_number'),
                 'weight_type' => $request->input('weight_type'),

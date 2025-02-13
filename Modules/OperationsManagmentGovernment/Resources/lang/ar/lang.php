@@ -93,4 +93,17 @@ return [
     'document_download'                       => 'تحميل',
     'document_create'                         => 'إنشاء مستند',
 
+    //zone
+    'project_zone'                            => 'مناطق المشروع',
+    'add_project_zone'                        => 'اضافة مناطق المشروع',
+    'edit_project_zone'                       => 'تعديل مناطق المشروع',
+    'delete_project_zone'                     => 'حذف مناطق المشروع',
+
+
+    //permissions
+    'permissions'                             => 'صلاحيات العملاء',
+    'update_permissions'                        => 'تعديل صلاحيات العملاء',
+
+
+
 ];
