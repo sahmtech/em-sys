@@ -99,6 +99,8 @@ class OperationsManagmentGovernmentController extends Controller
         $companies = Company::all();
         $projects = SalesProject::pluck('name', 'id')->toArray();
         $projectIds = SalesProject::pluck('id');
+        $ids = ContactActivityPermission::pluck('contact_id')->toArray();
+        $contacts = Contact::whereIn('id', $ids)->pluck('supplier_business_name', 'id')->toArray();
         if (request()->ajax()) {
             return DataTables::of($WaterWeights)
                 ->editColumn('company', function ($row) {
@@ -144,7 +146,7 @@ class OperationsManagmentGovernmentController extends Controller
                 ->make(true);
         }
 
-        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'projects'));
+        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'contacts'));
     }
 
 

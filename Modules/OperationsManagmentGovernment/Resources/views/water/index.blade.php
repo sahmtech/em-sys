@@ -83,7 +83,7 @@
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('project_id', __('operationsmanagmentgovernment::lang.project') . ':*') !!}
-                                    {!! Form::select('project_id', $projects, null, [
+                                    {!! Form::select('project_id', $contacts, null, [
                                         'class' => 'form-control select2',
                                         'placeholder' => __('messages.select'),
                                         'required',
@@ -162,7 +162,7 @@
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('project_id', __('operationsmanagmentgovernment::lang.project') . ':*') !!}
-                                    {!! Form::select('project_id', $projects, null, [
+                                    {!! Form::select('project_id', $contacts, null, [
                                         'class' => 'form-control select2',
                                         'required',
                                         'id' => 'edit_project_id',
