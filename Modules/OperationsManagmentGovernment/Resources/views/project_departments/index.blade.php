@@ -127,6 +127,7 @@
         var document_table = $('#document_table').DataTable({
             processing: true,
             serverSide: true,
+            order: [0, 'desc'],
             ajax: {
                 url: '{{ route('project_departments') }}',
                 data: function(d) {

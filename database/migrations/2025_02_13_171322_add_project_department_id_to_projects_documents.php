@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('projects_documents', function (Blueprint $table) {
-            $table->integer('project_department_id')->nullable()->after('sales_project_id');
-            $table->foreign('project_department_id')->references('id')->on('project_departments')->onDelete('cascade');
-        });
+        if (! Schema::hasColumn('projects_documents', 'project_department_id')) {
+            Schema::table('projects_documents', function (Blueprint $table) {
+                $table->integer('project_department_id')->nullable()->after('sales_project_id');
+                $table->foreign('project_department_id')->references('id')->on('project_departments')->onDelete('cascade');
+            });
+        }
     }
 
     /**
@@ -26,9 +28,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('projects_documents', function (Blueprint $table) {
-            $table->dropForeign(['project_department_id']);
-            $table->dropColumn('project_department_id');
-        });
+        if (Schema::hasColumn('projects_documents', 'project_department_id')) {
+            Schema::table('projects_documents', function (Blueprint $table) {
+                $table->dropForeign(['project_department_id']);
+                $table->dropColumn('project_department_id');
+            });
+        }
     }
 };

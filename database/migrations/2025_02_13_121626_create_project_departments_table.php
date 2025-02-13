@@ -13,26 +13,24 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('project_departments', function (Blueprint $table) {
-            $table->id();
-            $table->string('name_ar');
-            $table->string('name_en')->nullable();
+        if (! Schema::hasTable('project_departments')) {
+            Schema::create('project_departments', function (Blueprint $table) {
+                $table->id();
+                $table->string('name_ar');
+                $table->string('name_en')->nullable();
 
-            $table->Integer('sales_project_id')->unsigned();
-            $table->Integer('contact_id')->unsigned();
+                $table->unsignedBigInteger('sales_project_id');
+                $table->unsignedBigInteger('contact_id');
 
-            $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
-            $table->foreign('sales_project_id')->references('id')->on('sales_projects')->onDelete('cascade');
+                $table->foreign('sales_project_id')->references('id')->on('sales_projects')->onDelete('cascade');
+                $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
 
-            // Add foreign key constraints
-            $table->foreign('sales_project_id')->references('id')->on('sales_projects')->onDelete('cascade');
-            $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
+                $table->string('note')->nullable();
+                $table->softDeletes();
+                $table->timestamps();
+            });
+        }
 
-            $table->string('note')->nullable();
-
-            $table->softDeletes();
-            $table->timestamps();
-        });
     }
 
     /**
@@ -42,6 +40,7 @@ return new class extends Migration
      */
     public function down()
     {
+
         Schema::dropIfExists('project_departments');
     }
 };
