@@ -520,8 +520,24 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'projects_documents_blueprint')]
                 );
             }
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_zone')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'zone']),
+                    __('operationsmanagmentgovernment::lang.project_zone'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'project_zone')]
+                );
+            }
 
 
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.water_reports')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'water']),
+                    __('operationsmanagmentgovernment::lang.water_reports'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'water_reports')]
+                );
+            }
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
 
                 $menu->url(
@@ -530,12 +546,12 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests')]
                 );
             }
-            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.water_reports')) {
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.permissions')) {
 
                 $menu->url(
-                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'water']),
-                    __('operationsmanagmentgovernment::lang.water_reports'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'water_reports')]
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'permissions']),
+                    __('operationsmanagmentgovernment::lang.permissions'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'permissions')]
                 );
             }
             $menu->url(

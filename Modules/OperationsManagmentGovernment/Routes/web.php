@@ -22,22 +22,19 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //water
         Route::get('/water', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'water'])->name('operationsmanagmentgovernment.water');
         Route::post('/store_water', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'store_water'])->name('operationsmanagmentgovernment.water_weight.store');
-        Route::get(
-            'operationsmanagmentgovernment/water_weight/edit/{id}',
-            'Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController@edit_water'
-        )
-            ->name('operationsmanagmentgovernment.water_weight.edit');
+        Route::get('water_weight/edit/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'edit_water'])->name('operationsmanagmentgovernment.water_weight.edit');
+        Route::put('water_weight/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'update_water'])->name('operationsmanagmentgovernment.water_weight.update');
+        Route::delete('water_weight/delete/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'delete_water'])->name('operationsmanagmentgovernment.water_weight.delete');
 
-        Route::put(
-            'operationsmanagmentgovernment/water_weight/update/{id}',
-            'Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController@update_water'
-        )
-            ->name('operationsmanagmentgovernment.water_weight.update');
-        Route::delete(
-            'operationsmanagmentgovernment/water_weight/delete/{id}',
-            'Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController@delete_water'
-        )
-            ->name('operationsmanagmentgovernment.water_weight.delete');
+        //zone
+        Route::get('/zone', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'zone'])->name('operationsmanagmentgovernment.zone');
+
+
+        //permissions
+        Route::get('/permissions', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'permissions'])->name('operationsmanagmentgovernment.permissions');
+        Route::get('/get_contact_permissions/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'get_contact_permissions'])->name('operationsmanagmentgovernment.get_contact_permissions');
+        Route::put('/permissions/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'update_permissions'])->name('operationsmanagmentgovernment.permissions.update');
+
 
         Route::get('/dashboard', [Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])->name('operationsmanagmentgovernment.dashboard');
         Route::get('/requests', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index'])->name('operationsmanagmentgovernment.view_requests');

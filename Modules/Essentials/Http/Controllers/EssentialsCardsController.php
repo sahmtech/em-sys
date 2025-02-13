@@ -1895,6 +1895,8 @@ class EssentialsCardsController extends Controller
 
     public function postRenewData(Request $request)
     {
+
+
         try {
             $requestData = $request->only([
                 'id',
@@ -1910,6 +1912,7 @@ class EssentialsCardsController extends Controller
             $jsonData = [];
 
             foreach ($requestData['id'] as $index => $workerId) {
+
                 $jsonObject = [
                     'id' => $requestData['id'][$index],
                     'employee_id' => $requestData['employee_id'][$index],
@@ -1945,86 +1948,95 @@ class EssentialsCardsController extends Controller
                     foreach ($selectedData as $data) {
 
 
-                        $exist_card = EssentialsWorkCard::where(
-                            'is_active',
-                            1
-                        )->find($data['id']);
+                        $res = $this->interactiveServicesController->renewIqama($requestData['number'][$index],  $data['renew_duration']);
 
 
-                        $renewStartDate = Carbon::parse($data['expiration_date']);
-                        $renewEndDate = $renewStartDate->addMonths(
-                            $data['renew_duration']
-                        );
-                        $new_fees = $this->calculateFees($data['renew_duration']);
+                        if ($res['success'] == 1) {
+                            $exist_card = EssentialsWorkCard::where(
+                                'is_active',
+                                1
+                            )->find($data['id']);
 
-                        if ($exist_card) {
-                            $exist_card->is_active = 0;
-                            $exist_card->save();
-                        }
 
-                        $new_card = new EssentialsWorkCard();
-                        $lastrecord = EssentialsWorkCard::where('is_active', 1)
-                            ->orderBy('work_card_no', 'desc')
-                            ->first();
-
-                        if ($lastrecord) {
-                            $lastEmpNumber = (int) substr(
-                                $lastrecord->work_card_no,
-                                3
+                            $renewStartDate = Carbon::parse($data['expiration_date']);
+                            $renewEndDate = $renewStartDate->addMonths(
+                                $data['renew_duration']
                             );
-                            $nextNumericPart = $lastEmpNumber + 1;
-                            $new_card['work_card_no'] =
-                                'WC' .
-                                str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
-                        } else {
-                            $new_card['work_card_no'] = 'WC' . '000';
-                        }
-                        $new_card->is_active = 1;
-                        $new_card->fees = $data['fees'];
-                        $new_card->work_card_fees = $data['work_card_fees'];
-                        $new_card->Payment_number = $data['Payment_number'];
-                        $new_card->workcard_duration =
-                            $data['renew_duration'] +
-                            $exist_card['workcard_duration'];
-                        $new_card->employee_id = $data['employee_id'];
-                        $new_card->start_date = $data['expiration_date'];
-                        $new_card->end_date = $renewEndDate;
-                        $new_card->save();
+                            $new_fees = $this->calculateFees($data['renew_duration']);
 
-                        if (
-                            $data['number'] != null &&
-                            $data['expiration_date'] != null
-                        ) {
-                            $existingDocument = EssentialsOfficialDocument::where(
-                                'type',
-                                'residence_permit'
-                            )
-                                ->where('employee_id', $data['employee_id'])
-                                ->where('is_active', 1)
-                                ->latest('created_at')
-                                ->first();
-
-                            if ($existingDocument) {
-                                $existingDocument->is_active = 0;
-                                $existingDocument->save();
+                            if ($exist_card) {
+                                $exist_card->is_active = 0;
+                                $exist_card->save();
                             }
 
-                            $newDocument = new EssentialsOfficialDocument();
-                            $newDocument->type = 'residence_permit';
-                            $newDocument->employee_id = $data['employee_id'];
-                            $newDocument->number = $data['number'];
-                            $newDocument->expiration_date = $renewEndDate;
-                            $newDocument->issue_date = now();
-                            $newDocument->is_active = 1;
-                            $newDocument->save();
+                            $new_card = new EssentialsWorkCard();
+                            $lastrecord = EssentialsWorkCard::where('is_active', 1)
+                                ->orderBy('work_card_no', 'desc')
+                                ->first();
+
+                            if ($lastrecord) {
+                                $lastEmpNumber = (int) substr(
+                                    $lastrecord->work_card_no,
+                                    3
+                                );
+                                $nextNumericPart = $lastEmpNumber + 1;
+                                $new_card['work_card_no'] =
+                                    'WC' .
+                                    str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+                            } else {
+                                $new_card['work_card_no'] = 'WC' . '000';
+                            }
+                            $new_card->is_active = 1;
+                            $new_card->fees = $data['fees'];
+                            $new_card->work_card_fees = $data['work_card_fees'];
+                            $new_card->Payment_number = $data['Payment_number'];
+                            $new_card->workcard_duration =
+                                $data['renew_duration'] +
+                                $exist_card['workcard_duration'];
+                            $new_card->employee_id = $data['employee_id'];
+                            $new_card->start_date = $data['expiration_date'];
+                            $new_card->end_date = $renewEndDate;
+                            $new_card->save();
+
+                            if (
+                                $data['number'] != null &&
+                                $data['expiration_date'] != null
+                            ) {
+                                $existingDocument = EssentialsOfficialDocument::where(
+                                    'type',
+                                    'residence_permit'
+                                )
+                                    ->where('employee_id', $data['employee_id'])
+                                    ->where('is_active', 1)
+                                    ->latest('created_at')
+                                    ->first();
+
+                                if ($existingDocument) {
+                                    $existingDocument->is_active = 0;
+                                    $existingDocument->save();
+                                }
+
+                                $newDocument = new EssentialsOfficialDocument();
+                                $newDocument->type = 'residence_permit';
+                                $newDocument->employee_id = $data['employee_id'];
+                                $newDocument->number = $data['number'];
+                                $newDocument->expiration_date = $renewEndDate;
+                                $newDocument->issue_date = now();
+                                $newDocument->is_active = 1;
+                                $newDocument->save();
+                            }
+
+                            //renew eqama here
+                            $output = [
+                                'success' => 1,
+                                'msg' => __('essentials::lang.card_renew_sucessfully'),
+                            ];
+                        } else {
+                            $output = [
+                                'success' => 0,
+                                'msg' => __('messages.error_occurred'),
+                            ];
                         }
-
-
-                        //renew eqama here
-                        $output = [
-                            'success' => 1,
-                            'msg' => __('essentials::lang.card_renew_sucessfully'),
-                        ];
                     }
                 }
             } else {

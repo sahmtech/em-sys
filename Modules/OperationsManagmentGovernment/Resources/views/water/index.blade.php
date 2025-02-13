@@ -11,26 +11,6 @@
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     <div class="form-group col-md-3">
-                        {!! Form::label('company_filter', __('operationsmanagmentgovernment::lang.company')) !!}
-                        {!! Form::select('company_filter', $companies->pluck('name', 'id'), null, [
-                            'class' => 'form-control select2',
-                            'style' => 'width:100%',
-                            'placeholder' => __('lang_v1.all'),
-                            'id' => 'company_filterSelect',
-                        ]) !!}
-                    </div>
-
-                    <div class="form-group col-md-3">
-                        {!! Form::label('driver_filter', __('operationsmanagmentgovernment::lang.driver')) !!}
-                        {!! Form::select('driver_filter', $drivers, null, [
-                            'class' => 'form-control select2',
-                            'style' => 'width:100%',
-                            'placeholder' => __('lang_v1.all'),
-                            'id' => 'driver_filterSelect',
-                        ]) !!}
-                    </div>
-
-                    <div class="form-group col-md-3">
                         {!! Form::label('weight_type_filter', __('operationsmanagmentgovernment::lang.weight_type')) !!}
                         {!! Form::select(
                             'weight_type_filter',
@@ -100,18 +80,10 @@
 
                         <div class="modal-body">
                             <div class="row">
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('company_id', __('operationsmanagmentgovernment::lang.company') . ':*') !!}
-                                    {!! Form::select('company_id', $companies->pluck('name', 'id'), null, [
-                                        'class' => 'form-control select2',
-                                        'placeholder' => __('messages.select'),
-                                        'required',
-                                        'id' => 'company_select',
-                                    ]) !!}
-                                </div>
+
                                 <div class="form-group col-md-6">
                                     {!! Form::label('project_id', __('operationsmanagmentgovernment::lang.project') . ':*') !!}
-                                    {!! Form::select('project_id', $projects, null, [
+                                    {!! Form::select('project_id', $contacts, null, [
                                         'class' => 'form-control select2',
                                         'placeholder' => __('messages.select'),
                                         'required',
@@ -120,12 +92,11 @@
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('driver_id', __('operationsmanagmentgovernment::lang.driver') . ':*') !!}
-                                    {!! Form::select('driver_id', $drivers, null, [
-                                        'class' => 'form-control select2',
-                                        'placeholder' => __('messages.select'),
+                                    {!! Form::label('driver', __('operationsmanagmentgovernment::lang.driver') . ':*') !!}
+                                    {!! Form::text('driver', null, [
+                                        'class' => 'form-control',
+                                        'id' => 'edit_driver',
                                         'required',
-                                        'id' => 'driver_select',
                                     ]) !!}
                                 </div>
 
@@ -187,18 +158,11 @@
                         <div class="modal-body">
                             <input type="hidden" id="water_weight_id" name="water_weight_id">
                             <div class="row">
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('company_id', __('operationsmanagmentgovernment::lang.company') . ':*') !!}
-                                    {!! Form::select('company_id', $companies->pluck('name', 'id'), null, [
-                                        'class' => 'form-control select2',
-                                        'required',
-                                        'id' => 'edit_company_id',
-                                    ]) !!}
-                                </div>
+
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('project_id', __('operationsmanagmentgovernment::lang.project') . ':*') !!}
-                                    {!! Form::select('project_id', $projects, null, [
+                                    {!! Form::select('project_id', $contacts, null, [
                                         'class' => 'form-control select2',
                                         'required',
                                         'id' => 'edit_project_id',
@@ -206,11 +170,10 @@
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('driver_id', __('operationsmanagmentgovernment::lang.driver') . ':*') !!}
-                                    {!! Form::select('driver_id', $drivers, null, [
-                                        'class' => 'form-control select2',
-                                        'required',
-                                        'id' => 'edit_driver_id',
+                                    {!! Form::label('driver', __('operationsmanagmentgovernment::lang.driver') . ':*') !!}
+                                    {!! Form::text('driver', null, [
+                                        'class' => 'form-control',
+                                        'id' => 'edit_driver',
                                     ]) !!}
                                 </div>
 
