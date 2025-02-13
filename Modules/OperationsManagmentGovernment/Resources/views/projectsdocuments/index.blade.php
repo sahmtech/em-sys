@@ -101,6 +101,7 @@
                     <thead>
                         <tr>
                             <th>@lang('followup::lang.project_name')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.project_department')</th>
                             <th>@lang('followup::lang.created_by')</th>
                             <th>@lang('followup::lang.note')</th>
                             <th>@lang('followup::lang.attachments')</th>
@@ -156,6 +157,7 @@
             },
             columns: [
                 { data: 'name' },
+                {data: 'project_department'},
                 { data: 'created_by' },
                 { data: 'note' },
                 { data: 'attachments' },

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sales_project_id')->constrained('sales_projects')->onDelete('cascade');
 
+           
+
             $table->unsignedInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
 

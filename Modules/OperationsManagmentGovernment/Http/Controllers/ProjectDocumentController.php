@@ -38,6 +38,11 @@ class ProjectDocumentController extends Controller
                 ->editColumn('name', function ($row) {
                     return $row?->salesProject?->name ?? '';
                 })
+
+            //projectDepartment
+                ->editColumn('project_department', function ($row) {
+                    return $row?->projectDepartment?->name_ar ?? '';
+                })
                 ->editColumn('created_by', function ($row) {
                     $user = User::find($row?->created_by);
                     return $user ? trim($user->first_name . ' ' . $user->mid_name . ' ' . $user->last_name) : '';
@@ -70,7 +75,7 @@ class ProjectDocumentController extends Controller
                 })
 
             // Enable raw HTML in 'action' and 'attachments' columns
-                ->rawColumns(['action', 'attachments'])
+                ->rawColumns(['action', 'attachments', 'project_department', 'created_by'])
                 ->make(true); // Return the formatted data in JSON format
         }
 
@@ -92,6 +97,10 @@ class ProjectDocumentController extends Controller
             // Format project name
                 ->editColumn('name', function ($row) {
                     return $row?->salesProject?->name ?? '';
+                })
+            //projectDepartment
+                ->editColumn('project_department', function ($row) {
+                    return $row?->projectDepartment?->name_ar ?? '';
                 })
             // Format created_by column by fetching the user's first name
                 ->editColumn('created_by', function ($row) {
@@ -126,7 +135,7 @@ class ProjectDocumentController extends Controller
                     return '';
                 })
             // Enable raw HTML in 'action' and 'attachments' columns
-                ->rawColumns(['action', 'attachments'])
+                ->rawColumns(['action', 'attachments', 'project_department', 'created_by'])
                 ->make(true); // Return the formatted data in JSON format
         }
 
@@ -165,19 +174,72 @@ class ProjectDocumentController extends Controller
      * @param Request $request
      * @return Renderable
      */
+    // public function store(Request $request)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // dd($request->all());
+    //         $projectDocumentId = DB::table('projects_documents')->insertGetId([
+    //             'sales_project_id' => $request->sales_project_id,
+    //             'project_department_id' => $request->project_department_id,
+    //             'document_type'    => 'report',
+    //             'note'             => $request->description,
+    //             'created_by'       => auth()->user()->id,
+    //             'created_at'       => now(),
+    //             'updated_at'       => now(),
+    //         ]);
+
+    //         if ($request->hasFile('attachment')) {
+    //             $attachments = [];
+    //             $names       = $request->input('name');
+
+    //             foreach ($request->file('attachment') as $index => $file) {
+    //                 $filename = Str::random(10) . '-' . $file->getClientOriginalName();
+    //                 $path     = $file->storeAs('documents', $filename, 'public');
+
+    //                 $fileNameForAttachment = isset($names[$index]) ? $names[$index] : $filename;
+
+    //                 $attachments[] = [
+    //                     'project_document_id' => $projectDocumentId,
+    //                     'file_name'           => $fileNameForAttachment,
+    //                     'file_path'           => $path,
+    //                     'created_at'          => now(),
+    //                     'updated_at'          => now(),
+    //                 ];
+    //             }
+
+    //             DB::table('project_document_attachments')->insert($attachments);
+    //         }
+
+    //         $output = [
+    //             'success' => 1,
+    //             'msg'     => __('messages.added_success'),
+    //         ];
+    //         DB::commit();
+    //         return redirect()->back()->with('success', $output['msg']);
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         $output = [
+    //             'success' => 0,
+    //             'msg'     => __('messages.something_went_wrong'),
+    //         ];
+    //         return redirect()->back()->withErrors([$output['msg']]);
+    //     }
+    // }
+
     public function store(Request $request)
     {
+        // dd($request->all());
         DB::beginTransaction();
-
         try {
-            // dd($request->all());
-            $projectDocumentId = DB::table('projects_documents')->insertGetId([
-                'sales_project_id' => $request->sales_project_id,
-                'document_type'    => 'report',
-                'note'             => $request->description,
-                'created_by'       => auth()->user()->id,
-                'created_at'       => now(),
-                'updated_at'       => now(),
+            $projectDocument = ProjectDocument::create([
+                'sales_project_id'      => $request->sales_project_id,
+                'project_department_id' => $request->project_department_id,
+                'document_type'         => 'report',
+                'note'                  => $request->description,
+                'created_by'            => auth()->user()->id,
             ]);
 
             if ($request->hasFile('attachment')) {
@@ -191,31 +253,20 @@ class ProjectDocumentController extends Controller
                     $fileNameForAttachment = isset($names[$index]) ? $names[$index] : $filename;
 
                     $attachments[] = [
-                        'project_document_id' => $projectDocumentId,
-                        'file_name'           => $fileNameForAttachment,
-                        'file_path'           => $path,
-                        'created_at'          => now(),
-                        'updated_at'          => now(),
+                        'file_name' => $fileNameForAttachment,
+                        'file_path' => $path,
                     ];
                 }
 
-                DB::table('project_document_attachments')->insert($attachments);
+                $projectDocument->attachments()->createMany($attachments);
             }
 
-            $output = [
-                'success' => 1,
-                'msg'     => __('messages.added_success'),
-            ];
             DB::commit();
-            return redirect()->back()->with('success', $output['msg']);
 
+            return redirect()->back()->with('success', __('messages.added_success'));
         } catch (\Exception $e) {
             DB::rollBack();
-            $output = [
-                'success' => 0,
-                'msg'     => __('messages.something_went_wrong'),
-            ];
-            return redirect()->back()->withErrors([$output['msg']]);
+            return redirect()->back()->withErrors([__('messages.something_went_wrong')]);
         }
     }
 
@@ -223,15 +274,12 @@ class ProjectDocumentController extends Controller
     {
         DB::beginTransaction();
         try {
-            // dd($request->all());
-            // إدخال البيانات في جدول project_documents بدون استخدام Model
-            $projectDocumentId = DB::table('projects_documents')->insertGetId([
-                'sales_project_id' => $request->sales_project_id,
-                'document_type'    => 'blueprint',
-                'note'             => $request->description,
-                'created_by'       => auth()->user()->id,
-                'created_at'       => now(),
-                'updated_at'       => now(),
+            $projectDocument = ProjectDocument::create([
+                'sales_project_id'      => $request->sales_project_id,
+                'project_department_id' => $request->project_department_id,
+                'document_type'         => 'blueprint',
+                'note'                  => $request->description,
+                'created_by'            => auth()->user()->id,
             ]);
 
             if ($request->hasFile('attachment')) {
@@ -245,30 +293,20 @@ class ProjectDocumentController extends Controller
                     $fileNameForAttachment = isset($names[$index]) ? $names[$index] : $filename;
 
                     $attachments[] = [
-                        'project_document_id' => $projectDocumentId,
-                        'file_name'           => $fileNameForAttachment,
-                        'file_path'           => $path,
-                        'created_at'          => now(),
-                        'updated_at'          => now(),
+                        'file_name' => $fileNameForAttachment,
+                        'file_path' => $path,
                     ];
                 }
 
-                DB::table('project_document_attachments')->insert($attachments);
+                $projectDocument->attachments()->createMany($attachments);
             }
 
-            $output = [
-                'success' => 1,
-                'msg'     => __('messages.added_success'),
-            ];
             DB::commit();
-            return redirect()->back()->with('success', $output['msg']);
+
+            return redirect()->back()->with('success', __('messages.added_success'));
         } catch (\Exception $e) {
             DB::rollBack();
-            $output = [
-                'success' => 0,
-                'msg'     => __('messages.something_went_wrong'),
-            ];
-            return redirect()->back()->withErrors([$output['msg']]);
+            return redirect()->back()->withErrors([__('messages.something_went_wrong')]);
         }
     }
 

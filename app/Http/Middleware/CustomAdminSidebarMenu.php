@@ -6,6 +6,7 @@ use App\User;
 use Closure;
 use Illuminate\Support\Str;
 use Menu;
+use Modules\Essentials\Entities\ToDo;
 use Modules\OperationsManagmentGovernment\Entities\ContactActivityPermission;
 
 class CustomAdminSidebarMenu
@@ -530,7 +531,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'project_zone')]
                 );
             }
-
+            // ToDo:: permissions Edit
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_diagram')) {
 
                 $menu->url(
