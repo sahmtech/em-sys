@@ -147,7 +147,7 @@ class OperationsManagmentGovernmentController extends Controller
                 ->make(true);
         }
 
-        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'projects'));
+        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'projects', 'contacts'));
     }
 
 
@@ -189,7 +189,7 @@ class OperationsManagmentGovernmentController extends Controller
                 ]);
         } catch (Exception $e) {
             DB::rollBack();
-
+            dd('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             return redirect()->back()
                 ->with('status', [
                     'success' => false,
@@ -207,6 +207,7 @@ class OperationsManagmentGovernmentController extends Controller
             'id' => $waterWeight->id,
             'company_id' => $waterWeight->company_id,
             'project_id' => $waterWeight->project_id,
+            'contact_id' => $waterWeight->contact_id,
             'driver' => $waterWeight->driver,
             'plate_number' => $waterWeight->plate_number,
             'weight_type' => $waterWeight->weight_type,
@@ -226,6 +227,7 @@ class OperationsManagmentGovernmentController extends Controller
             $waterWeight->update([
                 'driver' => $request->input('driver'),
                 'contact_id' => $request->input('contact_id'),
+                'project_id' => $request->input('project_id'),
                 'plate_number' => $request->input('plate_number'),
                 'weight_type' => $request->input('weight_type'),
                 'sample_result' => $request->input('sample_result'),
