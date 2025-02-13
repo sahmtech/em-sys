@@ -2,6 +2,7 @@
 namespace App;
 
 use App\User;
+use App\ProjectDepartment;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Sales\Entities\SalesProject;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,7 +25,6 @@ class ProjectDocument extends Model
     {
         return $this->belongsTo(SalesProject::class);
     }
-   
 
     public function created_by()
     {
@@ -34,6 +34,10 @@ class ProjectDocument extends Model
     public function attachments()
     {
         return $this->hasMany(ProjectDocumentAttachment::class);
+    }
+    public function projectDepartment()
+    {
+        return $this->belongsTo(ProjectDepartment::class, 'project_department_id');
     }
 
 }

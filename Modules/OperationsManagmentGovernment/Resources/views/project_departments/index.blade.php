@@ -1,5 +1,6 @@
 @extends('layouts.app')
-@section('title', __('operationsmanagmentgovernment::lang.project_report'))
+@section('title', __('operationsmanagmentgovernment::lang.project_departments'))
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
     .close {
@@ -74,7 +75,7 @@
 @section('content')
 <section class="content-header">
     <h1>
-        <span>@lang('operationsmanagmentgovernment::lang.project_report')</span>
+        <span>@lang('operationsmanagmentgovernment::lang.project_departments')</span>
     </h1>
 </section>
 
@@ -88,8 +89,8 @@
             @slot('tool')
             <div class="box-tools">
                 <a class="btn btn-primary pull-right m-5 btn-modal"
-                    href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController@create') }}"
-                    data-href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController@create') }}"
+                    href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController@create') }}"
+                    data-href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController@create') }}"
                     data-container="#add_document_model">
                     <i class="fas fa-plus"></i> @lang('messages.add')
                 </a>
@@ -100,11 +101,10 @@
                 <table class="table table-bordered table-striped" id="document_table" style="margin-bottom: 100px;">
                     <thead>
                         <tr>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('operationsmanagmentgovernment::lang.project_department')</th>
-                            <th>@lang('followup::lang.created_by')</th>
-                            <th>@lang('followup::lang.note')</th>
-                            <th>@lang('followup::lang.attachments')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.project_department_name_ar')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.project_department_name_en')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.client')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.project')</th>
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
@@ -112,31 +112,10 @@
             </div>
 
             <div class="modal fade" id="add_document_model" tabindex="-1" role="dialog"></div>
-            <div class="modal fade" id="edit_document_model" tabindex="-1" role="dialog"></div>
             @endcomponent
         </div>
 
-        <!-- File Preview Modal -->
-        <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="fileModalLabel">File Preview</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="fileContent" class="text-center"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </section>
 @endsection
@@ -148,42 +127,24 @@
         var document_table = $('#document_table').DataTable({
             processing: true,
             serverSide: true,
+            order: [0, 'desc'],
             ajax: {
-                url: '{{ route('projects_documents') }}',
+                url: '{{ route('project_departments') }}',
                 data: function(d) {
                     d.carTypeSelect = $('#carTypeSelect').val();
                     d.driver_select = $('#driver_select').val();
                 }
             },
             columns: [
-                { data: 'name' },
-                {data: 'project_department'},
-                { data: 'created_by' },
-                { data: 'note' },
-                { data: 'attachments' },
+                { data: 'name_ar' },
+                { data: 'name_en' },
+                { data: 'contact' },
+                { data: 'project' },
                 { data: 'action' }
             ]
         });
 
-        // File Preview Handler
-        $(document).on('click', '.preview-file', function(e) {
-            e.preventDefault();
-            var fileUrl = $(this).data('file-url');
-            var fileName = $(this).data('file-name');
-            var modal = $('#fileModal');
-            modal.find('.modal-title').text(fileName);
-
-            if (!fileUrl || fileUrl.trim() === '') {
-                toastr.error("@lang('messages.invalid_file_url')");
-                return;
-            }
-
-            var fileExtension = fileUrl.split('.').pop().toLowerCase();
-            var content = generateFilePreviewContent(fileUrl, fileExtension);
-
-            modal.find('#fileContent').html(content);
-            modal.modal('show');
-        });
+        
 
         // Delete Document Handler
         $(document).on('click', '.delete_document_button', function() {
@@ -208,27 +169,18 @@
             });
         });
 
-        // Edit Document Handler
-        $(document).on('click', '.edit_document_button', function() {
-            var href = $(this).data('href');
-            handleDocumentEdit(href);
-        });
-
+       
         // Toastr Notifications
         showToastrMessages();
-    });
-
-    // Generate File Preview Content
-    function generateFilePreviewContent(fileUrl, fileExtension) {
-        if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-            return `<img src="${fileUrl}" class="img-fluid" />`;
-        } else if (fileExtension === 'pdf') {
-            return `<iframe src="${fileUrl}" width="100%" height="600px" style="border: none;"></iframe>`;
-        } else {
-            return `<a href="${fileUrl}" target="_blank" class="btn btn-secondary">
-                        @lang('messages.download_file')
-                    </a>`;
-        }
+          // Show Toastr Messages
+    function showToastrMessages() {
+        @if(session('success'))
+            toastr.success("{{ session('success') }}");
+        @endif
+        
+        @if(session('error'))
+            toastr.error("{{ session('error') }}");
+        @endif
     }
 
     // Handle Document Deletion
@@ -247,33 +199,11 @@
             }
         });
     }
+    });
 
-    // Handle Document Edit
-    function handleDocumentEdit(href) {
-        $.ajax({
-            method: "GET",
-            url: href,
-            dataType: "json",
-            success: function(result) {
-                if (result.success) {
-                    toastr.success(result.msg);
-                    $('#document_table').DataTable().ajax.reload();
-                } else {
-                    toastr.error(result.msg);
-                }
-            }
-        });
-    }
 
-    // Show Toastr Messages
-    function showToastrMessages() {
-        @if(session('success'))
-            toastr.success("{{ session('success') }}");
-        @endif
-        
-        @if(session('error'))
-            toastr.error("{{ session('error') }}");
-        @endif
-    }
+
+      
 </script>
+
 @endsection

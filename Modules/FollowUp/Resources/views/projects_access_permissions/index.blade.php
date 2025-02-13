@@ -12,24 +12,7 @@
 
     <!-- Main content -->
     <section class="content">
-        {{-- <div class="row">
-            <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('project_name_filter', __('sales::lang.contact_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $contacts2, null, [
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                                'id' => 'project_name_filter',
-                            ]) !!}
 
-                        </div>
-                    </div>
-                @endcomponent
-            </div>
-        </div> --}}
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="projects_table" style=" table-layout: fixed !important;">
@@ -118,17 +101,17 @@
                             projects = response.projects;
                         }
 
-                    
+
 
                         if (projects && Object.keys(projects).length > 0) {
                             $projectsMenu.find('option').each(function() {
                                 var optionValue = $(this).attr('value');
-          
+
                                 if (projects.hasOwnProperty(optionValue)) {
-               
+
                                     $(this).prop('selected', true);
                                 } else {
-                                  
+
                                     $(this).prop('selected', false);
                                 }
                             });

@@ -205,13 +205,17 @@ class InteractiveServicesController extends Controller
     }
 
     //This service allows an organization to renew one of its resident’s iqama.
-    public function renewIqama()
+    public function renewIqama($iqamaNumber, $iqamaDuration)
     {
         try {
             $body_data = [
-                "iqamaNumber" => "2000000000",
-                "iqamaDuration" => "12",
+                "iqamaNumber" => $iqamaNumber,
+                "iqamaDuration" => $iqamaDuration,
             ];
+            //  $body_data = [
+            //     "iqamaNumber" => "2000000000",
+            //     "iqamaDuration" => "12",
+            // ];
             $report = $this->muqeemApiService->callApiEndpoint('api/v1/iqama/renew', 'POST', $body_data);
             return response()->json([
                 'message' => 'Request Renew Iqama  Successful',

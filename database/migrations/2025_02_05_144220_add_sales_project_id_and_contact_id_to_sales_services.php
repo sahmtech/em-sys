@@ -1,23 +1,26 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up() 
     {
         Schema::table('sales_services', function (Blueprint $table) {
-
-            $table->unsignedBigInteger('contact_id')->nullable()->after('id');
-
-            $table->unsignedBigInteger('sales_project_id')->nullable()->after('contact_id');
-
-            // Add foreign key constraints
-            $table->foreign('sales_project_id')->references('id')->on('sales_projects')->onDelete('cascade');
-            $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
+            if (!Schema::hasColumn('sales_services', 'contact_id')) {
+                $table->unsignedBigInteger('contact_id')->nullable()->after('id');
+                $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
+            }
+    
+            if (!Schema::hasColumn('sales_services', 'sales_project_id')) {
+                $table->unsignedBigInteger('sales_project_id')->nullable()->after('contact_id');
+                $table->foreign('sales_project_id')->references('id')->on('sales_projects')->onDelete('cascade');
+            }
         });
     }
+    
 
     public function down()
     {
