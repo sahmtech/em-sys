@@ -264,7 +264,7 @@ return [
     "holidays"                                            => "العطل",
     "todays_attendance"                                   => "حضور اليوم",
     "already_clocked_in"                                  => "تم تسجيل الدخول بالفعل",
-    "not_clocked_in"                                      => "لم يتم تسجيل الدخول",
+    "not_clocked_in"                                      => "لم يتم تسجيل الحضور",
     "crud_leave_type"                                     => "أنواع الإجازات",
     "crud_all_leave"                                      => "عرض كل الإجازات",
     'view_leave_balances'                                 => 'عرض رصيد الإجازات',

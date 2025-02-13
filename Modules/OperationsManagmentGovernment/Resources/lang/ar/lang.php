@@ -2,6 +2,67 @@
 return [
     'operationsmanagmentgovernment'           => 'إدارة التشغيل (القطاع الحكومي)',
     'OperationsManagmentGovernment_dashboard' => 'الصفحة الرئيسية لإدارة التشغيل (القطاع الحكومي)',
+    'view_requests' => 'عرض جميع الطلبات',
+    'requests' => 'الطلبات',
+    'show_request' => 'عرض معلومات الطلب',
+    'return_request' => 'إرجاع الطلب',
+    'change_request_status' => 'تغيير حالة الطلب',
+    'add_request' => 'إضافة طلب',
+    'water_reports' => 'تقارير وايتات المياه',
+    'project_document' => 'مستند المشروع',
+    'projects_documents' => 'مستندات المشروع',
+    'project_report' => 'تقرير المشروع',
+    'add_project_report' => 'إضافة تقرير المشروع',
+    'select_project' => 'اختر المشروع',
+
+    // Water Weight Management
+    'water_weights' => 'إدارة وايتات المياه',
+    'add_water_weight' => 'إضافة وايت مياه',
+    'company' => 'الشركة',
+    'contact' => 'العميل',
+    'project' => 'المشروع',
+    'driver' => 'السائق',
+    'plate_number' => 'رقم اللوحة',
+    'water_droping_location' => 'موقع تفريغ المياه',
+    'weight_type' => 'نوع الحمولة',
+    '6_tons' => '6 أطنان',
+    '18_tons' => '18 طناً',
+    '34_tons' => '34 طناً',
+    'sample_result' => 'نتيجة العينة',
+    'date' => 'التاريخ',
+    'created_by' => 'تم الإنشاء بواسطة',
+    'action' => 'الإجراء',
+    'delete_water_weight' => 'حذف وايت المياه',
+
+    // Filters
+    'filters' => 'عوامل التصفية',
+    'all' => 'الكل',
+    'select_company' => 'اختر الشركة',
+    'select_driver' => 'اختر السائق',
+    'select_weight_type' => 'اختر نوع الحمولة',
+
+    // Messages
+    'added_success' => 'تمت الإضافة بنجاح',
+    'updated_success' => 'تم التحديث بنجاح',
+    'deleted_success' => 'تم الحذف بنجاح',
+    'something_went_wrong' => 'حدث خطأ ما!',
+
+    // Buttons
+    'add' => 'إضافة',
+    'edit' => 'تعديل',
+    'delete' => 'حذف',
+    'save' => 'حفظ',
+    'close' => 'إغلاق',
+
+    // DataTable Actions
+    'edit_water_weight' => 'تعديل وايت المياه',
+    'show_water_weight' => 'عرض تفاصيل وايت المياه',
+
+
+    'deleted_success' => 'تم الحذف بنجاح',
+    'are_you_sure' => 'هل أنت متأكد؟',
+    'confirm_delete' => 'سيتم حذف هذا العنصر نهائيًا!',
+
     'view_requests'                           => 'عرض جميع الطلبات',
     'requests'                                => 'الطلبات',
     'show_request'                            => 'عرض معلومات الطلب',
@@ -48,5 +109,18 @@ return [
     'project_department_name_en'              => 'اسم قسم المشروع بالإنجليزية',
     'project'                                 => 'المشروع',
     'client'                                  => 'العميل',
+
+    //zone
+    'project_zone'                            => 'مناطق المشروع',
+    'add_project_zone'                        => 'اضافة مناطق المشروع',
+    'edit_project_zone'                       => 'تعديل مناطق المشروع',
+    'delete_project_zone'                     => 'حذف مناطق المشروع',
+
+
+    //permissions
+    'permissions'                             => 'صلاحيات العملاء',
+    'update_permissions'                        => 'تعديل صلاحيات العملاء',
+
+
 
 ];
