@@ -2,9 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\User;
 use Closure;
 use Illuminate\Support\Str;
 use Menu;
+use Modules\OperationsManagmentGovernment\Entities\ContactActivityPermission;
 
 class CustomAdminSidebarMenu
 {
@@ -602,7 +604,10 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id = $user->crm_contact_id;
 
+            $contact_has_permission =  ContactActivityPermission::where('contact_id', $contact_id)->count() > 0 ?? false;
             //$menu->header("");
             //$menu->header("");
             $menu->url(
@@ -636,11 +641,20 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'bills'],
             );
             // if (auth()->user()->user_type != 'customer') {
+
+
             $menu->url(
                 route('agentTimeSheet.index'),
                 __('agent.time_sheet'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'time_sheet'],
             );
+
+            if ($contact_has_permission)
+                $menu->url(
+                    route('agent_water_reports'),
+                    __('operationsmanagmentgovernment::lang.water_reports'),
+                    ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'water_reports'],
+                );
             // }
         });
     }
