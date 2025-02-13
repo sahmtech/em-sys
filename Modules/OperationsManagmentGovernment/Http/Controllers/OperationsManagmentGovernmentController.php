@@ -97,10 +97,11 @@ class OperationsManagmentGovernmentController extends Controller
 
         $WaterWeights = WaterWeight::all();
         $companies = Company::all();
-        $projects = SalesProject::pluck('name', 'id')->toArray();
-        $projectIds = SalesProject::pluck('id');
+
         $ids = ContactActivityPermission::pluck('contact_id')->toArray();
         $contacts = Contact::whereIn('id', $ids)->pluck('supplier_business_name', 'id')->toArray();
+        $contact_ids = Contact::whereIn('id', $ids)->pluck('id')->toArray();
+        $projects = SalesProject::whereIn('contact_id', $contact_ids)->pluck('name', 'id')->toArray();
         if (request()->ajax()) {
             return DataTables::of($WaterWeights)
                 ->editColumn('company', function ($row) {
@@ -146,7 +147,7 @@ class OperationsManagmentGovernmentController extends Controller
                 ->make(true);
         }
 
-        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'contacts'));
+        return view('operationsmanagmentgovernment::water.index', compact('WaterWeights', 'companies', 'projects'));
     }
 
 

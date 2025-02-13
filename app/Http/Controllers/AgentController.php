@@ -47,6 +47,7 @@ use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\UserLeaveBalance;
+use Modules\OperationsManagmentGovernment\Entities\WaterWeight;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Activitylog\Models\Activity;
@@ -131,6 +132,50 @@ class AgentController extends Controller
         }
 
         return ' ';
+    }
+
+
+    public function water_reports()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id = $user->crm_contact_id;
+
+        $projects = SalesProject::where('contact_id', $contact_id)->pluck('id')->toArray();
+        $WaterWeights = WaterWeight::whereIn('project_id', $projects);
+
+        if (request()->ajax()) {
+            return DataTables::of($WaterWeights)
+                ->editColumn('company', function ($row) {
+                    return $row->Company?->name ?? '-';
+                })
+                ->editColumn('project', function ($row) {
+                    $tmp = SalesProject::Where('id', $row->project_id)->first()?->name ?? '';
+                    return $tmp ?? '-';
+                })
+                ->editColumn('driver', function ($row) {
+                    return $row->driver;
+                })
+                ->editColumn('plate_number', function ($row) {
+                    return $row->plate_number ?? '-';
+                })
+                ->editColumn('weight_type', function ($row) {
+                    return __('operationsmanagmentgovernment::lang.' . $row->weight_type);
+                })
+                ->editColumn('sample_result', function ($row) {
+                    return $row->sample_result ?? '-';
+                })
+                ->editColumn('date', function ($row) {
+                    return $row->date ? \Carbon\Carbon::parse($row->date)->format('Y-m-d') : '-';
+                })
+                ->editColumn('created_by', function ($row) {
+                    $tmp = User::where('id', $row->created_by)->first();
+                    return  $tmp?->first_name . ' ' .  $tmp?->last_ame ?? '';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        return view('custom_views.agents.water.index', compact('WaterWeights',));
     }
 
     public function agentHome()
@@ -240,7 +285,6 @@ class AgentController extends Controller
                             } else {
                                 return null;
                             }
-
                         }
                     )
                     ->addColumn(
@@ -252,7 +296,6 @@ class AgentController extends Controller
                             } else {
                                 return null;
                             }
-
                         }
                     )
                     ->addColumn(
@@ -526,9 +569,9 @@ class AgentController extends Controller
                         return $specializationName;
                     })->addColumn('bank_code', function ($user) {
 
-                    $bank_details = json_decode($user->bank_details);
-                    return $bank_details->bank_code ?? ' ';
-                })
+                        $bank_details = json_decode($user->bank_details);
+                        return $bank_details->bank_code ?? ' ';
+                    })
                     ->addColumn('worker', function ($user) {
                         return $user->worker;
                     })
@@ -1433,7 +1476,6 @@ class AgentController extends Controller
                 ->rawColumns(['status', 'request_type_id', 'can_return', 'id_proof_number', 'created_user', 'assigned_to'])
 
                 ->make(true);
-
         }
 
         $companies = Company::pluck('name', 'id');
