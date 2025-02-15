@@ -16,7 +16,6 @@
                         <table class="table table-bordered table-striped" id="water_weights_table">
                             <thead>
                                 <tr>
-                                    <th>@lang('operationsmanagmentgovernment::lang.company')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.project')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.driver')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.plate_number')</th>
@@ -25,7 +24,6 @@
                                     <th>@lang('operationsmanagmentgovernment::lang.sample_result')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.date')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.created_by')</th>
-                                    <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
                         </table>
@@ -49,7 +47,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('operationsmanagmentgovernment.water') }}',
+                    url: '{{ route('agent_water_reports') }}',
                     data: function(d) {
                         d.company_id = $('#company_filterSelect').val();
                         d.driver_id = $('#driver_filterSelect').val();
@@ -57,10 +55,7 @@
                     }
                 },
                 columns: [{
-                        data: 'company'
-                    },
-                    {
-                        data: 'project'
+                        data: 'project_id'
                     },
                     {
                         data: 'driver'
@@ -83,11 +78,7 @@
                     {
                         data: 'created_by'
                     },
-                    {
-                        data: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
+
                 ]
             });
 

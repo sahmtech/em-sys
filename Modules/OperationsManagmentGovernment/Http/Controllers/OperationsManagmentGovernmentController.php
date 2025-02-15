@@ -14,6 +14,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Modules\OperationsManagmentGovernment\Entities\ContactActivity;
 use Modules\OperationsManagmentGovernment\Entities\ContactActivityPermission;
+use Modules\OperationsManagmentGovernment\Entities\ProjectZone;
 use Modules\Sales\Entities\SalesProject;
 
 class OperationsManagmentGovernmentController extends Controller
@@ -52,7 +53,7 @@ class OperationsManagmentGovernmentController extends Controller
 
     public function get_contact_permissions($id)
     {
-        $permissions = ContactActivityPermission::where('contact_id', $id)->pluck('activity_id')->toArray();
+        $permissions = ContactActivityPermission::where('activity_id', 1)->where('contact_id', $id)->pluck('activity_id')->toArray();
         $all_activities = ContactActivity::all()->pluck('name', 'id')->toArray();
 
         return response()->json(['permissions' => $permissions ?: [], 'all_activities' => $all_activities]);
@@ -60,7 +61,7 @@ class OperationsManagmentGovernmentController extends Controller
 
     public function update_permissions(Request $request, $id)
     {
-        ContactActivityPermission::where('contact_id', $id)->delete();
+        ContactActivityPermission::where('activity_id', 1)->where('contact_id', $id)->delete();
 
         if ($request->has('activities')) {
             foreach ($request->activities as $activity_id) {
@@ -76,11 +77,123 @@ class OperationsManagmentGovernmentController extends Controller
 
 
 
-
-    public function zone()
+    public function zones()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $can_index_project_zones = auth()->user()->can('operationsmanagmentgovernment.project_zones');
 
-        return view('operationsmanagmentgovernment::zone.index');
+        if (!($is_admin || $can_index_project_zones)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('messages.unauthorized'),
+            ]);
+        }
+
+        if (request()->ajax()) {
+            $zones = ProjectZone::query();
+
+            return DataTables::of($zones)
+                ->editColumn('project', function ($row) {
+                    return SalesProject::where('id', $row->project_id)->first()?->name ?? '-';
+                })
+                ->editColumn('contact', function ($row) {
+                    return Contact::where('id', $row->contact_id)->first()?->supplier_business_name ?? '-';
+                })
+                ->addColumn('action', function ($row) {
+                    return '
+                        <button data-id="' . $row->id . '" class="btn btn-xs btn-info edit_zone">
+                            <i class="fas fa-edit"></i> ' . __("messages.edit") . '
+                        </button>
+                        <button data-href="' . route('operationsmanagmentgovernment.zone.delete', ['id' => $row->id]) . '" 
+                            class="btn btn-xs btn-danger delete_zone">
+                            <i class="fa fa-trash"></i> ' . __("messages.delete") . '
+                        </button>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        $projects = SalesProject::pluck('name', 'id')->toArray();
+        $contacts = Contact::pluck('supplier_business_name', 'id')->toArray();
+
+        return view('operationsmanagmentgovernment::zone.index', compact('projects', 'contacts'));
+    }
+
+    public function store_zone(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'contact_id' => 'required|exists:contacts,id',
+            'project_id' => 'nullable|exists:sales_projects,id',
+        ]);
+
+        ProjectZone::create([
+            'name' => $request->name,
+            'contact_id' => $request->contact_id,
+            'project_id' => $request->project_id,
+        ]);
+
+        return redirect()->back()->with('status', [
+            'success' => true,
+            'msg' => __('operationsmanagmentgovernment::lang.added_success'),
+        ]);
+    }
+
+    public function edit_zone($id)
+    {
+        $zone = ProjectZone::findOrFail($id);
+
+        return response()->json([
+            'id' => $zone->id,
+            'contact_id' => $zone->contact_id,
+            'project_id' => $zone->project_id,
+            'name' => $zone->name,
+        ]);
+    }
+
+    public function update_zone(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'contact_id' => 'required|exists:contacts,id',
+            'project_id' => 'nullable|exists:sales_projects,id',
+        ]);
+
+        $zone = ProjectZone::findOrFail($id);
+        $zone->update([
+            'name' => $request->name,
+            'contact_id' => $request->contact_id,
+            'project_id' => $request->project_id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'msg' => __('operationsmanagmentgovernment::lang.updated_success'),
+        ]);
+    }
+
+    public function delete_zone($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $zone = ProjectZone::findOrFail($id);
+            $zone->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'msg' => __('operationsmanagmentgovernment::lang.deleted_success'),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
+        }
     }
 
     public function water()
@@ -98,7 +211,7 @@ class OperationsManagmentGovernmentController extends Controller
         $WaterWeights = WaterWeight::all();
         $companies = Company::all();
 
-        $ids = ContactActivityPermission::pluck('contact_id')->toArray();
+        $ids = ContactActivityPermission::where('activity_id', 1)->pluck('contact_id')->toArray();
         $contacts = Contact::whereIn('id', $ids)->pluck('supplier_business_name', 'id')->toArray();
         $contact_ids = Contact::whereIn('id', $ids)->pluck('id')->toArray();
         $projects = SalesProject::whereIn('contact_id', $contact_ids)->pluck('name', 'id')->toArray();

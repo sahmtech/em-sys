@@ -29,7 +29,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('water_weight/delete/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'delete_water'])->name('operationsmanagmentgovernment.water_weight.delete');
 
         //zone
-        Route::get('/zone', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'zone'])->name('operationsmanagmentgovernment.zone');
+        Route::get('/zone', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'zones'])->name('operationsmanagmentgovernment.zone');
+        Route::post('/zone/store', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'store_zone'])->name('operationsmanagmentgovernment.zone.store');
+        Route::delete('/zone/delete/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'delete_zone'])->name('operationsmanagmentgovernment.zone.delete');
+        Route::get('/zone/edit/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'edit_zone'])->name('operationsmanagmentgovernment.zone.edit');
+        Route::post('/zone/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'update_zone'])->name('operationsmanagmentgovernment.zone.update');
 
         //permissions
         Route::get('/permissions', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'permissions'])->name('operationsmanagmentgovernment.permissions');
@@ -66,8 +70,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('security_guards/{id}', [\Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'destroy'])->name('security_guards.destroy');
         Route::get('security_guards/edit/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'edit'])->name('security_guards.edit');
 
-        Route::post('operationsmanagmentgovernment/security_guards/update/{id}',
-            [SecurityGuardController::class, 'update'])->name('security_guards.update');
-
+        Route::post(
+            'operationsmanagmentgovernment/security_guards/update/{id}',
+            [SecurityGuardController::class, 'update']
+        )->name('security_guards.update');
     });
 });

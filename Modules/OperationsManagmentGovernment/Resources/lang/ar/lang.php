@@ -128,7 +128,8 @@ return [
     'full_name'                               => 'الإسم',
 
     //zone
-    'project_zone'                            => 'مناطق المشروع',
+    'zone_name'                               => 'اسم المنطقة',
+    'project_zones'                           => 'مناطق المشروع',
     'add_project_zone'                        => 'اضافة مناطق المشروع',
     'edit_project_zone'                       => 'تعديل مناطق المشروع',
     'delete_project_zone'                     => 'حذف مناطق المشروع',

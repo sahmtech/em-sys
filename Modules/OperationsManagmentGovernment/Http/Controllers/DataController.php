@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -52,7 +53,7 @@ class DataController extends Controller
 
                     //project zone
                     [
-                        'value'   => 'operationsmanagmentgovernment.project_zone',
+                        'value'   => 'operationsmanagmentgovernment.project_zones',
                         'label'   => __('operationsmanagmentgovernment::lang.project_zone'),
                         'default' => false,
                     ],
@@ -163,7 +164,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    
+
 
                     [
                         'value'   => 'operationsmanagmentgovernment.delete_security_guard',

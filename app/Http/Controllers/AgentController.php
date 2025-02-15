@@ -47,6 +47,7 @@ use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\UserLeaveBalance;
+use Modules\OperationsManagmentGovernment\Entities\ProjectZone;
 use Modules\OperationsManagmentGovernment\Entities\WaterWeight;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesProject;
@@ -134,6 +135,41 @@ class AgentController extends Controller
         return ' ';
     }
 
+    public function project_zones()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id = $user->crm_contact_id;
+
+
+        if (request()->ajax()) {
+            $zones = ProjectZone::where('contact_id', $contact_id);
+
+            return DataTables::of($zones)
+                ->editColumn('project', function ($row) {
+                    return SalesProject::where('id', $row->project_id)->first()?->name ?? '-';
+                })
+                ->editColumn('contact', function ($row) {
+                    return Contact::where('id', $row->contact_id)->first()?->supplier_business_name ?? '-';
+                })
+                ->addColumn('action', function ($row) {
+                    return '
+                        <button data-id="' . $row->id . '" class="btn btn-xs btn-info edit_zone">
+                            <i class="fas fa-edit"></i> ' . __("messages.edit") . '
+                        </button>
+                        <button data-href="' . route('operationsmanagmentgovernment.zone.delete', ['id' => $row->id]) . '" 
+                            class="btn btn-xs btn-danger delete_zone">
+                            <i class="fa fa-trash"></i> ' . __("messages.delete") . '
+                        </button>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        $projects = SalesProject::pluck('name', 'id')->toArray();
+        $contacts = Contact::pluck('supplier_business_name', 'id')->toArray();
+        return view('custom_views.agents.zone.index', compact('projects', 'contacts'));
+    }
 
     public function water_reports()
     {
@@ -143,14 +179,13 @@ class AgentController extends Controller
 
         $projects = SalesProject::where('contact_id', $contact_id)->pluck('id')->toArray();
         $WaterWeights = WaterWeight::whereIn('project_id', $projects);
-
         if (request()->ajax()) {
             return DataTables::of($WaterWeights)
                 ->editColumn('company', function ($row) {
                     return $row->Company?->name ?? '-';
                 })
-                ->editColumn('project', function ($row) {
-                    $tmp = SalesProject::Where('id', $row->project_id)->first()?->name ?? '';
+                ->editColumn('project_id', function ($row) {
+                    $tmp = SalesProject::where('id', $row->project_id)->first()?->name ?? '';
                     return $tmp ?? '-';
                 })
                 ->editColumn('driver', function ($row) {
@@ -172,6 +207,8 @@ class AgentController extends Controller
                     $tmp = User::where('id', $row->created_by)->first();
                     return  $tmp?->first_name . ' ' .  $tmp?->last_ame ?? '';
                 })
+
+
                 ->rawColumns(['action'])
                 ->make(true);
         }

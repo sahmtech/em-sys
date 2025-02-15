@@ -48,7 +48,6 @@
                         <table class="table table-bordered table-striped" id="water_weights_table">
                             <thead>
                                 <tr>
-                                    <th>@lang('operationsmanagmentgovernment::lang.company')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.project')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.driver')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.plate_number')</th>
@@ -120,7 +119,7 @@
                                         'water_droping_location',
                                         __('operationsmanagmentgovernment::lang.water_droping_location') . ':',
                                     ) !!}
-                                    {!! Form::text('water_droping_location', null, ['class' => 'form-control']) !!}
+                                    {!! Form::text('water_droping_location', null, ['class' => 'form-control', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -133,7 +132,7 @@
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('sample_result', __('operationsmanagmentgovernment::lang.sample_result') . ':') !!}
-                                    {!! Form::text('sample_result', null, ['class' => 'form-control']) !!}
+                                    {!! Form::text('sample_result', null, ['class' => 'form-control', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -191,12 +190,13 @@
                                     {!! Form::text('driver', null, [
                                         'class' => 'form-control',
                                         'id' => 'edit_driver',
+                                        'required',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('plate_number', __('operationsmanagmentgovernment::lang.plate_number') . ':') !!}
-                                    {!! Form::text('plate_number', null, ['class' => 'form-control', 'id' => 'edit_plate_number']) !!}
+                                    {!! Form::text('plate_number', null, ['class' => 'form-control', 'id' => 'edit_plate_number', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -207,6 +207,7 @@
                                     {!! Form::text('water_droping_location', null, [
                                         'class' => 'form-control',
                                         'id' => 'edit_water_droping_location',
+                                        'required',
                                     ]) !!}
                                 </div>
 
@@ -216,17 +217,18 @@
                                         'class' => 'form-control select2',
                                         'required',
                                         'id' => 'edit_weight_type',
+                                        'required',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('sample_result', __('operationsmanagmentgovernment::lang.sample_result') . ':') !!}
-                                    {!! Form::text('sample_result', null, ['class' => 'form-control', 'id' => 'edit_sample_result']) !!}
+                                    {!! Form::text('sample_result', null, ['class' => 'form-control', 'id' => 'edit_sample_result', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('date', __('operationsmanagmentgovernment::lang.date') . ':*') !!}
-                                    {!! Form::date('date', null, ['class' => 'form-control', 'required', 'id' => 'edit_date']) !!}
+                                    {!! Form::date('date', null, ['class' => 'form-control', 'required', 'id' => 'edit_date', 'required']) !!}
                                 </div>
                             </div>
                         </div>
@@ -296,10 +298,7 @@
                     }
                 },
                 columns: [{
-                        data: 'company'
-                    },
-                    {
-                        data: 'project'
+                        data: 'project_id'
                     },
                     {
                         data: 'driver'
