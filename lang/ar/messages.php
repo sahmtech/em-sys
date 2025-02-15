@@ -61,4 +61,8 @@ return [
     'Customer RP'                                  => 'رصيد العميل',
     'add_attachment'                               => 'إضافة مرفق',
 
+    // Guard User
+    'user_not_found'                               => 'لم يتم العثور على  حارس من خلال هذا الرقم',
+    'user_deleted'                                 => 'تم حذف حارس الامن بنجاح',
+
 ];

@@ -541,6 +541,17 @@ class CustomAdminSidebarMenu
                 );
             }
 
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_security_guards')) {
+
+                $menu->url(
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'index']),
+                    __('operationsmanagmentgovernment::lang.security_guards'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'security_guards')]
+                );
+            }
+
+            
+
             
 
 

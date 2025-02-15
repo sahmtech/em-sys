@@ -1,7 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController;
-use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +14,8 @@ use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentContro
 |
 */
 
-use Illuminate\Support\Facades\Route;
+use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController;
+use Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController;
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
@@ -30,12 +31,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //zone
         Route::get('/zone', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'zone'])->name('operationsmanagmentgovernment.zone');
 
-
         //permissions
         Route::get('/permissions', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'permissions'])->name('operationsmanagmentgovernment.permissions');
         Route::get('/get_contact_permissions/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'get_contact_permissions'])->name('operationsmanagmentgovernment.get_contact_permissions');
         Route::put('/permissions/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'update_permissions'])->name('operationsmanagmentgovernment.permissions.update');
-
 
         Route::get('/dashboard', [Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])->name('operationsmanagmentgovernment.dashboard');
         Route::get('/requests', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index'])->name('operationsmanagmentgovernment.view_requests');
@@ -60,6 +59,15 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/project_departments', [ProjectDepartmentController::class, 'index'])->name('project_departments');
         Route::delete('project_departments_destroy/{id}', [ProjectDepartmentController::class, 'destroy'])->name('project_departments.destroy');
 
+        // security_guards
+        Route::get('/security_guards', [\Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'index'])->name('security_guards');
+        Route::get('/security_guards-create', [\Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'create'])->name('security_guards-create');
+        Route::post('/security_guards-store', [\Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'store'])->name('security_guards-store');
+        Route::delete('security_guards/{id}', [\Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'destroy'])->name('security_guards.destroy');
+        Route::get('security_guards/edit/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController::class, 'edit'])->name('security_guards.edit');
+
+        Route::post('operationsmanagmentgovernment/security_guards/update/{id}',
+            [SecurityGuardController::class, 'update'])->name('security_guards.update');
 
     });
 });

@@ -113,6 +113,20 @@ return [
     'project'                                 => 'المشروع',
     'client'                                  => 'العميل',
 
+    //Gurdian
+    'security_guards'                         => 'حراس الأمن',
+    'view_security_guards'                    => 'عرض  حراس الأمن',
+    'add_security_guard'                      => 'إضافة حارس أمن',
+    'edit_security_guard'                     => 'تعديل حارس الأمن',
+    'delete_security_guard'                   => 'حذف حارس الأمن',
+
+    'first_name'                              => 'الاسم الأول',
+    'mid_name'                                => 'الاسم الثاني',
+    'last_name'                               => 'إسم العائلة',
+    'fingerprint_no'                          => 'رقمة البصمة',
+    'profession'                              => 'الوظيفة',
+    'full_name'                               => 'الإسم',
+
     //zone
     'project_zone'                            => 'مناطق المشروع',
     'add_project_zone'                        => 'اضافة مناطق المشروع',

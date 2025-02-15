@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -31,62 +30,60 @@ class DataController extends Controller
 
                     //water
                     [
-                        'value' => 'operationsmanagmentgovernment.water_reports',
-                        'label' => __('operationsmanagmentgovernment::lang.water_reports'),
+                        'value'   => 'operationsmanagmentgovernment.water_reports',
+                        'label'   => __('operationsmanagmentgovernment::lang.water_reports'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'operationsmanagmentgovernment.add_water_weight',
-                        'label' => __('operationsmanagmentgovernment::lang.add_water_weight'),
+                        'value'   => 'operationsmanagmentgovernment.add_water_weight',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_water_weight'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'operationsmanagmentgovernment.edit_water_weight',
-                        'label' => __('operationsmanagmentgovernment::lang.edit_water_weight'),
+                        'value'   => 'operationsmanagmentgovernment.edit_water_weight',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_water_weight'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'operationsmanagmentgovernment.delete_water_weight',
-                        'label' => __('operationsmanagmentgovernment::lang.delete_water_weight'),
+                        'value'   => 'operationsmanagmentgovernment.delete_water_weight',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_water_weight'),
                         'default' => false,
                     ],
 
                     //project zone
                     [
-                        'value' => 'operationsmanagmentgovernment.project_zone',
-                        'label' => __('operationsmanagmentgovernment::lang.project_zone'),
+                        'value'   => 'operationsmanagmentgovernment.project_zone',
+                        'label'   => __('operationsmanagmentgovernment::lang.project_zone'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'operationsmanagmentgovernment.add_project_zone',
-                        'label' => __('operationsmanagmentgovernment::lang.add_project_zone'),
+                        'value'   => 'operationsmanagmentgovernment.add_project_zone',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_project_zone'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'operationsmanagmentgovernment.edit_project_zone',
-                        'label' => __('operationsmanagmentgovernment::lang.edit_project_zone'),
+                        'value'   => 'operationsmanagmentgovernment.edit_project_zone',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_project_zone'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'operationsmanagmentgovernment.delete_project_zone',
-                        'label' => __('operationsmanagmentgovernment::lang.delete_project_zone'),
+                        'value'   => 'operationsmanagmentgovernment.delete_project_zone',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_project_zone'),
                         'default' => false,
                     ],
 
                     //permissions
                     [
-                        'value' => 'operationsmanagmentgovernment.permissions',
-                        'label' => __('operationsmanagmentgovernment::lang.permissions'),
+                        'value'   => 'operationsmanagmentgovernment.permissions',
+                        'label'   => __('operationsmanagmentgovernment::lang.permissions'),
                         'default' => false,
                     ],
 
                     [
-                        'value' => 'operationsmanagmentgovernment.edit_permissions',
-                        'label' => __('operationsmanagmentgovernment::lang.edit_permissions'),
+                        'value'   => 'operationsmanagmentgovernment.edit_permissions',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_permissions'),
                         'default' => false,
                     ],
-
-
 
                     [
                         'value'   => 'operationsmanagmentgovernment.change_request_status',
@@ -151,6 +148,26 @@ class DataController extends Controller
                     [
                         'value'   => 'operationsmanagmentgovernment.delete_project_report',
                         'label'   => __('operationsmanagmentgovernment::lang.delete_project_report'),
+                        'default' => false,
+                    ],
+
+                    // Security  Guard
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_security_guards',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_security_guards'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_security_guard',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_security_guard'),
+                        'default' => false,
+                    ],
+
+                    
+
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_security_guard',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_security_guard'),
                         'default' => false,
                     ],
 
