@@ -29,6 +29,9 @@ class SecurityGuardController extends Controller
                     return $row->first_name ? trim($row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name) : '';
 
                 })
+                ->editColumn('id_proof_number', function ($row) {
+                    return $row->id_proof_number ?? '';
+                })
 
                 ->editColumn('fingerprint_no', function ($row) {
                     return $row->fingerprint_no ?? '';
@@ -68,7 +71,7 @@ class SecurityGuardController extends Controller
                     }
                 )
 
-                ->rawColumns(['action', 'profession', 'fingerprint_no', 'full_name'])
+                ->rawColumns(['action', 'profession', 'fingerprint_no', 'full_name', 'id_proof_number'])
                 ->make(true);
         }
 
@@ -98,15 +101,16 @@ class SecurityGuardController extends Controller
     {
         try {
 
-            $input = $request->only(['first_name', 'mid_name', 'last_name', 'fingerprint_no', 'profession']);
+            $input = $request->only(['first_name', 'mid_name', 'last_name', 'fingerprint_no', 'id_proof_number', 'profession']);
 
             $user = User::create([
-                'user_type'      => 'guard',
-                'fingerprint_no' => $input['fingerprint_no'],
-                'first_name'     => $input['first_name'],
-                'mid_name'       => $input['mid_name'],
-                'last_name'      => $input['last_name'],
-                'custom_field_1' => $input['profession'], // Store profession id
+                'user_type'       => 'guard',
+                'fingerprint_no'  => $input['fingerprint_no'],
+                'id_proof_number' => $input['id_proof_number'],
+                'first_name'      => $input['first_name'],
+                'mid_name'        => $input['mid_name'],
+                'last_name'       => $input['last_name'],
+                'custom_field_1'  => $input['profession'], // Store profession id
             ]);
 
             // return $user;
@@ -160,25 +164,38 @@ class SecurityGuardController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // return $request->all();
-        $securityGuard = User::findOrFail($id);
+        try {
+            // return $request->all();
+            $securityGuard = User::findOrFail($id);
 
-        $request->validate([
-            'first_name'     => 'required|string|max:255',
-            'mid_name'       => 'required|string|max:255',
-            'last_name'      => 'required|string|max:255',
-            'profession'     => 'required',
-            'fingerprint_no' => 'required|string|max:255',
-        ]);
+            $request->validate([
+                'first_name'      => 'required|string|max:255',
+                'mid_name'        => 'required|string|max:255',
+                'last_name'       => 'required|string|max:255',
+                'profession'      => 'required',
+                'id_proof_number' => 'required:integer',
+                'fingerprint_no'  => 'required|string|max:255',
+            ]);
 
-        $securityGuard->update([
-            'first_name' => $request->first_name,
-            'mid_name' => $request->mid_name,
-            'last_name' => $request->last_name,
-            'custom_field_1' => $request->profession, //profession id
-        ]);
+            $securityGuard->update([
+                'first_name'      => $request->first_name,
+                'mid_name'        => $request->mid_name,
+                'last_name'       => $request->last_name,
+                'id_proof_number' => $request->id_proof_number,
+                'custom_field_1'  => $request->profession, //profession id
+            ]);
 
-        return redirect()->route('security_guards')->with('success', 'تم تحديث بيانات حارس الأمن بنجاح.');
+            return redirect()->route('security_guards')->with('success', __('messages.updated_success'));
+
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg'     => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->route('security_guards')->withErrors([$output['msg']]);
+
     }
 
     /**

@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', __('operationsmanagmentgovernment::lang.edit_security_guard'))
+@section('title', __('operationsmanagmentgovernment::lang.edit_security_guard_data'))
 
 @section('content')
 
 <section class="content-header">
-    <h1>@lang('operationsmanagmentgovernment::lang.edit_security_guard')</h1>
+    <h1>@lang('operationsmanagmentgovernment::lang.edit_security_guard_data')</h1>
 </section>
 
 <section class="content">
@@ -82,6 +82,23 @@
                                 ]) !!}
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {!! Form::label('id_proof_number',
+                                __('operationsmanagmentgovernment::lang.id_proof_number')) !!}
+                                <span class="text-danger">*</span>
+                                {!! Form::text('id_proof_number', $security_guard->id_proof_number ?? null, [
+                                'class' => 'form-control',
+                                'required',
+                                'placeholder' => __('operationsmanagmentgovernment::lang.id_proof_number'),
+                                ]) !!}
+                            </div>
+                        </div>
+
+
+
+
                     </div>
 
 

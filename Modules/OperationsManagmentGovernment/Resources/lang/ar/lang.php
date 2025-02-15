@@ -118,12 +118,14 @@ return [
     'view_security_guards'                    => 'عرض  حراس الأمن',
     'add_security_guard'                      => 'إضافة حارس أمن',
     'edit_security_guard'                     => 'تعديل حارس الأمن',
+    'edit_security_guard_data'                => 'تعديل بيانات حارس الأمن',
     'delete_security_guard'                   => 'حذف حارس الأمن',
 
     'first_name'                              => 'الاسم الأول',
     'mid_name'                                => 'الاسم الثاني',
     'last_name'                               => 'إسم العائلة',
-    'fingerprint_no'                          => 'رقمة البصمة',
+    'fingerprint_no'                          => 'رقم البصمة',
+    'id_proof_number'                         => 'رقم الهوية',
     'profession'                              => 'الوظيفة',
     'full_name'                               => 'الإسم',
 

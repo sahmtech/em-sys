@@ -83,9 +83,21 @@
                                 'placeholder' => __('operationsmanagmentgovernment::lang.fingerprint_no'),
                                 ]) !!}
                             </div>
+                        </div>
 
-
-
+                        {{-- id_proof_number --}}
+                        <div class="col-md-6">
+                            <div class="form-group ">
+                                {!! Form::label('id_proof_number',
+                                __('operationsmanagmentgovernment::lang.id_proof_number'))
+                                !!}
+                                <span class="text-danger">*</span>
+                                {!! Form::text('id_proof_number', null, [
+                                'class' => 'form-control',
+                                'required',
+                                'placeholder' => __('operationsmanagmentgovernment::lang.id_proof_number'),
+                                ]) !!}
+                            </div>
                         </div>
 
                         {{-- profession --}}

@@ -102,6 +102,7 @@
                     <thead>
                         <tr>
                             <th>@lang('operationsmanagmentgovernment::lang.full_name')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.id_proof_number')</th>
                             <th>@lang('operationsmanagmentgovernment::lang.fingerprint_no')</th>
                             <th>@lang('operationsmanagmentgovernment::lang.profession')</th>
                             <th>@lang('messages.action')</th>
@@ -136,6 +137,7 @@
             },
             columns: [
                 { data: 'full_name' },
+                { data: 'id_proof_number'},
                 { data: 'fingerprint_no' },
                 { data: 'profession' },
                 { data: 'action' }
