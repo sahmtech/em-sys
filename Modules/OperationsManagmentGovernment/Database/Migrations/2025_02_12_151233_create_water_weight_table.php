@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('company_id')->nullable();
             $table->string('driver')->nullable();
             $table->string('plate_number')->nullable();
-            $table->unsignedInteger('project_idد')->nullable();
+            $table->unsignedInteger('project_id')->nullable();
             $table->string('water_droping_location')->nullable();
             $table->enum('weight_type', ['6_tons', '18_tons', '34_tons'])->default('6_tons');
             $table->string('sample_result')->nullable();

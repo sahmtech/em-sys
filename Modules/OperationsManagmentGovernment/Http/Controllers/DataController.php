@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -50,9 +51,32 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    //asset_assessment
+                    [
+                        'value'   => 'operationsmanagmentgovernment.asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.asset_assessment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_asset_assessment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.edit_asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_asset_assessment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_asset_assessment'),
+                        'default' => false,
+                    ],
+
+
                     //project zone
                     [
-                        'value'   => 'operationsmanagmentgovernment.project_zone',
+                        'value'   => 'operationsmanagmentgovernment.project_zones',
                         'label'   => __('operationsmanagmentgovernment::lang.project_zone'),
                         'default' => false,
                     ],
@@ -163,7 +187,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    
+
 
                     [
                         'value'   => 'operationsmanagmentgovernment.delete_security_guard',

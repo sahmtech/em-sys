@@ -526,9 +526,9 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_zone')) {
 
                 $menu->url(
-                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'zone']),
-                    __('operationsmanagmentgovernment::lang.project_zone'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'project_zone')]
+                    action([\Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'zones']),
+                    __('operationsmanagmentgovernment::lang.project_zones'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'zone')]
                 );
             }
             // ToDo:: permissions Edit
@@ -550,9 +550,9 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            
 
-            
+
+
 
 
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.water_reports')) {
@@ -561,6 +561,14 @@ class CustomAdminSidebarMenu
                     action([\Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'water']),
                     __('operationsmanagmentgovernment::lang.water_reports'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'water_reports')]
+                );
+            }
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.asset_assessment')) {
+
+                $menu->url(
+                    route('operationsmanagmentgovernment.asset_assessment'),
+                    __('operationsmanagmentgovernment::lang.asset_assessment'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'asset_assessment')]
                 );
             }
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
@@ -630,7 +638,7 @@ class CustomAdminSidebarMenu
             $user = User::where('id', auth()->user()->id)->first();
             $contact_id = $user->crm_contact_id;
 
-            $contact_has_permission =  ContactActivityPermission::where('contact_id', $contact_id)->count() > 0 ?? false;
+            $contact_has_permission =  ContactActivityPermission::where('activity_id', 1)->where('contact_id', $contact_id)->count() > 0 ?? false;
             //$menu->header("");
             //$menu->header("");
             $menu->url(
@@ -672,12 +680,23 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'time_sheet'],
             );
 
-            if ($contact_has_permission)
+            if ($contact_has_permission) {
                 $menu->url(
                     route('agent_water_reports'),
                     __('operationsmanagmentgovernment::lang.water_reports'),
                     ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'water_reports'],
                 );
+                $menu->url(
+                    route('agent_project_zones'),
+                    __('operationsmanagmentgovernment::lang.project_zones'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'zone']
+                );
+                $menu->url(
+                    route('agent_asset_assessment'),
+                    __('operationsmanagmentgovernment::lang.asset_assessment'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'asset_assessment']
+                );
+            }
             // }
         });
     }
