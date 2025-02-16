@@ -198,10 +198,11 @@
                 <div class="modal-body">
                     <input type="hidden" name="from" value="{{ $from }}">
                     <input type="hidden" name="type" value="outside">
+                    <input type="hidden" name="department" value='44'>
 
 
                     <div class="form-group">
-                        <label for="department">@lang('home.department')</label>
+                        <label for="department">@lang('home.client')</label>
                         <select style="height:40px;" class="form-control" id="department" name="department" disabled>
                             @foreach ($contacts as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>

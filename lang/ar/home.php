@@ -49,4 +49,6 @@ return [
     'outside_communication'                => 'التواصل الخارجي',
     'clients_orders'                       => 'طلبات العملاء',
 
+    'client'                               => 'العميل المرسل',
+
 ];
