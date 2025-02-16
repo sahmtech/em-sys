@@ -7,8 +7,6 @@
     </section>
 
     <section class="content">
-
-
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
@@ -52,7 +50,6 @@
                     {
                         data: 'quantity'
                     },
-
                 ]
             });
         });

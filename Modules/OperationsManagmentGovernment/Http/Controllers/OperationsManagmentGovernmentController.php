@@ -226,14 +226,14 @@ class OperationsManagmentGovernmentController extends Controller
         }
 
         if (request()->ajax()) {
-            $zones = ProjectZone::query();
+            $zones = ProjectZone::with('project.contact')->get();
 
             return DataTables::of($zones)
-                ->editColumn('project', function ($row) {
-                    return SalesProject::where('id', $row->project_id)->first()?->name ?? '-';
+                ->addColumn('project', function ($row) {
+                    return $row->project?->name ?? '-';
                 })
-                ->editColumn('contact', function ($row) {
-                    return Contact::where('id', $row->contact_id)->first()?->supplier_business_name ?? '-';
+                ->addColumn('contact', function ($row) {
+                    return $row->project?->contact?->supplier_business_name ?? '-';
                 })
                 ->addColumn('action', function ($row) {
                     return '
@@ -254,6 +254,7 @@ class OperationsManagmentGovernmentController extends Controller
 
         return view('operationsmanagmentgovernment::zone.index', compact('projects', 'contacts'));
     }
+
 
     public function store_zone(Request $request)
     {
@@ -344,7 +345,7 @@ class OperationsManagmentGovernmentController extends Controller
             ]);
         }
 
-        $WaterWeights = WaterWeight::all();
+        $WaterWeights = WaterWeight::query();
         $companies = Company::all();
 
         $ids = ContactActivityPermission::where('activity_id', 1)->pluck('contact_id')->toArray();
@@ -352,12 +353,17 @@ class OperationsManagmentGovernmentController extends Controller
         $contact_ids = Contact::whereIn('id', $ids)->pluck('id')->toArray();
         $projects = SalesProject::whereIn('contact_id', $contact_ids)->pluck('name', 'id')->toArray();
         // dd($WaterWeights);
+
+
         if (request()->ajax()) {
+            if (!empty(request()->weight_type)) {
+                $WaterWeights->where('weight_type', request()->weight_type . '_tons');
+            }
             return DataTables::of($WaterWeights)
                 ->editColumn('company', function ($row) {
                     return $row->Company?->name ?? '-';
                 })
-                ->editColumn('project', function ($row) {
+                ->editColumn('project_id', function ($row) {
                     $tmp = SalesProject::Where('id', $row->project_id)->first()?->name ?? '';
                     return $tmp ?? '-';
                 })
@@ -382,7 +388,7 @@ class OperationsManagmentGovernmentController extends Controller
                 })
                 ->addColumn('file', function ($row) {
                     if ($row->file_path) {
-                        $fileUrl = asset('storage/' . $row->file_path);
+                        $fileUrl = asset('uploads/' . $row->file_path);
                         return '<a href="' . $fileUrl . '" target="_blank" class="btn btn-xs btn-info">
                                     <i class="fa fa-file"></i> ' . __('home.view_attach') . '
                                 </a>';
@@ -393,7 +399,7 @@ class OperationsManagmentGovernmentController extends Controller
                     $html = '';
                     if ($is_admin) {
                         $html   .= '<button data-id="' . $row->id . '" 
-                        class="btn btn-xs btn-info open-edit-modal">
+                        class="btn btn-xs btn-primary open-edit-modal">
                         <i class="fas fa-edit"></i> ' . __("messages.edit") . '
                     </button> ';
                         $html .= '<button data-href="' . route('operationsmanagmentgovernment.water_weight.delete', ['id' => $row->id]) . '" 
@@ -423,6 +429,8 @@ class OperationsManagmentGovernmentController extends Controller
 
     public function store_water(Request $request)
     {
+
+
         try {
             DB::beginTransaction();
             error_log(json_encode($request->all()));
@@ -442,7 +450,7 @@ class OperationsManagmentGovernmentController extends Controller
                 'plate_number' => $request->input('plate_number'),
                 'project_id' => $request->input('project_id'),
                 'water_droping_location' => $request->input('water_droping_location'),
-                'weight_type' => $request->input('weight_type'),
+                'weight_type' => $request->input('weight_type') . '_tons',
                 'sample_result' => $request->input('sample_result'),
                 'date' => $request->input('date'),
                 'file_path' => $filePath,
