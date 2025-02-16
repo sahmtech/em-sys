@@ -378,6 +378,20 @@
             $('#addAssetModal').on('hidden.bs.modal', function() {
                 $('#contact_select, #project_select, #zone_select').val(null).trigger('change');
             });
+
+            $('#addAssetModal').on('shown.bs.modal', function() {
+                $('#contact_select, #project_select, #zone_select').select2({
+                    dropdownParent: $('#addAssetModal'),
+                    width: '100%',
+                });
+            });
+
+            $('#editAssetModal').on('shown.bs.modal', function() {
+                $('#edit_contact_select, #edit_project_select, #edit_zone_select').select2({
+                    dropdownParent: $('#editAssetModal'),
+                    width: '100%',
+                });
+            });
         });
     </script>
 @endsection
