@@ -15,9 +15,9 @@
                         {!! Form::select(
                             'weight_type_filter',
                             [
-                                '6_tons' => __('operationsmanagmentgovernment::lang.6_tons'),
-                                '18_tons' => __('operationsmanagmentgovernment::lang.18_tons'),
-                                '34_tons' => __('operationsmanagmentgovernment::lang.34_tons'),
+                                '7' => __('operationsmanagmentgovernment::lang.7_tons'),
+                                '19' => __('operationsmanagmentgovernment::lang.19_tons'),
+                                '30' => __('operationsmanagmentgovernment::lang.30_tons'),
                             ],
                             null,
                             [
@@ -48,7 +48,6 @@
                         <table class="table table-bordered table-striped" id="water_weights_table">
                             <thead>
                                 <tr>
-                                    <th>@lang('operationsmanagmentgovernment::lang.company')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.project')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.driver')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.plate_number')</th>
@@ -57,6 +56,7 @@
                                     <th>@lang('operationsmanagmentgovernment::lang.sample_result')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.date')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.created_by')</th>
+                                    <th>@lang('lang_v1.attachments')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -70,7 +70,11 @@
                 aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                        {!! Form::open(['route' => 'operationsmanagmentgovernment.water_weight.store', 'method' => 'POST']) !!}
+                        {!! Form::open([
+                            'route' => 'operationsmanagmentgovernment.water_weight.store',
+                            'files' => true,
+                            'method' => 'POST',
+                        ]) !!}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -111,29 +115,38 @@
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('plate_number', __('operationsmanagmentgovernment::lang.plate_number') . ':') !!}
+                                    {!! Form::label('plate_number', __('operationsmanagmentgovernment::lang.plate_number') . ':*') !!}
                                     {!! Form::text('plate_number', null, ['class' => 'form-control']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label(
                                         'water_droping_location',
-                                        __('operationsmanagmentgovernment::lang.water_droping_location') . ':',
+                                        __('operationsmanagmentgovernment::lang.water_droping_location') . ':*',
                                     ) !!}
-                                    {!! Form::text('water_droping_location', null, ['class' => 'form-control']) !!}
+                                    {!! Form::text('water_droping_location', null, ['class' => 'form-control', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('weight_type', __('operationsmanagmentgovernment::lang.weight_type') . ':*') !!}
-                                    {!! Form::select('weight_type', ['6_tons' => '6 Tons', '18_tons' => '18 Tons', '34_tons' => '34 Tons'], null, [
-                                        'class' => 'form-control select2',
-                                        'required',
-                                    ]) !!}
+                                    {!! Form::select(
+                                        'weight_type',
+                                        [
+                                            '7' => __('operationsmanagmentgovernment::lang.7_tons'),
+                                            '19' => __('operationsmanagmentgovernment::lang.19_tons'),
+                                            '30' => __('operationsmanagmentgovernment::lang.30_tons'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control select2',
+                                            'required',
+                                        ],
+                                    ) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('sample_result', __('operationsmanagmentgovernment::lang.sample_result') . ':') !!}
-                                    {!! Form::text('sample_result', null, ['class' => 'form-control']) !!}
+                                    {!! Form::label('sample_result', __('operationsmanagmentgovernment::lang.sample_result') . ':*') !!}
+                                    {!! Form::text('sample_result', null, ['class' => 'form-control', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -142,7 +155,14 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('file_upload', __('lang_v1.attachments') . ':*') !!}
+                                    {!! Form::file('file_upload', ['class' => 'form-control']) !!}
+                                </div>
+                            </div>
+                        </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
@@ -157,7 +177,7 @@
                 aria-labelledby="editModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                        {!! Form::open(['id' => 'editWaterWeightForm', 'method' => 'POST']) !!}
+                        {!! Form::open(['id' => 'editWaterWeightForm', 'files' => true, 'method' => 'POST']) !!}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -191,46 +211,64 @@
                                     {!! Form::text('driver', null, [
                                         'class' => 'form-control',
                                         'id' => 'edit_driver',
+                                        'required',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('plate_number', __('operationsmanagmentgovernment::lang.plate_number') . ':') !!}
-                                    {!! Form::text('plate_number', null, ['class' => 'form-control', 'id' => 'edit_plate_number']) !!}
+                                    {!! Form::label('plate_number', __('operationsmanagmentgovernment::lang.plate_number') . ':*') !!}
+                                    {!! Form::text('plate_number', null, ['class' => 'form-control', 'id' => 'edit_plate_number', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label(
                                         'water_droping_location',
-                                        __('operationsmanagmentgovernment::lang.water_droping_location') . ':',
+                                        __('operationsmanagmentgovernment::lang.water_droping_location') . ':*',
                                     ) !!}
                                     {!! Form::text('water_droping_location', null, [
                                         'class' => 'form-control',
                                         'id' => 'edit_water_droping_location',
+                                        'required',
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('weight_type', __('operationsmanagmentgovernment::lang.weight_type') . ':*') !!}
-                                    {!! Form::select('weight_type', ['6_tons' => '6 Tons', '18_tons' => '18 Tons', '34_tons' => '34 Tons'], null, [
-                                        'class' => 'form-control select2',
-                                        'required',
-                                        'id' => 'edit_weight_type',
-                                    ]) !!}
+                                    {!! Form::select(
+                                        'weight_type',
+                                        [
+                                            '7' => __('operationsmanagmentgovernment::lang.7_tons'),
+                                            '19' => __('operationsmanagmentgovernment::lang.19_tons'),
+                                            '30' => __('operationsmanagmentgovernment::lang.30_tons'),
+                                        ],
+                                        null,
+                                        [
+                                            'class' => 'form-control select2',
+                                            'required',
+                                            'id' => 'edit_weight_type',
+                                            'required',
+                                        ],
+                                    ) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('sample_result', __('operationsmanagmentgovernment::lang.sample_result') . ':') !!}
-                                    {!! Form::text('sample_result', null, ['class' => 'form-control', 'id' => 'edit_sample_result']) !!}
+                                    {!! Form::label('sample_result', __('operationsmanagmentgovernment::lang.sample_result') . ':*') !!}
+                                    {!! Form::text('sample_result', null, ['class' => 'form-control', 'id' => 'edit_sample_result', 'required']) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('date', __('operationsmanagmentgovernment::lang.date') . ':*') !!}
-                                    {!! Form::date('date', null, ['class' => 'form-control', 'required', 'id' => 'edit_date']) !!}
+                                    {!! Form::date('date', null, ['class' => 'form-control', 'required', 'id' => 'edit_date', 'required']) !!}
                                 </div>
                             </div>
                         </div>
-
+                        <div class="modal-body">
+                            <input type="hidden" id="water_weight_id" name="water_weight_id">
+                            <div class="form-group col-md-6">
+                                {!! Form::label('file_upload', __('lang_v1.attachments') . ':*') !!}
+                                {!! Form::file('file_upload', ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
@@ -296,10 +334,7 @@
                     }
                 },
                 columns: [{
-                        data: 'company'
-                    },
-                    {
-                        data: 'project'
+                        data: 'project_id'
                     },
                     {
                         data: 'driver'
@@ -323,6 +358,11 @@
                         data: 'created_by'
                     },
                     {
+                        data: 'file',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'action',
                         orderable: false,
                         searchable: false
@@ -330,11 +370,47 @@
                 ]
             });
 
-            $('#company_filterSelect, #driver_filterSelect, #weight_type_filterSelect').on('change', function() {
+            $(' #weight_type_filterSelect').on('change', function() {
                 water_weights_table.ajax.reload();
             });
 
-            // Open Edit Modal
+            // Function to fetch projects based on contact selection
+            function fetchProjects(contactId, projectSelectId, selectedProjectId = null) {
+                if (contactId) {
+                    $.ajax({
+                        url: "{{ url('operationsmanagmentgovernment/getProjectsFromContact') }}/" +
+                            contactId,
+                        type: "GET",
+                        success: function(response) {
+                            $(projectSelectId).empty().append(
+                                '<option value="">{{ __('messages.select') }}</option>');
+
+                            $.each(response, function(id, name) {
+                                $(projectSelectId).append('<option value="' + id + '">' + name +
+                                    '</option>');
+                            });
+
+                            if (selectedProjectId) {
+                                $(projectSelectId).val(selectedProjectId).trigger('change');
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Fetch Projects when Contact is Selected (Add Modal)
+            $('#contact_select').on('change', function() {
+                var contactId = $(this).val();
+                fetchProjects(contactId, '#project_select');
+            });
+
+            // Fetch Projects when Contact is Changed in Edit Modal
+            $('#edit_contact_id').on('change', function() {
+                var contactId = $(this).val();
+                fetchProjects(contactId, '#edit_project_id');
+            });
+
+            // Open Edit Modal and Fetch Data
             $(document).on('click', '.open-edit-modal', function() {
                 var waterWeightId = $(this).data('id');
                 var url = '{{ route('operationsmanagmentgovernment.water_weight.edit', ':id') }}'.replace(
@@ -342,15 +418,23 @@
 
                 $.get(url, function(data) {
                     $('#water_weight_id').val(data.id);
-                    $('#edit_company_id').val(data.company_id).trigger('change');
-                    $('#edit_project_id').val(data.project_id).trigger('change');
-                    $('#edit_driver_id').val(data.driver_id).trigger('change');
+                    $('#edit_driver').val(data.driver);
                     $('#edit_plate_number').val(data.plate_number);
                     $('#edit_water_droping_location').val(data.water_droping_location);
                     $('#edit_weight_type').val(data.weight_type).trigger('change');
                     $('#edit_sample_result').val(data.sample_result);
                     $('#edit_date').val(data.date);
+
+                    // Set contact & fetch its related projects before setting project
+                    $('#edit_contact_id').val(data.contact_id).trigger('change');
+
+                    setTimeout(function() {
+                        fetchProjects(data.contact_id, '#edit_project_id', data.project_id);
+                    }, 500);
+
                     $('#editWaterWeightModal').modal('show');
+                }).fail(function(xhr) {
+                    console.error("Error fetching water weight details:", xhr);
                 });
             });
 

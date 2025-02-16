@@ -53,9 +53,9 @@
                                 {!! Form::select(
                                     'weight_type',
                                     [
-                                        '6_tons' => __('operationsmanagmentgovernment::lang.6_tons'),
-                                        '18_tons' => __('operationsmanagmentgovernment::lang.18_tons'),
-                                        '34_tons' => __('operationsmanagmentgovernment::lang.34_tons'),
+                                        '7_tons' => __('operationsmanagmentgovernment::lang.7_tons'),
+                                        '19_tons' => __('operationsmanagmentgovernment::lang.19_tons'),
+                                        '30_tons' => __('operationsmanagmentgovernment::lang.30_tons'),
                                     ],
                                     $waterWeight->weight_type,
                                     [
