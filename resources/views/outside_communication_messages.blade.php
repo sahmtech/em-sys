@@ -202,13 +202,16 @@
 
 
                     <div class="form-group">
-                        <label for="department">@lang('home.client')</label>
-                        <select style="height:40px;" class="form-control" id="department" name="department" disabled>
+                        <label for="contact_id">@lang('home.client')</label>
+                        <select style="height:40px;" class="form-control" id="contact_id" name="contact_id" disabled>
                             @foreach ($contacts as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
+                            <input type="hidden" name="contact_id" value="{{ $id }}">
+
                             @endforeach
                         </select>
                     </div>
+
 
                     <div class="form-group">
                         <label for="title">@lang('home.title')</label>

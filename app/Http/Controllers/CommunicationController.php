@@ -122,10 +122,10 @@ class CommunicationController extends Controller
     public function send_communication_message(Request $request)
     {
 
-
         $validatedData = $request->validate([
             'from'          => 'required|string',
             'department'    => 'required|integer|exists:essentials_departments,id',
+            'contact_id'    => 'nullable|integer|exists:contacts,id',
             'title'         => 'required|string|max:255',
             'message'       => 'required|string',
             'type'          => 'required|string',
@@ -199,8 +199,9 @@ class CommunicationController extends Controller
             'sender_department_id'   => $sender_department_id,
             'reciever_department_id' => $validatedData['department'],
             'sender_id'              => auth()->user()->id,
+            'contact_id'             => $validatedData['contact_id'] ?? null,
             'title'                  => $validatedData['title'],
-            'type'                  => $validatedData['type'],
+            'type'                   => $validatedData['type'],
             'message'                => $validatedData['message'],
             'urgency'                => $validatedData['urgency'],
         ]);

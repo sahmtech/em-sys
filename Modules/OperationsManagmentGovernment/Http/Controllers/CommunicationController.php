@@ -88,7 +88,7 @@ class CommunicationController extends Controller
 
         $user     = User::where('id', auth()->user()->id)->first();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $messages = CommunicationMessage::query()->where('type', 'outside');
+        $messages = CommunicationMessage::query()->where('type', 'outside')->whereNotNull('contact_id');
 
         $contacts = Contact::where('supplier_business_name', 'روتانا')->pluck('supplier_business_name', 'id');
 
@@ -100,10 +100,12 @@ class CommunicationController extends Controller
 
         $messages     = $messages->whereIn('sender_department_id', $departmentIds);
         $sentMessages = CommunicationMessage::whereIn('sender_department_id', $departmentIds)->where('type', 'outside')
+            ->whereNotNull('contact_id')
 
             ->with('replies', 'attachments')->get();
 
         $receivedMessages = CommunicationMessage::whereIn('reciever_department_id', $departmentIds)->where('type', 'outside')
+            ->whereNotNull('contact_id')
 
             ->with('replies', 'attachments')->get();
         if (request()->ajax()) {
