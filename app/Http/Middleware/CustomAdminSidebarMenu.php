@@ -563,6 +563,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'water_reports')]
                 );
             }
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.asset_assessment')) {
+
+                $menu->url(
+                    route('operationsmanagmentgovernment.asset_assessment'),
+                    __('operationsmanagmentgovernment::lang.asset_assessment'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'asset_assessment')]
+                );
+            }
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_requests')) {
 
                 $menu->url(
@@ -682,6 +690,11 @@ class CustomAdminSidebarMenu
                     route('agent_project_zones'),
                     __('operationsmanagmentgovernment::lang.project_zones'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'zone']
+                );
+                $menu->url(
+                    route('agent_asset_assessment'),
+                    __('operationsmanagmentgovernment::lang.asset_assessment'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'asset_assessment']
                 );
             }
             // }

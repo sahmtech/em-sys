@@ -24,6 +24,7 @@
                                     <th>@lang('operationsmanagmentgovernment::lang.sample_result')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.date')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.created_by')</th>
+                                    <th>@lang('lang_v1.attachments')</th>
                                 </tr>
                             </thead>
                         </table>
@@ -77,6 +78,11 @@
                     },
                     {
                         data: 'created_by'
+                    },
+                    {
+                        data: 'file',
+                        orderable: false,
+                        searchable: false
                     },
 
                 ]

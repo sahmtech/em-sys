@@ -47,6 +47,7 @@ use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\UserLeaveBalance;
+use Modules\OperationsManagmentGovernment\Entities\AssetAssessment;
 use Modules\OperationsManagmentGovernment\Entities\ProjectZone;
 use Modules\OperationsManagmentGovernment\Entities\WaterWeight;
 use Modules\Sales\Entities\salesContract;
@@ -171,6 +172,33 @@ class AgentController extends Controller
         return view('custom_views.agents.zone.index', compact('projects', 'contacts'));
     }
 
+    public function asset_assessment()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id = $user->crm_contact_id;
+
+        $zones = ProjectZone::where('contact_id', $contact_id)->pluck('name', 'id');
+        $ids = ProjectZone::where('contact_id', $contact_id)->pluck('id')->toArray();
+        $assets = AssetAssessment::whereIn('zone_id', $ids)->with(['zone.project.contact']);
+
+        if (request()->ajax()) {
+            return DataTables::of($assets)
+                ->addColumn('project', function ($row) {
+                    return $row->project?->name ?? '-';
+                })
+                ->addColumn('zone', function ($row) {
+                    return $row->zone?->name ?? '-';
+                })
+
+                ->rawColumns(['action',      'project'])
+                ->make(true);
+        }
+
+        $contacts = Contact::pluck('supplier_business_name', 'id')->toArray();
+        return view('custom_views.agents.assets.index', compact('zones', 'contacts'));
+    }
+
     public function water_reports()
     {
         $is_admin = auth()->user()->hasRole('Admin#1');
@@ -207,9 +235,17 @@ class AgentController extends Controller
                     $tmp = User::where('id', $row->created_by)->first();
                     return  $tmp?->first_name . ' ' .  $tmp?->last_ame ?? '';
                 })
+                ->addColumn('file', function ($row) {
+                    if ($row->file_path) {
+                        $fileUrl = asset('storage/' . $row->file_path);
+                        return '<a href="' . $fileUrl . '" target="_blank" class="btn btn-xs btn-info">
+                                    <i class="fa fa-file"></i> ' . __('home.view_attach') . '
+                                </a>';
+                    }
+                    return '';
+                })
 
-
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'file'])
                 ->make(true);
         }
         return view('custom_views.agents.water.index', compact('WaterWeights',));

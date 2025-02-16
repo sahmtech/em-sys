@@ -40,6 +40,21 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get_contact_permissions/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'get_contact_permissions'])->name('operationsmanagmentgovernment.get_contact_permissions');
         Route::put('/permissions/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'update_permissions'])->name('operationsmanagmentgovernment.permissions.update');
 
+        //asset assessment
+        Route::get('/assets', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'asset_assessment'])->name('operationsmanagmentgovernment.asset_assessment');
+        Route::post('/assets/store', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'store_asset_assessment'])->name('operationsmanagmentgovernment.asset_assessment.store');
+        Route::get('/assets/edit/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'edit_asset_assessment'])->name('operationsmanagmentgovernment.asset_assessment.edit');
+        Route::put('/assets/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'update_asset_assessment'])->name('operationsmanagmentgovernment.asset_assessment.update');
+        Route::delete('/assets/delete/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'destroy_asset_assessment'])->name('operationsmanagmentgovernment.asset_assessment.delete');
+
+
+        //helpers
+        Route::get('/getProjectsFromContact/{contact_id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'getProjectsFromContact'])
+            ->name('operationsmanagmentgovernment.getProjectsFromContact');
+
+        Route::get('/getZonesFromProjects/{project_id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'getZonesFromProjects'])
+            ->name('operationsmanagmentgovernment.getZonesFromProjects');
+
         Route::get('/dashboard', [Modules\OperationsManagmentGovernment\Http\Controllers\DashboardController::class, 'index'])->name('operationsmanagmentgovernment.dashboard');
         Route::get('/requests', [\Modules\OperationsManagmentGovernment\Http\Controllers\RequestController::class, 'index'])->name('operationsmanagmentgovernment.view_requests');
         Route::get('/projects_documents', [ProjectDocumentController::class, 'index'])->name('projects_documents');

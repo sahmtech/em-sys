@@ -1187,6 +1187,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('/workers/{id}', [AgentController::class, 'showAgentWorker'])->name('show_agent_worker');
         Route::get('/water_reports', [AgentController::class, 'water_reports'])->name('agent_water_reports');
         Route::get('/zone', [AgentController::class, 'project_zones'])->name('agent_project_zones');
+        Route::get('/assets', [AgentController::class, 'asset_assessment'])->name('agent_asset_assessment');
         Route::get('/requests', [AgentController::class, 'agentRequests'])->name('agentRequests');
         Route::post('/storeAgentRequests', [AgentController::class, 'storeAgentRequests'])->name('storeAgentRequests');
 

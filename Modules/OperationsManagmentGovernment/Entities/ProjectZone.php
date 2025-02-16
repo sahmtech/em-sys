@@ -7,6 +7,7 @@ use App\Contact;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Sales\Entities\SalesProject;
 
 class ProjectZone extends Model
 {
@@ -15,7 +16,10 @@ class ProjectZone extends Model
     public $table = 'project_zone';
 
     protected $guarded = ['id'];
-
+    public function project()
+    {
+        return $this->belongsTo(SalesProject::class, 'project_id');
+    }
 
     public function Contact()
     {

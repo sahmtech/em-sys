@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title', __('operationsmanagmentgovernment::lang.project_zones'))
+@section('title', __('operationsmanagmentgovernment::lang.asset_assessment'))
 
 @section('content')
     <section class="content-header">
-        <h1>@lang('operationsmanagmentgovernment::lang.project_zones')</h1>
+        <h1>@lang('operationsmanagmentgovernment::lang.asset_assessment')</h1>
     </section>
 
     <section class="content">
@@ -13,12 +13,13 @@
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="zones_table">
+                        <table class="table table-bordered table-striped" id="asset_assessment_table">
                             <thead>
                                 <tr>
-                                    <th>@lang('operationsmanagmentgovernment::lang.zone_name')</th>
                                     <th>@lang('operationsmanagmentgovernment::lang.project')</th>
-                                    <th>@lang('operationsmanagmentgovernment::lang.contact')</th>
+                                    <th>@lang('operationsmanagmentgovernment::lang.zone')</th>
+                                    <th>@lang('operationsmanagmentgovernment::lang.asset')</th>
+                                    <th>@lang('operationsmanagmentgovernment::lang.quantity')</th>
                                 </tr>
                             </thead>
                         </table>
@@ -36,29 +37,24 @@
                 width: '100%'
             });
 
-            var zones_table = $('#zones_table').DataTable({
+            var asset_assessment_table = $('#asset_assessment_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: {
-                    url: '{{ route('agent_project_zones') }}',
-                    data: function(d) {
-                        d.project_id = $('#project_filterSelect').val();
-                    }
-                },
+                ajax: "{{ route('operationsmanagmentgovernment.asset_assessment') }}",
                 columns: [{
-                        data: 'name'
-                    },
-                    {
                         data: 'project'
+                    }, {
+                        data: 'zone'
                     },
                     {
-                        data: 'contact'
+                        data: 'asset'
+                    },
+                    {
+                        data: 'quantity'
                     },
 
                 ]
             });
-
-
         });
     </script>
 @endsection
