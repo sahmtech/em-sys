@@ -90,13 +90,7 @@ class CommunicationController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $messages = CommunicationMessage::query()->where('type', 'outside');
 
-        if ($user->user_type == 'admin') {
-            $contacts = Contact::pluck('supplier_business_name', 'id');
-
-        } else {
-            $contacts = Contact::where('supplier_business_name', 'روتانا')->pluck('supplier_business_name', 'id');
-
-        }
+        $contacts = Contact::where('supplier_business_name', 'روتانا')->pluck('supplier_business_name', 'id');
 
         $departments = EssentialsDepartment::whereNotIn('id', $departmentIds)->pluck('name', 'id');
         $users       = User::select(
