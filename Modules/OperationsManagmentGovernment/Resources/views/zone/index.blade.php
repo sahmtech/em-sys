@@ -262,6 +262,21 @@
                     console.error("Error fetching zone details:", xhr);
                 });
             });
+
+
+            $('#addZoneModal').on('shown.bs.modal', function() {
+                $('#add_contact_id, #add_project_id').select2({
+                    dropdownParent: $('#addZoneModal'),
+                    width: '100%',
+                });
+            });
+
+            $('#editZoneModal').on('shown.bs.modal', function() {
+                $('#edit_contact_id, #edit_project_id').select2({
+                    dropdownParent: $('#editZoneModal'),
+                    width: '100%',
+                });
+            });
         });
     </script>
 @endsection
