@@ -598,7 +598,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     route('operationsmanagmentgovernment.outSide-Communication', ['from' => 'operationsmanagmentgovernment']),
 
-                    __('operationsmanagmentgovernment::lang.outside_communication'),
+                    __('operationsmanagmentgovernment::lang.clients_orders'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'outside_communication')]
                 );
             }

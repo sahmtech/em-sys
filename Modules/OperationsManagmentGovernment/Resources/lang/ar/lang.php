@@ -157,6 +157,7 @@ return [
     'edit_permissions'                        => ' تعديل صلاحيات العملاء',
     'view_outside_communication'              => ' عرض التواصل الخارجي',
     'outside_communication'                   => '  التواصل الخارجي',
+    'clients_orders'                          => 'طلبات العملاء',
 
     // validation
     'first_name'                              => 'الاسم الأول',
