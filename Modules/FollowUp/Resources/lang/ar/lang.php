@@ -277,6 +277,7 @@ return [
     'user'                                                => 'مستخدم',
     'worker'                                              => 'عامل',
     'employee_or_worker'                                  => 'الموظف او العامل',
+    'guard'                                               => 'حارس الأمن',
 
     'escalated_from'                                      => 'تم التصعيد من',
     'escalate_requests'                                   => 'الطلبات المصعّدة',
@@ -393,7 +394,6 @@ return [
     //''=>''
     'deal_timesheet'                                      => 'اعتماد التايم شيت',
 
-
     'add_branch'                                          => 'إضافة الي فرع',
     'asset'                                               => 'العهد',
     'asset_name'                                          => 'إسم العهدة',
@@ -416,7 +416,6 @@ return [
     'leave_type'                                          => 'نوع الإيجازة',
     'residency_Igama'                                     => 'الهوية / الاقامة / رقم الحدود ',
     'attachment_owner'                                    => 'صاحب المرفق',
-
 
     'add_branch'                                          => 'إضافة الي فرع',
     'asset'                                               => 'العهد',

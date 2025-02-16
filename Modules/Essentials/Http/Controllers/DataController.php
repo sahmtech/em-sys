@@ -1043,6 +1043,66 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    //TODO::import_new_arrival_workers
+                    [
+                        'value' => 'payrolls.import_new_arrival_workers',
+                        'label' => __('essentials::lang.import_new_arrival_workers'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value'   => 'payrolls.housed',
+                        'label'   => __('essentials::lang.housed'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.advanceSalaryRequest',
+                        'label'   => __('essentials::lang.advanceSalaryRequest'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.medicalExamination',
+                        'label'   => __('essentials::lang.medicalExamination'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.medicalInsurance',
+                        'label'   => __('essentials::lang.medicalInsurance'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.workCardIssuing',
+                        'label'   => __('essentials::lang.workCardIssuing'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.SIMCard',
+                        'label'   => __('essentials::lang.SIMCard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.bankAccount',
+                        'label'   => __('essentials::lang.bankAccount'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.contract',
+                        'label'   => __('essentials::lang.contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.residencyAdd&Print',
+                        'label'   => __('essentials::lang.residencyAdd&Print'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'payrolls.residencyDelivery',
+                        'label'   => __('essentials::lang.residencyDelivery'),
+                        'default' => false,
+                    ],
+
+
+
                 ],
 
             ],
