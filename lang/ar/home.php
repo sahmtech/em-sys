@@ -47,5 +47,6 @@ return [
     'view_attach'                          => 'عرض المرفق',
     'no_attachments'                       => 'لا يوجد مرفقات',
     'outside_communication'                => 'التواصل الخارجي',
+    'clients_orders'                       => 'طلبات العملاء',
 
 ];
