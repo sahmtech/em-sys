@@ -169,19 +169,31 @@
             });
         });
 
-       
-        // Toastr Notifications
+        // Show Toastr Messages
+        function showToastrMessages() {
+            // Success message from session
+            @if(session('success'))
+                toastr.success("{{ session('success') }}", 'Success');
+            @endif
+            
+            // Error message from session
+            @if(session('error'))
+                toastr.error("{{ session('error') }}", 'Error');
+            @endif
+
+            // Displaying validation errors from Laravel
+            @if ($errors->any())
+                @foreach ($errors->all() as $error)
+                    toastr.error("{{ $error }}", 'خطأ في المدخلات  ');
+                @endforeach
+            @endif
+        }
+
+        // Call the function to show Toastr messages on page load
         showToastrMessages();
-          // Show Toastr Messages
-       function showToastrMessages() {
-        @if(session('success'))
-            toastr.success("{{ session('success') }}");
-        @endif
-        
-        @if(session('error'))
-            toastr.error("{{ session('error') }}");
-        @endif
-    }
+
+       
+       
 
     // Handle Document Deletion
     function handleDocumentDeletion(href) {

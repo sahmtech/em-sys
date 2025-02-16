@@ -106,6 +106,19 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    // project departments
+                    
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_project_departments',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_project_departments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_project_department',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_project_department'),
+                        'default' => false,
+                    ],
+
                     // Project Diagram
                     [
                         'value'   => 'operationsmanagmentgovernment.project_diagram',
@@ -163,11 +176,16 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    
-
                     [
                         'value'   => 'operationsmanagmentgovernment.delete_security_guard',
                         'label'   => __('operationsmanagmentgovernment::lang.delete_security_guard'),
+                        'default' => false,
+                    ],
+
+                    // outside communication
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_outside_communication',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_outside_communication'),
                         'default' => false,
                     ],
 

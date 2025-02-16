@@ -34,12 +34,12 @@ class ProjectDepartmentController extends Controller
                     return $name;
                 })
                 ->addColumn('action', function ($row) {
-                    // if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('operationsmanagmentgovernment.delete_project_report')) {
+                    if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('operationsmanagmentgovernment.delete_project_department')) {
                         return '<button class="btn btn-danger btn-sm delete_document_button" data-href="' . route('project_departments.destroy', ['id' => $row->id]) . '" style="padding: 8px 12px; margin: 4px;">
                                     <i class="fas fa-trash"></i> حذف
                                 </button>';
-                    // }
-                    // return '';
+                    }
+                    return '';
                 })
 
                 ->rawColumns(['name_ar', 'name_en', 'contact', 'project', 'action'])

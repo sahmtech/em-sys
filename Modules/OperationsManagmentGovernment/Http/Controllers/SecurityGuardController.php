@@ -4,6 +4,7 @@ namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -165,37 +166,60 @@ class SecurityGuardController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // return $request->all();
+            // Find the security guard
             $securityGuard = User::findOrFail($id);
 
-            $request->validate([
-                'first_name'      => 'required|string|max:255',
-                'mid_name'        => 'required|string|max:255',
-                'last_name'       => 'required|string|max:255',
-                'profession'      => 'required',
-                'id_proof_number' => 'required:integer',
-                'fingerprint_no'  => 'required|string|max:255',
-            ]);
+            $rules = [
+                'first_name'      => 'required|string|max:50',
+                'mid_name'        => 'required|string|max:50',
+                'last_name'       => 'required|string|max:50',
+                'profession'      => 'required|exists:essentials_professions,id',
+                'id_proof_number' => 'required|numeric|min:10',
+                'fingerprint_no'  => 'required|max:50',
+            ];
+            $message = [
+                'first_name.required'      => 'الرجاء ادخال :attribute ',
+                'first_name.max'           => ' الحد الاعلى المسموح به 5 خانات في :attribute',
+                'mid_name.required'        => 'الرجاء ادخال :attribute ',
+                'last_name.required'       => 'الرجاء ادخال :attribute ',
+                'profession.required'      => 'الرجاء تحديد :attribute ',
+                'profession.exists'        => 'ناسف لا يوجد :attribute من خلال هذا الرقم ',
+                'fingerprint_no.required'  => 'الرجاء ادخال :attribute',
+                'id_proof_number.required' => 'الرجاء ادخال رقم الهوية :attribute',
+                'id_proof_number.numeric'  => 'رقم الهوية يجب ان يكون ارقام  :attribute',
+                'id_proof_number.min'      => 'رقم الهوية يجب ان يكون من 10 ارقام',
+            ];
 
+            $validator = Validator::make($request->all(), $rules, $message);
+
+            if ($validator->fails()) {
+                return redirect()->route('security_guards')->withErrors($validator)->withInput();
+            }
+
+            // Update the user data
             $securityGuard->update([
                 'first_name'      => $request->first_name,
                 'mid_name'        => $request->mid_name,
                 'last_name'       => $request->last_name,
                 'id_proof_number' => $request->id_proof_number,
-                'custom_field_1'  => $request->profession, //profession id
+                'custom_field_1'  => $request->profession, // profession id
             ]);
 
+            // Redirect with success message
             return redirect()->route('security_guards')->with('success', __('messages.updated_success'));
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Catch validation exception and redirect back with error messages
+            return redirect()->route('security_guards')
+                ->withErrors($e->errors()) // Return the validation errors
+                ->withInput();             // Retain old input values
         } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = [
-                'success' => false,
-                'msg'     => __('messages.something_went_wrong'),
-            ];
-        }
-        return redirect()->route('security_guards')->withErrors([$output['msg']]);
+            // Log the error and show a generic error message
+            \Log::emergency('File:' . $e->getFile() . ' Line:' . $e->getLine() . ' Message:' . $e->getMessage());
 
+            // Return a generic error message
+            return redirect()->route('security_guards')->withErrors([__('messages.something_went_wrong')]);
+        }
     }
 
     /**

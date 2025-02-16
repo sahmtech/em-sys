@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController;
+use Modules\OperationsManagmentGovernment\Http\Controllers\CommunicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,7 @@ use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentCont
 |
 */
 
+use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController;
 use Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDocumentController;
 use Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController;
 
@@ -69,5 +70,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('operationsmanagmentgovernment/security_guards/update/{id}',
             [SecurityGuardController::class, 'update'])->name('security_guards.update');
 
+        //
+
     });
+    Route::get('operationsmanagmentgovernment.outSide-Communication', [CommunicationController::class, 'outSide'])->name('operationsmanagmentgovernment.outSide-Communication');
+
 });

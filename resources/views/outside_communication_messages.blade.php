@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('home.communication_messages'))
+@section('title', __('home.outside_communication'))
 
 @section('content')
 
     <section class="content-header">
         <h1>
-            <span>@lang('home.communication_between_deps')</span>
+            <span>@lang('home.outside_communication')</span>
         </h1>
     </section>
 
@@ -199,8 +199,8 @@
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" name="from" value="{{ $from }}">
-                        <input type="hidden"   name="type" value="inside">
-
+                     <input type="hidden"   name="type" value="outside">
+                        
 
                         <div class="form-group">
                             <label for="department">@lang('home.department')</label>

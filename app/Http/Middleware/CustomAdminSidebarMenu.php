@@ -532,7 +532,7 @@ class CustomAdminSidebarMenu
                 );
             }
             // ToDo:: permissions Edit
-            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_diagram')) {
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_project_departments')) {
 
                 $menu->url(
                     action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController::class, 'index']),
@@ -584,6 +584,16 @@ class CustomAdminSidebarMenu
                 __('home.communication_between_deps'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
             );
+
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_outside_communication')) {
+
+                $menu->url(
+                    route('operationsmanagmentgovernment.outSide-Communication', ['from' => 'operationsmanagmentgovernment']),
+
+                    __('operationsmanagmentgovernment::lang.outside_communication'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'outside_communication')]
+                );
+            }
         });
     }
     public function InformationTechnologyManagmentMenu()

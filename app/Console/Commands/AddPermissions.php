@@ -30,6 +30,10 @@ class AddPermissions extends Command
             'operationsmanagmentgovernment.view_security_guards',
             'operationsmanagmentgovernment.add_security_guard',
             'operationsmanagmentgovernment.edit_security_guard',
+
+            // outside communication
+            'operationsmanagmentgovernment.view_outside_communication',
+            'operationsmanagmentgovernment.delete_project_department',
         ];
 
         foreach ($permissions as $permission) {

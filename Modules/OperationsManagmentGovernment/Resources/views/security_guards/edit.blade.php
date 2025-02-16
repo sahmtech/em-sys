@@ -122,6 +122,8 @@
 
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     $(document).ready(function () {
         // Dynamically add new fields
@@ -155,5 +157,28 @@
             $(this).closest(".single-field").remove();
         });
     });
+
+      // Show Toastr Messages
+      function showToastrMessages() {
+            // Success message from session
+            @if(session('success'))
+                toastr.success("{{ session('success') }}", 'Success');
+            @endif
+            
+            // Error message from session
+            @if(session('error'))
+                toastr.error("{{ session('error') }}", 'Error');
+            @endif
+
+            // Displaying validation errors from Laravel
+            @if ($errors->any())
+                @foreach ($errors->all() as $error)
+                    toastr.error("{{ $error }}", 'Validation Error');
+                @endforeach
+            @endif
+        }
+
+        // Call the function to show Toastr messages on page load
+        showToastrMessages();
 </script>
 @endsection
