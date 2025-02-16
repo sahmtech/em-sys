@@ -237,7 +237,7 @@ class AgentController extends Controller
                 })
                 ->addColumn('file', function ($row) {
                     if ($row->file_path) {
-                        $fileUrl = asset('storage/' . $row->file_path);
+                        $fileUrl = asset('uploads/' . $row->file_path);
                         return '<a href="' . $fileUrl . '" target="_blank" class="btn btn-xs btn-info">
                                     <i class="fa fa-file"></i> ' . __('home.view_attach') . '
                                 </a>';
