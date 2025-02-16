@@ -15,9 +15,9 @@
                         {!! Form::select(
                             'weight_type_filter',
                             [
-                                '7_tons' => __('operationsmanagmentgovernment::lang.7_tons'),
-                                '19_tons' => __('operationsmanagmentgovernment::lang.19_tons'),
-                                '30_tons' => __('operationsmanagmentgovernment::lang.30_tons'),
+                                '7' => __('operationsmanagmentgovernment::lang.7_tons'),
+                                '19' => __('operationsmanagmentgovernment::lang.19_tons'),
+                                '30' => __('operationsmanagmentgovernment::lang.30_tons'),
                             ],
                             null,
                             [
@@ -132,9 +132,9 @@
                                     {!! Form::select(
                                         'weight_type',
                                         [
-                                            '7_tons' => __('operationsmanagmentgovernment::lang.7_tons'),
-                                            '19_tons' => __('operationsmanagmentgovernment::lang.19_tons'),
-                                            '30_tons' => __('operationsmanagmentgovernment::lang.30_tons'),
+                                            '7' => __('operationsmanagmentgovernment::lang.7_tons'),
+                                            '19' => __('operationsmanagmentgovernment::lang.19_tons'),
+                                            '30' => __('operationsmanagmentgovernment::lang.30_tons'),
                                         ],
                                         null,
                                         [
@@ -237,9 +237,9 @@
                                     {!! Form::select(
                                         'weight_type',
                                         [
-                                            '7_tons' => __('operationsmanagmentgovernment::lang.7_tons'),
-                                            '19_tons' => __('operationsmanagmentgovernment::lang.19_tons'),
-                                            '30_tons' => __('operationsmanagmentgovernment::lang.30_tons'),
+                                            '7' => __('operationsmanagmentgovernment::lang.7_tons'),
+                                            '19' => __('operationsmanagmentgovernment::lang.19_tons'),
+                                            '30' => __('operationsmanagmentgovernment::lang.30_tons'),
                                         ],
                                         null,
                                         [
@@ -370,11 +370,47 @@
                 ]
             });
 
-            $('#company_filterSelect, #driver_filterSelect, #weight_type_filterSelect').on('change', function() {
+            $(' #weight_type_filterSelect').on('change', function() {
                 water_weights_table.ajax.reload();
             });
 
-            // Open Edit Modal
+            // Function to fetch projects based on contact selection
+            function fetchProjects(contactId, projectSelectId, selectedProjectId = null) {
+                if (contactId) {
+                    $.ajax({
+                        url: "{{ url('operationsmanagmentgovernment/getProjectsFromContact') }}/" +
+                            contactId,
+                        type: "GET",
+                        success: function(response) {
+                            $(projectSelectId).empty().append(
+                                '<option value="">{{ __('messages.select') }}</option>');
+
+                            $.each(response, function(id, name) {
+                                $(projectSelectId).append('<option value="' + id + '">' + name +
+                                    '</option>');
+                            });
+
+                            if (selectedProjectId) {
+                                $(projectSelectId).val(selectedProjectId).trigger('change');
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Fetch Projects when Contact is Selected (Add Modal)
+            $('#contact_select').on('change', function() {
+                var contactId = $(this).val();
+                fetchProjects(contactId, '#project_select');
+            });
+
+            // Fetch Projects when Contact is Changed in Edit Modal
+            $('#edit_contact_id').on('change', function() {
+                var contactId = $(this).val();
+                fetchProjects(contactId, '#edit_project_id');
+            });
+
+            // Open Edit Modal and Fetch Data
             $(document).on('click', '.open-edit-modal', function() {
                 var waterWeightId = $(this).data('id');
                 var url = '{{ route('operationsmanagmentgovernment.water_weight.edit', ':id') }}'.replace(
@@ -382,15 +418,23 @@
 
                 $.get(url, function(data) {
                     $('#water_weight_id').val(data.id);
-                    $('#edit_company_id').val(data.company_id).trigger('change');
-                    $('#edit_project_id').val(data.project_id).trigger('change');
-                    $('#edit_driver_id').val(data.driver_id).trigger('change');
+                    $('#edit_driver').val(data.driver);
                     $('#edit_plate_number').val(data.plate_number);
                     $('#edit_water_droping_location').val(data.water_droping_location);
                     $('#edit_weight_type').val(data.weight_type).trigger('change');
                     $('#edit_sample_result').val(data.sample_result);
                     $('#edit_date').val(data.date);
+
+                    // Set contact & fetch its related projects before setting project
+                    $('#edit_contact_id').val(data.contact_id).trigger('change');
+
+                    setTimeout(function() {
+                        fetchProjects(data.contact_id, '#edit_project_id', data.project_id);
+                    }, 500);
+
                     $('#editWaterWeightModal').modal('show');
+                }).fail(function(xhr) {
+                    console.error("Error fetching water weight details:", xhr);
                 });
             });
 

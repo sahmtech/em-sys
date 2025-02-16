@@ -65,6 +65,7 @@
                                 {!! Form::select('contact_id', $contacts, null, [
                                     'class' => 'form-control select2',
                                     'required',
+                                    'id' => 'add_contact_id',
                                 ]) !!}
                             </div>
                             <div class="form-group">
@@ -72,6 +73,7 @@
                                 {!! Form::select('project_id', $projects, null, [
                                     'class' => 'form-control select2',
                                     'placeholder' => __('messages.select'),
+                                    'id' => 'add_project_id',
                                 ]) !!}
                             </div>
                             <div class="form-group">
@@ -170,6 +172,49 @@
                 zones_table.ajax.reload();
             });
 
+            // Function to fetch projects based on contact selection
+            function fetchProjects(contactId, projectSelectId, selectedProjectId = null) {
+                if (contactId) {
+                    $.ajax({
+                        url: "{{ url('operationsmanagmentgovernment/getProjectsFromContact') }}/" +
+                            contactId,
+                        type: "GET",
+                        success: function(response) {
+                            $(projectSelectId).empty().append(
+                                '<option value="">{{ __('messages.select') }}</option>');
+
+                            $.each(response, function(id, name) {
+                                $(projectSelectId).append('<option value="' + id + '">' + name +
+                                    '</option>');
+                            });
+
+                            if (selectedProjectId) {
+                                $(projectSelectId).val(selectedProjectId).trigger('change');
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Fetch Projects when Contact is Selected (Add Modal)
+            $('#contact_select').on('change', function() {
+                var contactId = $(this).val();
+                fetchProjects(contactId, '#project_select');
+            });
+
+            // Fetch Projects when Contact is Selected (Add Modal)
+            $('#add_contact_id').on('change', function() {
+                var contactId = $(this).val();
+                fetchProjects(contactId, '#add_project_id');
+            });
+
+            // Fetch Projects when Contact is Changed in Edit Modal
+            $('#edit_contact_id').on('change', function() {
+                var contactId = $(this).val();
+                fetchProjects(contactId, '#edit_project_id');
+            });
+
+
             $(document).on('click', '.delete_zone', function() {
                 var href = $(this).data('href');
 
@@ -195,6 +240,7 @@
                 });
             });
 
+            // Open Edit Modal and Fetch Data
             $(document).on('click', '.edit_zone', function() {
                 var zoneId = $(this).data('id');
                 var url = '{{ route('operationsmanagmentgovernment.zone.edit', ':id') }}'.replace(':id',
@@ -202,10 +248,18 @@
 
                 $.get(url, function(data) {
                     $('#zone_id').val(data.id);
-                    $('#edit_contact_id').val(data.contact_id).trigger('change');
-                    $('#edit_project_id').val(data.project_id).trigger('change');
                     $('#edit_name').val(data.name);
+
+                    // Set contact & fetch its related projects before setting project
+                    $('#edit_contact_id').val(data.contact_id).trigger('change');
+
+                    setTimeout(function() {
+                        fetchProjects(data.contact_id, '#edit_project_id', data.project_id);
+                    }, 500);
+
                     $('#editZoneModal').modal('show');
+                }).fail(function(xhr) {
+                    console.error("Error fetching zone details:", xhr);
                 });
             });
         });
