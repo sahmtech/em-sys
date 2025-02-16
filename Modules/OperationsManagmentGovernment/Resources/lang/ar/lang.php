@@ -1,4 +1,7 @@
 <?php
+
+use Mpdf\Tag\Q;
+
 return [
     'operationsmanagmentgovernment'           => 'إدارة التشغيل (القطاع الحكومي)',
     'OperationsManagmentGovernment_dashboard' => 'الصفحة الرئيسية لإدارة التشغيل (القطاع الحكومي)',
@@ -25,14 +28,24 @@ return [
     'plate_number'                            => 'رقم اللوحة',
     'water_droping_location'                  => 'موقع تفريغ المياه',
     'weight_type'                             => 'نوع الحمولة',
-    '6_tons'                                  => '6 أطنان',
-    '18_tons'                                 => '18 طناً',
-    '34_tons'                                 => '34 طناً',
+    '7_tons'                                  => '7 أطنان',
+    '19_tons'                                 => '19 طناً',
+    '30_tons'                                 => '30 طناً',
     'sample_result'                           => 'نتيجة العينة',
     'date'                                    => 'التاريخ',
     'created_by'                              => 'تم الإنشاء بواسطة',
     'action'                                  => 'الإجراء',
     'delete_water_weight'                     => 'حذف وايت المياه',
+
+    //asset_assessment
+    'asset_assessment'                        => 'حصر الممتلكات',
+    'add_asset_assessment'                    => 'إضافة حصر ممتلكات',
+    'edit_asset_assessment'                   => 'تعديل حصر ممتلكات',
+    'delete_asset_assessment'                 => 'حذف حصر ممتلكات',
+    'asset'                                   => 'العنصر',
+    'quantity'                                => 'الكمية',
+    'add_asset'                               => 'إضافة عنصر',
+    'edit_asset'                              => 'تعديل عنصر',
 
     // Filters
     'filters'                                 => 'عوامل التصفية',
@@ -113,11 +126,29 @@ return [
     'project'                                 => 'المشروع',
     'client'                                  => 'العميل',
 
+    //Gurdian
+    'security_guards'                         => 'حراس الأمن',
+    'view_security_guards'                    => 'عرض  حراس الأمن',
+    'add_security_guard'                      => 'إضافة حارس أمن',
+    'edit_security_guard'                     => 'تعديل حارس الأمن',
+    'edit_security_guard_data'                => 'تعديل بيانات حارس الأمن',
+    'delete_security_guard'                   => 'حذف حارس الأمن',
+
+    'first_name'                              => 'الاسم الأول',
+    'mid_name'                                => 'الاسم الثاني',
+    'last_name'                               => 'إسم العائلة',
+    'fingerprint_no'                          => 'رقم البصمة',
+    'id_proof_number'                         => 'رقم الهوية',
+    'profession'                              => 'الوظيفة',
+    'full_name'                               => 'الإسم',
+
     //zone
-    'project_zone'                            => 'مناطق المشروع',
+    'zone_name'                               => 'اسم المنطقة',
+    'project_zones'                           => 'مناطق المشروع',
     'add_project_zone'                        => 'اضافة مناطق المشروع',
     'edit_project_zone'                       => 'تعديل مناطق المشروع',
     'delete_project_zone'                     => 'حذف مناطق المشروع',
+    'zone'                                    => 'منطقة المشروع',
 
     //permissions
     'permissions'                             => 'صلاحيات العملاء',

@@ -17,7 +17,6 @@ class AddPermissions extends Command
             // Project Diagram
 
             'operationsmanagmentgovernment.project_diagram',
-
             'operationsmanagmentgovernment.add_project_diagram',
             'operationsmanagmentgovernment.delete_project_diagram',
             'operationsmanagmentgovernment.view_project_diagram',
@@ -25,6 +24,12 @@ class AddPermissions extends Command
             'operationsmanagmentgovernment.view_project_report',
             'operationsmanagmentgovernment.add_project_report',
             'operationsmanagmentgovernment.delete_project_report',
+
+            // security guard
+            'operationsmanagmentgovernment.delete_security_guard',
+            'operationsmanagmentgovernment.view_security_guards',
+            'operationsmanagmentgovernment.add_security_guard',
+            'operationsmanagmentgovernment.edit_security_guard',
         ];
 
         foreach ($permissions as $permission) {

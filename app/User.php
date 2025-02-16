@@ -2,42 +2,43 @@
 namespace App;
 
 use App\Contact;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Laravel\Passport\HasApiTokens;
-use Modules\AssetManagement\Entities\AssetTransaction;
-use Modules\Essentials\Entities\EssentialsAdmissionToWork;
-use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Session;
+use Modules\HelpDesk\Entities\HdTicket;
+use Illuminate\Notifications\Notifiable;
+use Modules\Sales\Entities\SalesProject;
+use Modules\Essentials\Entities\WorkCard;
+use Modules\Essentials\Entities\Penalties;
+use Modules\HousingMovements\Entities\Car;
+use Modules\HelpDesk\Entities\HdTicketReply;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\HousingMovements\Entities\HtrRoom;
+use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsWorkCard;
+use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\AssetManagement\Entities\AssetTransaction;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsEmployeesFamily;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\InternationalRelations\Entities\IrProposedLabor;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
+use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
-use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Modules\Essentials\Entities\EssentialsSpecialization;
-use Modules\Essentials\Entities\EssentialsUserShift;
-use Modules\Essentials\Entities\EssentialsWorkCard;
-use Modules\Essentials\Entities\Penalties;
-use Modules\Essentials\Entities\UserLeaveBalance;
-use Modules\Essentials\Entities\WorkCard;
-use Modules\FollowUp\Entities\FollowupUserAccessProject;
-use Modules\HelpDesk\Entities\HdTicket;
-use Modules\HelpDesk\Entities\HdTicketReply;
-use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
-use Modules\HousingMovements\Entities\HtrRoom;
-use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
-use Modules\InternationalRelations\Entities\IrProposedLabor;
-use Modules\Sales\Entities\SalesProject;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -687,6 +688,11 @@ class User extends Authenticatable
     public function logins()
     {
         return $this->hasMany(LoginRecord::class);
+    }
+    // To Get Guard Profession From custom_field_1 on users
+    public function guardProfession()
+    {
+        return $this->belongsTo(EssentialsProfession::class, 'custom_field_1');
     }
 
 }

@@ -12,8 +12,10 @@ use Illuminate\Routing\Controller;
 use Modules\OperationsManagmentGovernment\Entities\WaterWeight;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
+use Modules\OperationsManagmentGovernment\Entities\AssetAssessment;
 use Modules\OperationsManagmentGovernment\Entities\ContactActivity;
 use Modules\OperationsManagmentGovernment\Entities\ContactActivityPermission;
+use Modules\OperationsManagmentGovernment\Entities\ProjectZone;
 use Modules\Sales\Entities\SalesProject;
 
 class OperationsManagmentGovernmentController extends Controller
@@ -26,6 +28,141 @@ class OperationsManagmentGovernmentController extends Controller
     {
         return view('operationsmanagmentgovernment::index');
     }
+
+    public function getProjectsFromContact($contact_id)
+    {
+        return SalesProject::where('contact_id', $contact_id)->pluck('name', 'id')->toArray();
+    }
+
+    public function getZonesFromProjects($project_id)
+    {
+        error_log($project_id);
+        return ProjectZone::where('project_id', $project_id)->pluck('name', 'id')->toArray();
+    }
+
+    public function asset_assessment()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $can_index_asset_assessment = auth()->user()->can('operationsmanagmentgovernment.asset_assessment');
+
+        if (!($is_admin || $can_index_asset_assessment)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('messages.unauthorized'),
+            ]);
+        }
+
+        $zones = ProjectZone::pluck('name', 'id');
+        $assets = AssetAssessment::with(['zone.project.contact']);
+        if (request()->ajax()) {
+            return DataTables::of($assets)
+                ->addColumn('contact', function ($row) {
+                    return $row->project?->contact?->supplier_business_name ?? '-';
+                })
+                ->addColumn('project', function ($row) {
+                    return $row->project?->name ?? '-';
+                })
+                ->addColumn('zone', function ($row) {
+                    return $row->zone?->name ?? '-';
+                })
+                ->addColumn('action', function ($row) {
+                    return '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '" data-url="' . route('operationsmanagmentgovernment.asset_assessment.edit', $row->id) . '">' . __('messages.edit') . '</button>
+                            <button class="btn btn-xs btn-danger delete-asset-button" data-href="' . route('operationsmanagmentgovernment.asset_assessment.delete', $row->id) . '">' . __('messages.delete') . '</button>';
+                })
+                ->rawColumns(['action', 'contact', 'project'])
+                ->make(true);
+        }
+
+        $contacts = Contact::pluck('supplier_business_name', 'id')->toArray();
+        return view('operationsmanagmentgovernment::assets.index', compact('zones', 'contacts'));
+    }
+
+
+
+
+    public function store_asset_assessment(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            AssetAssessment::create([
+                'zone_id' => $request->zone_id,
+                'asset' => $request->asset,
+                'quantity' => $request->quantity,
+            ]);
+
+            DB::commit();
+            $output = [
+                'success' => true,
+                'msg' => __('operationsmanagmentgovernment::lang.added_success'),
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
+
+
+    public function edit_asset_assessment($id)
+    {
+        $asset = AssetAssessment::findOrFail($id);
+        $zone = ProjectZone::find($asset->zone_id);
+        $project = $zone ? SalesProject::find($zone->project_id) : null;
+        $contact = $project ? Contact::find($project->contact_id) : null;
+
+        return response()->json([
+            'id' => $asset->id,
+            'zone_id' => $asset->zone_id,
+            'asset' => $asset->asset,
+            'quantity' => $asset->quantity,
+            'project_id' => $project ? $project->id : null,
+            'contact_id' => $contact ? $contact->id : null,
+        ]);
+    }
+
+
+
+    public function update_asset_assessment(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $asset = AssetAssessment::findOrFail($id);
+            $asset->update([
+                'zone_id' => $request->zone_id,
+                'asset' => $request->asset,
+                'quantity' => $request->quantity,
+            ]);
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'msg' => __('messages.updated_success')]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'msg' => __('messages.something_went_wrong')]);
+        }
+    }
+
+    public function destroy_asset_assessment($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            AssetAssessment::findOrFail($id)->delete();
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'msg' => __('messages.deleted_success')]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'msg' => __('messages.something_went_wrong')]);
+        }
+    }
+
 
     public function permissions()
     {
@@ -52,7 +189,7 @@ class OperationsManagmentGovernmentController extends Controller
 
     public function get_contact_permissions($id)
     {
-        $permissions = ContactActivityPermission::where('contact_id', $id)->pluck('activity_id')->toArray();
+        $permissions = ContactActivityPermission::where('activity_id', 1)->where('contact_id', $id)->pluck('activity_id')->toArray();
         $all_activities = ContactActivity::all()->pluck('name', 'id')->toArray();
 
         return response()->json(['permissions' => $permissions ?: [], 'all_activities' => $all_activities]);
@@ -60,7 +197,7 @@ class OperationsManagmentGovernmentController extends Controller
 
     public function update_permissions(Request $request, $id)
     {
-        ContactActivityPermission::where('contact_id', $id)->delete();
+        ContactActivityPermission::where('activity_id', 1)->where('contact_id', $id)->delete();
 
         if ($request->has('activities')) {
             foreach ($request->activities as $activity_id) {
@@ -76,11 +213,123 @@ class OperationsManagmentGovernmentController extends Controller
 
 
 
-
-    public function zone()
+    public function zones()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $can_index_project_zones = auth()->user()->can('operationsmanagmentgovernment.project_zones');
 
-        return view('operationsmanagmentgovernment::zone.index');
+        if (!($is_admin || $can_index_project_zones)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('messages.unauthorized'),
+            ]);
+        }
+
+        if (request()->ajax()) {
+            $zones = ProjectZone::query();
+
+            return DataTables::of($zones)
+                ->editColumn('project', function ($row) {
+                    return SalesProject::where('id', $row->project_id)->first()?->name ?? '-';
+                })
+                ->editColumn('contact', function ($row) {
+                    return Contact::where('id', $row->contact_id)->first()?->supplier_business_name ?? '-';
+                })
+                ->addColumn('action', function ($row) {
+                    return '
+                        <button data-id="' . $row->id . '" class="btn btn-xs btn-info edit_zone">
+                            <i class="fas fa-edit"></i> ' . __("messages.edit") . '
+                        </button>
+                        <button data-href="' . route('operationsmanagmentgovernment.zone.delete', ['id' => $row->id]) . '" 
+                            class="btn btn-xs btn-danger delete_zone">
+                            <i class="fa fa-trash"></i> ' . __("messages.delete") . '
+                        </button>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        $projects = SalesProject::pluck('name', 'id')->toArray();
+        $contacts = Contact::pluck('supplier_business_name', 'id')->toArray();
+
+        return view('operationsmanagmentgovernment::zone.index', compact('projects', 'contacts'));
+    }
+
+    public function store_zone(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'contact_id' => 'required|exists:contacts,id',
+            'project_id' => 'nullable|exists:sales_projects,id',
+        ]);
+
+        ProjectZone::create([
+            'name' => $request->name,
+            'contact_id' => $request->contact_id,
+            'project_id' => $request->project_id,
+        ]);
+
+        return redirect()->back()->with('status', [
+            'success' => true,
+            'msg' => __('operationsmanagmentgovernment::lang.added_success'),
+        ]);
+    }
+
+    public function edit_zone($id)
+    {
+        $zone = ProjectZone::findOrFail($id);
+
+        return response()->json([
+            'id' => $zone->id,
+            'contact_id' => $zone->contact_id,
+            'project_id' => $zone->project_id,
+            'name' => $zone->name,
+        ]);
+    }
+
+    public function update_zone(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'contact_id' => 'required|exists:contacts,id',
+            'project_id' => 'nullable|exists:sales_projects,id',
+        ]);
+
+        $zone = ProjectZone::findOrFail($id);
+        $zone->update([
+            'name' => $request->name,
+            'contact_id' => $request->contact_id,
+            'project_id' => $request->project_id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'msg' => __('operationsmanagmentgovernment::lang.updated_success'),
+        ]);
+    }
+
+    public function delete_zone($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $zone = ProjectZone::findOrFail($id);
+            $zone->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'msg' => __('operationsmanagmentgovernment::lang.deleted_success'),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
+        }
     }
 
     public function water()
@@ -98,10 +347,11 @@ class OperationsManagmentGovernmentController extends Controller
         $WaterWeights = WaterWeight::all();
         $companies = Company::all();
 
-        $ids = ContactActivityPermission::pluck('contact_id')->toArray();
+        $ids = ContactActivityPermission::where('activity_id', 1)->pluck('contact_id')->toArray();
         $contacts = Contact::whereIn('id', $ids)->pluck('supplier_business_name', 'id')->toArray();
         $contact_ids = Contact::whereIn('id', $ids)->pluck('id')->toArray();
         $projects = SalesProject::whereIn('contact_id', $contact_ids)->pluck('name', 'id')->toArray();
+        // dd($WaterWeights);
         if (request()->ajax()) {
             return DataTables::of($WaterWeights)
                 ->editColumn('company', function ($row) {
@@ -130,6 +380,15 @@ class OperationsManagmentGovernmentController extends Controller
                     $tmp = User::where('id', $row->created_by)->first();
                     return  $tmp?->first_name . ' ' .  $tmp?->last_ame ?? '';
                 })
+                ->addColumn('file', function ($row) {
+                    if ($row->file_path) {
+                        $fileUrl = asset('storage/' . $row->file_path);
+                        return '<a href="' . $fileUrl . '" target="_blank" class="btn btn-xs btn-info">
+                                    <i class="fa fa-file"></i> ' . __('home.view_attach') . '
+                                </a>';
+                    }
+                    return '';
+                })
                 ->addColumn('action', function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
@@ -143,7 +402,7 @@ class OperationsManagmentGovernmentController extends Controller
                     return $html;
                 })
 
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'file'])
                 ->make(true);
         }
 
@@ -166,6 +425,15 @@ class OperationsManagmentGovernmentController extends Controller
     {
         try {
             DB::beginTransaction();
+            error_log(json_encode($request->all()));
+            $filePath = null;
+            if (request()->hasFile('file_upload')) {
+                $file = request()->file('file_upload');
+                $filePath = $file->store('/water_weights');
+                error_log($filePath);
+            } else {
+                error_log("no file path");
+            }
 
             $waterWeight = WaterWeight::create([
                 'company_id' => 1,
@@ -177,6 +445,7 @@ class OperationsManagmentGovernmentController extends Controller
                 'weight_type' => $request->input('weight_type'),
                 'sample_result' => $request->input('sample_result'),
                 'date' => $request->input('date'),
+                'file_path' => $filePath,
                 'created_by' => auth()->id(),
             ]);
 
@@ -213,7 +482,9 @@ class OperationsManagmentGovernmentController extends Controller
             'weight_type' => $waterWeight->weight_type,
             'water_droping_location' => $waterWeight->water_droping_location,
             'sample_result' => $waterWeight->sample_result,
-            'date' => $waterWeight->date
+            'date' => $waterWeight->date,
+            'file_path' => $waterWeight->file_path ? asset('storage/' . $waterWeight->file_path) : null,
+
         ]);
     }
 
@@ -224,6 +495,14 @@ class OperationsManagmentGovernmentController extends Controller
             DB::beginTransaction();
 
             $waterWeight = WaterWeight::findOrFail($id);
+            $filePath = $waterWeight->file_path;
+            if (request()->hasFile('file_upload')) {
+                if ($request->hasFile('file_upload')) {
+                    $file = request()->file('file_upload');
+                    $filePath = $file->store('/water_weights');
+                }
+            }
+
             $waterWeight->update([
                 'driver' => $request->input('driver'),
                 'contact_id' => $request->input('contact_id'),
@@ -232,6 +511,7 @@ class OperationsManagmentGovernmentController extends Controller
                 'weight_type' => $request->input('weight_type'),
                 'sample_result' => $request->input('sample_result'),
                 'date' => $request->input('date'),
+                'file_path' => $filePath,
             ]);
 
             DB::commit();

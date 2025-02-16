@@ -1,5 +1,6 @@
 @extends('layouts.app')
-@section('title', __('operationsmanagmentgovernment::lang.project_departments'))
+@section('title', __('operationsmanagmentgovernment::lang.security_guards'))
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
     .close {
@@ -74,7 +75,7 @@
 @section('content')
 <section class="content-header">
     <h1>
-        <span>@lang('operationsmanagmentgovernment::lang.project_departments')</span>
+        <span>@lang('operationsmanagmentgovernment::lang.security_guards')</span>
     </h1>
 </section>
 
@@ -88,8 +89,8 @@
             @slot('tool')
             <div class="box-tools">
                 <a class="btn btn-primary pull-right m-5 btn-modal"
-                    href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController@create') }}"
-                    data-href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController@create') }}"
+                    href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController@create') }}"
+                    data-href="{{ action('Modules\OperationsManagmentGovernment\Http\Controllers\SecurityGuardController@create') }}"
                     data-container="#add_document_model">
                     <i class="fas fa-plus"></i> @lang('messages.add')
                 </a>
@@ -100,7 +101,10 @@
                 <table class="table table-bordered table-striped" id="document_table" style="margin-bottom: 100px;">
                     <thead>
                         <tr>
-                            <th>@lang('followup::lang.name')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.full_name')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.id_proof_number')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.fingerprint_no')</th>
+                            <th>@lang('operationsmanagmentgovernment::lang.profession')</th>
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
@@ -123,41 +127,27 @@
         var document_table = $('#document_table').DataTable({
             processing: true,
             serverSide: true,
+            order: [0, 'desc'],
             ajax: {
-                url: '{{ route('project_departments') }}',
+                url: '{{ route('security_guards') }}',
                 data: function(d) {
                     d.carTypeSelect = $('#carTypeSelect').val();
                     d.driver_select = $('#driver_select').val();
                 }
             },
             columns: [
-                { data: 'name_ar' },
+                { data: 'full_name' },
+                { data: 'id_proof_number'},
+                { data: 'fingerprint_no' },
+                { data: 'profession' },
                 { data: 'action' }
             ]
         });
 
-        // File Preview Handler
-        $(document).on('click', '.preview-file', function(e) {
-            e.preventDefault();
-            var fileUrl = $(this).data('file-url');
-            var fileName = $(this).data('file-name');
-            var modal = $('#fileModal');
-            modal.find('.modal-title').text(fileName);
-
-            if (!fileUrl || fileUrl.trim() === '') {
-                toastr.error("@lang('messages.invalid_file_url')");
-                return;
-            }
-
-            var fileExtension = fileUrl.split('.').pop().toLowerCase();
-            var content = generateFilePreviewContent(fileUrl, fileExtension);
-
-            modal.find('#fileContent').html(content);
-            modal.modal('show');
-        });
+        
 
         // Delete Document Handler
-        $(document).on('click', '.delete_document_button', function() {
+        $(document).on('click', '.delete_security_guard_button', function() {
             var href = $(this).data('href');
             Swal.fire({
                 title: "هل أنت متأكد؟",
@@ -179,16 +169,41 @@
             });
         });
 
-        // Edit Document Handler
-        $(document).on('click', '.edit_document_button', function() {
-            var href = $(this).data('href');
-            handleDocumentEdit(href);
-        });
-
+       
         // Toastr Notifications
         showToastrMessages();
+          // Show Toastr Messages
+       function showToastrMessages() {
+        @if(session('success'))
+            toastr.success("{{ session('success') }}");
+        @endif
+        
+        @if(session('error'))
+            toastr.error("{{ session('error') }}");
+        @endif
+    }
+
+    // Handle Document Deletion
+    function handleDocumentDeletion(href) {
+        $.ajax({
+            method: "DELETE",
+            url: href,
+            dataType: "json",
+            success: function(result) {
+                if (result.success) {
+                    toastr.success(result.msg);
+                    $('#document_table').DataTable().ajax.reload();
+                } else {
+                    toastr.error(result.msg);
+                }
+            }
+        });
+    }
     });
+
+
 
       
 </script>
+
 @endsection
