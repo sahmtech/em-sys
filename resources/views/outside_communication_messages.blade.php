@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('home.outside_communication'))
+@section('title', __('home.clients_orders'))
 
 @section('content')
 
 <section class="content-header">
     <h1>
-        <span>@lang('home.outside_communication')</span>
+        <span>@lang('home.clients_orders')</span>
     </h1>
 </section>
 
