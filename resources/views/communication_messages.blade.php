@@ -199,6 +199,8 @@
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" name="from" value="{{ $from }}">
+                        <input type="hidden"   name="type" value="inside">
+
 
                         <div class="form-group">
                             <label for="department">@lang('home.department')</label>

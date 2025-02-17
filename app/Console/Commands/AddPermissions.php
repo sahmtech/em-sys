@@ -30,6 +30,24 @@ class AddPermissions extends Command
             'operationsmanagmentgovernment.view_security_guards',
             'operationsmanagmentgovernment.add_security_guard',
             'operationsmanagmentgovernment.edit_security_guard',
+
+            // outside communication
+            'operationsmanagmentgovernment.view_outside_communication',
+            'operationsmanagmentgovernment.delete_project_department',
+
+            // payrolls  import_new_arrival_workers Feat
+            'payrolls.import_new_arrival_workers',
+            'payrolls.housed',
+            'payrolls.advanceSalaryRequest',
+            'payrolls.medicalExamination',
+            'payrolls.medicalInsurance',
+            'payrolls.workCardIssuing',
+            'payrolls.bankAccount',
+            'payrolls.SIMCard',
+            'payrolls.contract',
+            'payrolls.residencyAdd',
+            'payrolls.residencyDelivery',
+
         ];
 
         foreach ($permissions as $permission) {

@@ -1,18 +1,22 @@
 <?php
-namespace App\Http\Controllers;
+namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 
 use App\CommunicationAttachment;
 use App\CommunicationMessage;
 use App\CommunicationReplie;
+use App\Contact;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Yajra\DataTables\Facades\DataTables;
 
 class CommunicationController extends Controller
 {
-    public function index($from)
+
+    // Out Side  Communication
+    public function outSide($from = 'operationsmanagmentgovernment')
     {
 
         $departmentIds = [];
@@ -84,7 +88,9 @@ class CommunicationController extends Controller
 
         $user     = User::where('id', auth()->user()->id)->first();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $messages = CommunicationMessage::query()->where('type', 'inside');
+        $messages = CommunicationMessage::query()->where('type', 'outside')->whereNotNull('contact_id');
+
+        $contacts = Contact::where('supplier_business_name', 'روتانا')->pluck('supplier_business_name', 'id');
 
         $departments = EssentialsDepartment::whereNotIn('id', $departmentIds)->pluck('name', 'id');
         $users       = User::select(
@@ -93,10 +99,14 @@ class CommunicationController extends Controller
         )->pluck('name', 'id')->toArray();
 
         $messages     = $messages->whereIn('sender_department_id', $departmentIds);
-        $sentMessages = CommunicationMessage::whereIn('sender_department_id', $departmentIds)->where('type', 'inside')
+        $sentMessages = CommunicationMessage::whereIn('sender_department_id', $departmentIds)->where('type', 'outside')
+            ->whereNotNull('contact_id')
+
             ->with('replies', 'attachments')->get();
 
-        $receivedMessages = CommunicationMessage::whereIn('reciever_department_id', $departmentIds)->where('type', 'inside')
+        $receivedMessages = CommunicationMessage::whereIn('reciever_department_id', $departmentIds)->where('type', 'outside')
+            ->whereNotNull('contact_id')
+
             ->with('replies', 'attachments')->get();
         if (request()->ajax()) {
             return Datatables::of($messages)
@@ -116,7 +126,7 @@ class CommunicationController extends Controller
             'high'   => __('helpdesk::lang.high'),
             'urgent' => __('helpdesk::lang.urgent'),
         ];
-        return view('communication_messages')->with(compact('from', 'route', 'sentMessages', 'receivedMessages', 'departments', 'users', 'urgencies'));
+        return view('outside_communication_messages')->with(compact('from', 'route', 'sentMessages', 'receivedMessages', 'contacts', 'departments', 'users', 'urgencies'));
     }
 
     public function send_communication_message(Request $request)
@@ -125,7 +135,6 @@ class CommunicationController extends Controller
         $validatedData = $request->validate([
             'from'          => 'required|string',
             'department'    => 'required|integer|exists:essentials_departments,id',
-            'contact_id'    => 'nullable|integer|exists:contacts,id',
             'title'         => 'required|string|max:255',
             'message'       => 'required|string',
             'type'          => 'required|string',
@@ -199,9 +208,7 @@ class CommunicationController extends Controller
             'sender_department_id'   => $sender_department_id,
             'reciever_department_id' => $validatedData['department'],
             'sender_id'              => auth()->user()->id,
-            'contact_id'             => $validatedData['contact_id'] ?? null,
             'title'                  => $validatedData['title'],
-            'type'                   => $validatedData['type'],
             'message'                => $validatedData['message'],
             'urgency'                => $validatedData['urgency'],
         ]);

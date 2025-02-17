@@ -532,7 +532,7 @@ class CustomAdminSidebarMenu
                 );
             }
             // ToDo:: permissions Edit
-            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.project_diagram')) {
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_project_departments')) {
 
                 $menu->url(
                     action([\Modules\OperationsManagmentGovernment\Http\Controllers\ProjectDepartmentController::class, 'index']),
@@ -592,6 +592,16 @@ class CustomAdminSidebarMenu
                 __('home.communication_between_deps'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'communication_between_deps'],
             );
+
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.view_outside_communication')) {
+
+                $menu->url(
+                    route('operationsmanagmentgovernment.outSide-Communication', ['from' => 'operationsmanagmentgovernment']),
+
+                    __('operationsmanagmentgovernment::lang.clients_orders'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'outside_communication')]
+                );
+            }
         });
     }
     public function InformationTechnologyManagmentMenu()
@@ -1585,50 +1595,51 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' && (request()->segment(2) == 'index-penalties')]
                 );
             }
+            
             if (
-                $is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')
-                || auth()->user()->can('housingmovements.housed')
-                || auth()->user()->can('housingmovements.advanceSalaryRequest')
-                || auth()->user()->can('housingmovements.medicalExamination')
-                || auth()->user()->can('housingmovements.medicalInsurance')
-                || auth()->user()->can('housingmovements.workCardIssuing')
-                || auth()->user()->can('housingmovements.SIMCard')
-                || auth()->user()->can('housingmovements.bankAccount')
-                || auth()->user()->can('housingmovements.contract')
-                || auth()->user()->can('housingmovements.residencyAdd&Print')
-                || auth()->user()->can('housingmovements.residencyDelivery')
+                $is_admin || auth()->user()->can('payrolls.import_new_arrival_workers')
+                || auth()->user()->can('payrolls.housed')
+                || auth()->user()->can('payrolls.advanceSalaryRequest')
+                || auth()->user()->can('payrolls.medicalExamination')
+                || auth()->user()->can('payrolls.medicalInsurance')
+                || auth()->user()->can('payrolls.workCardIssuing')
+                || auth()->user()->can('payrolls.SIMCard')
+                || auth()->user()->can('payrolls.bankAccount')
+                || auth()->user()->can('payrolls.contract')
+                || auth()->user()->can('payrolls.residencyAdd&Print')
+                || auth()->user()->can('payrolls.residencyDelivery')
 
             ) {
 
                 $menu->url(
-                    ($is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')) ? action([
+                    ($is_admin || auth()->user()->can('payrolls.import_new_arrival_workers')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'new_arrival_for_workers',
-                    ]) : ((auth()->user()->can('housingmovements.housed')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.housed')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'housed_workers_index',
-                    ]) : ((auth()->user()->can('housingmovements.advanceSalaryRequest')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.advanceSalaryRequest')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'advanceSalaryRequest',
-                    ]) : ((auth()->user()->can('housingmovements.medicalExamination')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.medicalExamination')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'medicalExamination',
-                    ]) : ((auth()->user()->can('housingmovements.medicalInsurance')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.medicalInsurance')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'medicalInsurance',
-                    ]) : ((auth()->user()->can('housingmovements.workCardIssuing')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.workCardIssuing')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'workCardIssuing',
-                    ]) : ((auth()->user()->can('housingmovements.SIMCard')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.SIMCard')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'SIMCard',
-                    ]) : ((auth()->user()->can('housingmovements.bankAccount')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.bankAccount')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'bankAccounts',
-                    ]) : ((auth()->user()->can('housingmovements.contract')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.contract')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'QiwaContracts',
-                    ]) : ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
+                    ]) : ((auth()->user()->can('payrolls.residencyAdd&Print')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'residencyPrint',
                     ]) : action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyDelivery'])))))))))),

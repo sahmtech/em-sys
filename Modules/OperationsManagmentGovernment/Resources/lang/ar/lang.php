@@ -108,6 +108,7 @@ return [
     // project_departments
     'project_department'                      => 'قسم المشروع',
     'project_departments'                     => 'أقسام المشروع',
+    'view_project_departments'                => 'عرض أقسام المشروع',
     'add_project_department'                  => 'إضافة قسم جديد',
     'edit_project_department'                 => 'تعديل قسم المشروع',
     'delete_project_department'               => 'حذف قسم المشروع',
@@ -153,5 +154,25 @@ return [
     //permissions
     'permissions'                             => 'صلاحيات العملاء',
     'update_permissions'                      => 'تعديل صلاحيات العملاء',
+    'edit_permissions'                        => ' تعديل صلاحيات العملاء',
+    'view_outside_communication'              => ' عرض التواصل الخارجي',
+    'outside_communication'                   => '  التواصل الخارجي',
+    'clients_orders'                          => 'طلبات العملاء',
+
+    // validation
+    'first_name'                              => 'الاسم الأول',
+    'mid_name'                                => 'اسم الثاني',
+    'last_name'                               => 'الاسم الأخير',
+    'profession'                              => 'الوظيفة',
+    'id_proof_number'                         => 'رقم إثبات الهوية',
+    'fingerprint_no'                          => 'رقم البصمة ',
+    'attributes'                              => [
+        'first_name'      => 'الاسم الاول',
+        'mid_name'        => 'الاسم الثاني',
+        'last_name'       => 'الاسم الاخير',
+        'profession'      => 'الوظيفة',
+        'id_proof_number' => 'رقم الهوية',
+        'fingerprint_no'  => 'رقم البصمة',
+    ],
 
 ];

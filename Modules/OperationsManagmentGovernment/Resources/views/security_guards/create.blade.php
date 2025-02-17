@@ -158,7 +158,6 @@
 
        
     });
-</script>
 
 
 </script>
