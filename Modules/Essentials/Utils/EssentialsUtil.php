@@ -108,11 +108,7 @@ class EssentialsUtil extends Util
 
         $user_shifts = EssentialsUserShift::join('essentials_shifts as s', 's.id', '=', 'essentials_user_shifts.essentials_shift_id')
             ->where('user_id', $user_id)
-            ->where('start_date', '<=', $shift_datetime)
-            ->where(function ($q) use ($shift_datetime) {
-                $q->whereNull('end_date')
-                    ->orWhere('end_date', '>=', $shift_datetime);
-            })
+            ->where('is_active', 1)
             ->select('essentials_user_shifts.*', 's.holidays', 's.start_time', 's.end_time', 's.type')
             ->get();
         foreach ($user_shifts as $shift) {
@@ -258,6 +254,7 @@ class EssentialsUtil extends Util
             ->whereDate('clock_in_time', Carbon::now()->toDateString())
             ->whereNull('clock_out_time')
             ->count();
+
         if ($count == 0) {
             //1 attended 
             //2 late
@@ -318,7 +315,7 @@ class EssentialsUtil extends Util
             ->whereNull('clock_out_time')
             ->first();
         $clock_out_time = is_object($data['clock_out_time']) ? $data['clock_out_time']->toDateTimeString() : $data['clock_out_time'];
-
+        error_log($clock_in);
         if (!empty($clock_in)) {
             $can_clockout = $this->canClockOut($clock_in, $essentials_settings, $clock_out_time);
             if (!$can_clockout) {

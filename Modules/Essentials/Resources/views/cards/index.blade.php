@@ -652,12 +652,12 @@
                                 pay_numberInput.on('input', function() {
                                     var currentValue = $(this).val().replace(
                                         /\D/g, ''
-                                        ); // Remove non-numeric characters
+                                    ); // Remove non-numeric characters
                                     if (currentValue.length !== 14) {
                                         // If not exactly 14 digits, show error message
                                         $('#error-message').text(
                                             'You must enter exactly 14 numbers'
-                                            ).show();
+                                        ).show();
                                     } else {
                                         // If exactly 14 digits, hide error message
                                         $('#error-message').hide();
@@ -696,90 +696,90 @@
 
 
                                 $('#renew_durationId_' + index).on('change',
-                            function() {
-                                    console.log("Change event triggered");
-                                    var selectedValue = $(this).val();
-                                    console.log("Selected value:",
-                                        selectedValue);
-                                    var feesInput = $(this).closest('.row')
-                                        .find('input[name="fees[]"]');
-                                    console.log("Fees input found:", feesInput);
-                                    var fees = calculateFees(selectedValue);
-                                    console.log("Calculated fees:", fees);
-                                    feesInput.val(fees);
-                                });
+                                    function() {
+                                        console.log("Change event triggered");
+                                        var selectedValue = $(this).val();
+                                        console.log("Selected value:",
+                                            selectedValue);
+                                        var feesInput = $(this).closest('.row')
+                                            .find('input[name="fees[]"]');
+                                        console.log("Fees input found:", feesInput);
+                                        var fees = calculateFees(selectedValue);
+                                        console.log("Calculated fees:", fees);
+                                        feesInput.val(fees);
+                                    });
 
 
                                 $('#renew_durationId_' + index).on('change',
-                            function() {
-                                    var selectedValue = $(this).val();
-                                    var passportFeesSelect = $(this).closest(
-                                        '.row').find(
-                                        'select[name="passportfees[]"]');
-                                    passportFeesSelect
-                                .empty(); // Clear previous options
+                                    function() {
+                                        var selectedValue = $(this).val();
+                                        var passportFeesSelect = $(this).closest(
+                                            '.row').find(
+                                            'select[name="passportfees[]"]');
+                                        passportFeesSelect
+                                            .empty(); // Clear previous options
 
-                                    if (selectedValue === '3') {
-                                        var feesOptions = {
-                                            163: '163',
-                                            288: '288',
-                                            413: '413',
+                                        if (selectedValue === '3') {
+                                            var feesOptions = {
+                                                163: '163',
+                                                288: '288',
+                                                413: '413',
 
-                                        };
-                                        $.each(feesOptions, function(value,
-                                            text) {
-                                            var option = $('<option>', {
-                                                value: value,
-                                                text: text
+                                            };
+                                            $.each(feesOptions, function(value,
+                                                text) {
+                                                var option = $('<option>', {
+                                                    value: value,
+                                                    text: text
+                                                });
+                                                passportFeesSelect.append(
+                                                    option);
                                             });
-                                            passportFeesSelect.append(
-                                                option);
-                                        });
-                                    } else if (selectedValue === '6') {
-                                        var feesOptions = {
-                                            326: '326',
-                                            825: '825',
-                                        };
-                                        $.each(feesOptions, function(value,
-                                            text) {
-                                            var option = $('<option>', {
-                                                value: value,
-                                                text: text
+                                        } else if (selectedValue === '6') {
+                                            var feesOptions = {
+                                                326: '326',
+                                                825: '825',
+                                            };
+                                            $.each(feesOptions, function(value,
+                                                text) {
+                                                var option = $('<option>', {
+                                                    value: value,
+                                                    text: text
+                                                });
+                                                passportFeesSelect.append(
+                                                    option);
                                             });
-                                            passportFeesSelect.append(
-                                                option);
-                                        });
-                                    } else if (selectedValue === '9') {
-                                        var feesOptions = {
-                                            488: '488',
+                                        } else if (selectedValue === '9') {
+                                            var feesOptions = {
+                                                488: '488',
 
-                                        };
-                                        $.each(feesOptions, function(value,
-                                            text) {
-                                            var option = $('<option>', {
-                                                value: value,
-                                                text: text
+                                            };
+                                            $.each(feesOptions, function(value,
+                                                text) {
+                                                var option = $('<option>', {
+                                                    value: value,
+                                                    text: text
+                                                });
+                                                passportFeesSelect.append(
+                                                    option);
                                             });
-                                            passportFeesSelect.append(
-                                                option);
-                                        });
-                                    } else if (selectedValue === '12') {
-                                        var feesOptions = {
-                                            650: '650',
-                                            1150: '1150',
+                                        } else if (selectedValue === '12') {
+                                            var feesOptions = {
+                                                650: '650',
+                                                1150: '1150',
 
-                                        };
-                                        $.each(feesOptions, function(value,
-                                            text) {
-                                            var option = $('<option>', {
-                                                value: value,
-                                                text: text
+                                            };
+                                            $.each(feesOptions, function(value,
+                                                text) {
+                                                var option = $('<option>', {
+                                                    value: value,
+                                                    text: text
+                                                });
+                                                passportFeesSelect.append(
+                                                    option);
                                             });
-                                            passportFeesSelect.append(
-                                                option);
-                                        });
-                                    }
-                                });
+                                        }
+                                    });
 
 
 

@@ -801,4 +801,19 @@ return [
     'appointment_date_end_at'                            => 'appointment end date',
     'attach_owner_type'                                  => 'Attachment Owner Type',
     'there_is_no_essential_dep'                          => 'There is no human resources department in the organizational structure',
+
+    // Start new arrival workers payrolls
+    'import_new_arrival_workers'                         => 'Import New Arrival Workers',
+    'housed'                                             => 'Housing',
+    'advanceSalaryRequest'                               => 'Advance Salary Request',
+    'medicalExamination'                                 => 'Medical Examination',
+    'medicalInsurance'                                   => 'Medical Insurance',
+    'workCardIssuing'                                    => 'Work Card Issuing',
+    'SIMCard'                                            => 'SIM Card',
+    'bankAccount'                                        => 'Bank Account',
+    'contract'                                           => 'Employment Contract',
+    'residencyAdd'                                       => 'Residency Issuance and Printing',
+    'residencyDelivery'                                  => 'Residency Delivery',
+    // End new arrival workers payrolls
+
 ];

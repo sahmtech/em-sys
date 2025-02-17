@@ -264,7 +264,7 @@ return [
     "holidays"                                            => "العطل",
     "todays_attendance"                                   => "حضور اليوم",
     "already_clocked_in"                                  => "تم تسجيل الدخول بالفعل",
-    "not_clocked_in"                                      => "لم يتم تسجيل الدخول",
+    "not_clocked_in"                                      => "لم يتم تسجيل الحضور",
     "crud_leave_type"                                     => "أنواع الإجازات",
     "crud_all_leave"                                      => "عرض كل الإجازات",
     'view_leave_balances'                                 => 'عرض رصيد الإجازات',
@@ -2057,5 +2057,19 @@ return [
     'appointment_date_end_at'                             => 'تاريخ نهاية التعيين',
     'attach_owner_type'                                   => 'نوع صاحب المرفق',
     'there_is_no_essential_dep'                           => 'لا يوجد إدارة  الموارد البشرية  في الهيكل التنظيمي ',
+
+    // Start new arrival workers
+    'import_new_arrival_workers'                          => 'إضافة وصول جديد للعمال',
+    'housed'                                              => 'تسكين',
+    'advanceSalaryRequest'                                => 'طلب سلفة',
+    'medicalExamination'                                  => 'الفحص الطبي',
+    'medicalInsurance'                                    => 'التأمين الطبي',
+    'workCardIssuing'                                     => 'إصدار كرت عمل',
+    'SIMCard'                                             => 'شريحة جوال',
+    'bankAccount'                                         => 'الحساب البنكي',
+    'contract'                                            => 'العقد الوظيفي',
+    'residencyAdd&Print'                                  => 'إصدار وطباعة الإقامة',
+    'residencyDelivery'                                   => 'تسليم الإقامة',
+    // End  new arrival workers
 
 ];

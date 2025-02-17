@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\CommunicationAttachment;
 use App\CommunicationMessage;
 use App\CommunicationReplie;
-use App\CommunicationAttachment;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,8 +14,9 @@ class CommunicationController extends Controller
 {
     public function index($from)
     {
+
         $departmentIds = [];
-        $route = route('Communication', ['from' => $from]);
+        $route         = route('Communication', ['from' => $from]);
 
         if ($from == 'hrm') {
             $departmentIds = EssentialsDepartment::where('name', 'LIKE', '%بشرية%')
@@ -41,9 +41,9 @@ class CommunicationController extends Controller
                         $query->where('name', 'LIKE', '%تشغيل%')
                             ->where('name', 'LIKE', '%أعمال%');
                     })->orWhere(function ($query) {
-                        $query->where('name', 'LIKE', '%تشغيل%')
-                            ->where('name', 'LIKE', '%شركات%');
-                    });
+                    $query->where('name', 'LIKE', '%تشغيل%')
+                        ->where('name', 'LIKE', '%شركات%');
+                });
             })->pluck('id')->toArray();
         } else if ($from == 'generalmanagement') {
             $departmentIds = EssentialsDepartment::where(function ($query) {
@@ -82,20 +82,22 @@ class CommunicationController extends Controller
                 ->pluck('id')->toArray();
         }
 
-        $user = User::where('id', auth()->user()->id)->first();
+        $user     = User::where('id', auth()->user()->id)->first();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $messages = CommunicationMessage::query();
+        $messages = CommunicationMessage::query()->where('type', 'inside');
 
         $departments = EssentialsDepartment::whereNotIn('id', $departmentIds)->pluck('name', 'id');
-        $users = User::select(
+        $users       = User::select(
             'users.id',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''), ' ', COALESCE(users.last_name, '')) as name")
         )->pluck('name', 'id')->toArray();
 
-        $messages = $messages->whereIn('sender_department_id', $departmentIds);
-        $sentMessages = CommunicationMessage::whereIn('sender_department_id', $departmentIds)->with('replies', 'attachments')->get();
+        $messages     = $messages->whereIn('sender_department_id', $departmentIds);
+        $sentMessages = CommunicationMessage::whereIn('sender_department_id', $departmentIds)->where('type', 'inside')
+            ->with('replies', 'attachments')->get();
 
-        $receivedMessages = CommunicationMessage::whereIn('reciever_department_id', $departmentIds)->with('replies', 'attachments')->get();
+        $receivedMessages = CommunicationMessage::whereIn('reciever_department_id', $departmentIds)->where('type', 'inside')
+            ->with('replies', 'attachments')->get();
         if (request()->ajax()) {
             return Datatables::of($messages)
                 ->editColumn('sender_id', function ($row) use ($users) {
@@ -109,24 +111,25 @@ class CommunicationController extends Controller
         }
 
         $urgencies = [
-            'low' => __('helpdesk::lang.low'),
-            'mid' => __('helpdesk::lang.mid'),
-            'high' => __('helpdesk::lang.high'),
-            'urgent' => __('helpdesk::lang.urgent')
+            'low'    => __('helpdesk::lang.low'),
+            'mid'    => __('helpdesk::lang.mid'),
+            'high'   => __('helpdesk::lang.high'),
+            'urgent' => __('helpdesk::lang.urgent'),
         ];
         return view('communication_messages')->with(compact('from', 'route', 'sentMessages', 'receivedMessages', 'departments', 'users', 'urgencies'));
     }
-
 
     public function send_communication_message(Request $request)
     {
 
         $validatedData = $request->validate([
-            'from' => 'required|string',
-            'department' => 'required|integer|exists:essentials_departments,id',
-            'title' => 'required|string|max:255',
-            'message' => 'required|string',
-            'urgency' => 'required|in:low,mid,high,urgent',
+            'from'          => 'required|string',
+            'department'    => 'required|integer|exists:essentials_departments,id',
+            'contact_id'    => 'nullable|integer|exists:contacts,id',
+            'title'         => 'required|string|max:255',
+            'message'       => 'required|string',
+            'type'          => 'required|string',
+            'urgency'       => 'required|in:low,mid,high,urgent',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
         ]);
 
@@ -153,8 +156,8 @@ class CommunicationController extends Controller
                         ->orWhere(function ($query) {
                             $query->where('name', 'LIKE', '%تشغيل%')->where('name', 'LIKE', '%أعمال%');
                         })->orWhere(function ($query) {
-                            $query->where('name', 'LIKE', '%تشغيل%')->where('name', 'LIKE', '%شركات%');
-                        });
+                        $query->where('name', 'LIKE', '%تشغيل%')->where('name', 'LIKE', '%شركات%');
+                    });
                 })->pluck('id')->first();
                 break;
             case 'generalmanagement':
@@ -193,39 +196,41 @@ class CommunicationController extends Controller
         }
 
         $message = CommunicationMessage::create([
-            'sender_department_id' => $sender_department_id,
+            'sender_department_id'   => $sender_department_id,
             'reciever_department_id' => $validatedData['department'],
-            'sender_id' =>  auth()->user()->id,
-            'title' => $validatedData['title'],
-            'message' => $validatedData['message'],
-            'urgency' => $validatedData['urgency'],
+            'sender_id'              => auth()->user()->id,
+            'contact_id'             => $validatedData['contact_id'] ?? null,
+            'title'                  => $validatedData['title'],
+            'type'                   => $validatedData['type'],
+            'message'                => $validatedData['message'],
+            'urgency'                => $validatedData['urgency'],
         ]);
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('/communticaton_attachments');
                 CommunicationAttachment::create([
                     'communication_message_id' => $message->id,
-                    'type' => 'message',
-                    'path' => $path,
+                    'type'                     => 'message',
+                    'path'                     => $path,
                 ]);
             }
         }
         return redirect()->back()->with('status', [
             'success' => true,
-            'msg' => __('lang_v1.sending_success'),
+            'msg'     => __('lang_v1.sending_success'),
         ]);
     }
     public function reply(Request $request, $id)
     {
         $request->validate([
-            'reply' => 'required|string',
+            'reply'         => 'required|string',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
         ]);
 
         $reply = CommunicationReplie::create([
             'communication_message_id' => $id,
-            'replay' => $request->input('reply'),
-            'replied_by' =>  auth()->user()->id,
+            'replay'                   => $request->input('reply'),
+            'replied_by'               => auth()->user()->id,
         ]);
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
@@ -233,14 +238,14 @@ class CommunicationController extends Controller
 
                 CommunicationAttachment::create([
                     'communication_reply_id' => $reply->id,
-                    'type' => 'reply',
-                    'path' => $path,
+                    'type'                   => 'reply',
+                    'path'                   => $path,
                 ]);
             }
         }
         return redirect()->back()->with('status', [
             'success' => true,
-            'msg' => __('lang_v1.sending_success'),
+            'msg'     => __('lang_v1.sending_success'),
         ]);
     }
 }

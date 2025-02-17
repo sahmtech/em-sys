@@ -279,6 +279,7 @@ return [
     'worker'                                              => 'Worker',
     'employee_or_worker'                                  => 'Employee or Worker',
     'user'                                                => 'User',
+    'guard'                                               => 'Security Guard',
 
     'editContactLocations'                                => 'Edit contact locations',
     'deleteContactLocations'                              => 'Delete contact locations',

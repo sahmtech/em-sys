@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\OperationsManagmentGovernment\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -14,7 +15,6 @@ class DataController extends Controller
     public function user_permissions()
     {
         return [
-
             [
                 'group_name'        => __('operationsmanagmentgovernment::lang.operationsmanagmentgovernment'),
                 'group_permissions' => [
@@ -26,6 +26,86 @@ class DataController extends Controller
                     [
                         'value'   => 'operationsmanagmentgovernment.view_requests',
                         'label'   => __('operationsmanagmentgovernment::lang.view_requests'),
+                        'default' => false,
+                    ],
+
+                    //water
+                    [
+                        'value'   => 'operationsmanagmentgovernment.water_reports',
+                        'label'   => __('operationsmanagmentgovernment::lang.water_reports'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_water_weight',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_water_weight'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.edit_water_weight',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_water_weight'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_water_weight',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_water_weight'),
+                        'default' => false,
+                    ],
+
+                    //asset_assessment
+                    [
+                        'value'   => 'operationsmanagmentgovernment.asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.asset_assessment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_asset_assessment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.edit_asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_asset_assessment'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_asset_assessment',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_asset_assessment'),
+                        'default' => false,
+                    ],
+
+
+                    //project zone
+                    [
+                        'value'   => 'operationsmanagmentgovernment.project_zones',
+                        'label'   => __('operationsmanagmentgovernment::lang.project_zone'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_project_zone',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_project_zone'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.edit_project_zone',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_project_zone'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_project_zone',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_project_zone'),
+                        'default' => false,
+                    ],
+
+                    //permissions
+                    [
+                        'value'   => 'operationsmanagmentgovernment.permissions',
+                        'label'   => __('operationsmanagmentgovernment::lang.permissions'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value'   => 'operationsmanagmentgovernment.edit_permissions',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_permissions'),
                         'default' => false,
                     ],
 
@@ -47,6 +127,19 @@ class DataController extends Controller
                     [
                         'value'   => 'operationsmanagmentgovernment.add_request',
                         'label'   => __('operationsmanagmentgovernment::lang.add_request'),
+                        'default' => false,
+                    ],
+
+                    // project departments
+                    
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_project_departments',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_project_departments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_project_department',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_project_department'),
                         'default' => false,
                     ],
 
@@ -92,6 +185,31 @@ class DataController extends Controller
                     [
                         'value'   => 'operationsmanagmentgovernment.delete_project_report',
                         'label'   => __('operationsmanagmentgovernment::lang.delete_project_report'),
+                        'default' => false,
+                    ],
+
+                    // Security  Guard
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_security_guards',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_security_guards'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_security_guard',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_security_guard'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_security_guard',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_security_guard'),
+                        'default' => false,
+                    ],
+
+                    // outside communication
+                    [
+                        'value'   => 'operationsmanagmentgovernment.view_outside_communication',
+                        'label'   => __('operationsmanagmentgovernment::lang.view_outside_communication'),
                         'default' => false,
                     ],
 

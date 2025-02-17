@@ -1,7 +1,80 @@
 <?php
+
+use Mpdf\Tag\Q;
+
 return [
     'operationsmanagmentgovernment'           => 'إدارة التشغيل (القطاع الحكومي)',
     'OperationsManagmentGovernment_dashboard' => 'الصفحة الرئيسية لإدارة التشغيل (القطاع الحكومي)',
+    'view_requests'                           => 'عرض جميع الطلبات',
+    'requests'                                => 'الطلبات',
+    'show_request'                            => 'عرض معلومات الطلب',
+    'return_request'                          => 'إرجاع الطلب',
+    'change_request_status'                   => 'تغيير حالة الطلب',
+    'add_request'                             => 'إضافة طلب',
+    'water_reports'                           => 'تقارير وايتات المياه',
+    'project_document'                        => 'مستند المشروع',
+    'projects_documents'                      => 'مستندات المشروع',
+    'project_report'                          => 'تقرير المشروع',
+    'add_project_report'                      => 'إضافة تقرير المشروع',
+    'select_project'                          => 'اختر المشروع',
+
+    // Water Weight Management
+    'water_weights'                           => 'إدارة وايتات المياه',
+    'add_water_weight'                        => 'إضافة وايت مياه',
+    'company'                                 => 'الشركة',
+    'contact'                                 => 'العميل',
+    'project'                                 => 'المشروع',
+    'driver'                                  => 'السائق',
+    'plate_number'                            => 'رقم اللوحة',
+    'water_droping_location'                  => 'موقع تفريغ المياه',
+    'weight_type'                             => 'نوع الحمولة',
+    '7_tons'                                  => '7 أطنان',
+    '19_tons'                                 => '19 طناً',
+    '30_tons'                                 => '30 طناً',
+    'sample_result'                           => 'نتيجة العينة',
+    'date'                                    => 'التاريخ',
+    'created_by'                              => 'تم الإنشاء بواسطة',
+    'action'                                  => 'الإجراء',
+    'delete_water_weight'                     => 'حذف وايت المياه',
+
+    //asset_assessment
+    'asset_assessment'                        => 'حصر الممتلكات',
+    'add_asset_assessment'                    => 'إضافة حصر ممتلكات',
+    'edit_asset_assessment'                   => 'تعديل حصر ممتلكات',
+    'delete_asset_assessment'                 => 'حذف حصر ممتلكات',
+    'asset'                                   => 'العنصر',
+    'quantity'                                => 'الكمية',
+    'add_asset'                               => 'إضافة عنصر',
+    'edit_asset'                              => 'تعديل عنصر',
+
+    // Filters
+    'filters'                                 => 'عوامل التصفية',
+    'all'                                     => 'الكل',
+    'select_company'                          => 'اختر الشركة',
+    'select_driver'                           => 'اختر السائق',
+    'select_weight_type'                      => 'اختر نوع الحمولة',
+
+    // Messages
+    'added_success'                           => 'تمت الإضافة بنجاح',
+    'updated_success'                         => 'تم التحديث بنجاح',
+    'deleted_success'                         => 'تم الحذف بنجاح',
+    'something_went_wrong'                    => 'حدث خطأ ما!',
+
+    // Buttons
+    'add'                                     => 'إضافة',
+    'edit'                                    => 'تعديل',
+    'delete'                                  => 'حذف',
+    'save'                                    => 'حفظ',
+    'close'                                   => 'إغلاق',
+
+    // DataTable Actions
+    'edit_water_weight'                       => 'تعديل وايت المياه',
+    'show_water_weight'                       => 'عرض تفاصيل وايت المياه',
+
+    'deleted_success'                         => 'تم الحذف بنجاح',
+    'are_you_sure'                            => 'هل أنت متأكد؟',
+    'confirm_delete'                          => 'سيتم حذف هذا العنصر نهائيًا!',
+
     'view_requests'                           => 'عرض جميع الطلبات',
     'requests'                                => 'الطلبات',
     'show_request'                            => 'عرض معلومات الطلب',
@@ -31,5 +104,75 @@ return [
     'document_view'                           => 'عرض',
     'document_download'                       => 'تحميل',
     'document_create'                         => 'إنشاء مستند',
+
+    // project_departments
+    'project_department'                      => 'قسم المشروع',
+    'project_departments'                     => 'أقسام المشروع',
+    'view_project_departments'                => 'عرض أقسام المشروع',
+    'add_project_department'                  => 'إضافة قسم جديد',
+    'edit_project_department'                 => 'تعديل قسم المشروع',
+    'delete_project_department'               => 'حذف قسم المشروع',
+    'project_department_name'                 => 'اسم قسم المشروع',
+    'project_department_select'               => 'اختر قسم المشروع',
+    'project_select_first'                    => 'اختر المشروع أولاً',
+    'project_department_description'          => 'وصف قسم المشروع',
+    'project_department_create'               => 'إنشاء قسم جديد',
+    'project_department_store'                => 'حفظ قسم المشروع',
+    'project_department_update'               => 'تحديث قسم المشروع',
+    'project_department_destroy'              => 'حذف قسم المشروع',
+    'project_department_index'                => 'عرض جميع أقسام المشروع',
+    'project_department_create'               => 'إنشاء قسم جديد',
+    'project_department_name_ar'              => 'اسم قسم المشروع بالعربية',
+    'project_department_name_en'              => 'اسم قسم المشروع بالإنجليزية',
+    'project'                                 => 'المشروع',
+    'client'                                  => 'العميل',
+
+    //Gurdian
+    'security_guards'                         => 'حراس الأمن',
+    'view_security_guards'                    => 'عرض  حراس الأمن',
+    'add_security_guard'                      => 'إضافة حارس أمن',
+    'edit_security_guard'                     => 'تعديل حارس الأمن',
+    'edit_security_guard_data'                => 'تعديل بيانات حارس الأمن',
+    'delete_security_guard'                   => 'حذف حارس الأمن',
+
+    'first_name'                              => 'الاسم الأول',
+    'mid_name'                                => 'الاسم الثاني',
+    'last_name'                               => 'إسم العائلة',
+    'fingerprint_no'                          => 'رقم البصمة',
+    'id_proof_number'                         => 'رقم الهوية',
+    'profession'                              => 'الوظيفة',
+    'full_name'                               => 'الإسم',
+
+    //zone
+    'zone_name'                               => 'اسم المنطقة',
+    'project_zones'                           => 'مناطق المشروع',
+    'add_project_zone'                        => 'اضافة مناطق المشروع',
+    'edit_project_zone'                       => 'تعديل مناطق المشروع',
+    'delete_project_zone'                     => 'حذف مناطق المشروع',
+    'zone'                                    => 'منطقة المشروع',
+
+    //permissions
+    'permissions'                             => 'صلاحيات العملاء',
+    'update_permissions'                      => 'تعديل صلاحيات العملاء',
+    'edit_permissions'                        => ' تعديل صلاحيات العملاء',
+    'view_outside_communication'              => ' عرض التواصل الخارجي',
+    'outside_communication'                   => '  التواصل الخارجي',
+    'clients_orders'                          => 'طلبات العملاء',
+
+    // validation
+    'first_name'                              => 'الاسم الأول',
+    'mid_name'                                => 'اسم الثاني',
+    'last_name'                               => 'الاسم الأخير',
+    'profession'                              => 'الوظيفة',
+    'id_proof_number'                         => 'رقم إثبات الهوية',
+    'fingerprint_no'                          => 'رقم البصمة ',
+    'attributes'                              => [
+        'first_name'      => 'الاسم الاول',
+        'mid_name'        => 'الاسم الثاني',
+        'last_name'       => 'الاسم الاخير',
+        'profession'      => 'الوظيفة',
+        'id_proof_number' => 'رقم الهوية',
+        'fingerprint_no'  => 'رقم البصمة',
+    ],
 
 ];

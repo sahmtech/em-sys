@@ -29,6 +29,21 @@
                 ]) !!}
             </div>
 
+            {{-- Projects --}}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('project_select_first',
+                    __('operationsmanagmentgovernment::lang.project_select_first') . ':*') !!}
+                    {!! Form::select('project_department_id', [], null, [
+                    'class' => 'form-control',
+                    'id' => 'project_department_id',
+                    'style' => 'height:40px',
+                    'required',
+                    'placeholder' => __('operationsmanagmentgovernment::lang.project_select_first'),
+                    ]) !!}
+                </div>
+            </div>
+
 
             <!-- Dynamic Fields for Document Name and Attachment -->
             <div id="dynamic-fields">
@@ -133,4 +148,34 @@
             $(this).closest(".field-group").remove();
         });
     });
+
+
+    $(document).ready(function () {
+    $('#sales_project_id').change(function () {
+        var projectId = $(this).val(); // Get selected contact ID
+
+        if (projectId) {
+            $.ajax({
+                url: '/get-departments-project/' + projectId, // Updated API route
+
+                data: function(d) {
+                   
+                },
+                
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#project_department_id').empty(); // Clear existing options
+                    $('#project_department_id').append('<option value="">' + "حدد قسم المشروع" + '</option>');
+
+                    $.each(data, function (key, value) {
+                        $('#project_department_id').append('<option value="' + key + '">' + value + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#project_department_id').empty();
+        }
+    });
+});
 </script>

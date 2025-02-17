@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\ContactController;
+use App\ProjectDepartment;
 use Modules\Sales\Entities\SalesProject;
 
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
@@ -195,5 +196,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('/get-sales-projects/{contactId}', function ($contactId) {
         $salesProjects = SalesProject::where('contact_id', $contactId)->pluck('name', 'id');
         return response()->json($salesProjects);
+    });
+
+    Route::get('/get-departments-project/{projectId}', function ($projectId) {
+        $salesDeparment = ProjectDepartment::where('sales_project_id', $projectId)->pluck('name_ar', 'id');
+        return response()->json($salesDeparment);
     });
 });
