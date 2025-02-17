@@ -439,4 +439,22 @@ return [
     'leave_type'                                          => 'نوع الإيجازة',
     'residency_Igama'                                     => 'الهوية / الاقامة / رقم الحدود ',
     'attachment_owner'                                    => 'صاحب المرفق',
+
+    // New Arrival Worker
+
+    'new_arrival_for_workers'                             => 'الوصول الجديد للعمال',
+    'import_new_arrival_workers'                          => 'إضافة وصول جديد للعمال',
+    'advanceSalaryRequest'                                => 'طلب سلفة',
+    'medicalExamination'                                  => 'الفحص الطبي',
+    'medicalInsurance'                                    => 'التأمين الطبي',
+    'workCardIssuing'                                     => 'إصدار كرت عمل',
+    'SIMCard'                                             => 'شريحة جوال',
+    'bankAccount'                                         => 'الحساب البنكي',
+    'QiwaContract'                                        => 'عقد قوى',
+    'residencyPrint'                                      => 'طباعة الإقامة',
+    'residencyAdd&Print'                                  => 'إصدار وطباعة الإقامة',
+    'residencyDelivery'                                   => 'تسليم الإقامة',
+    'housed'                                              => 'تسكين',
+    'contract'                                            => 'العقد الوظيفي',
+
 ];

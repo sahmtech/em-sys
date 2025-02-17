@@ -35,7 +35,7 @@ class AddPermissions extends Command
             'operationsmanagmentgovernment.view_outside_communication',
             'operationsmanagmentgovernment.delete_project_department',
 
-            // payrolls  import_new_arrival_workers Feat
+            // payrolls -> import_new_arrival_workers Feat
             'payrolls.import_new_arrival_workers',
             'payrolls.housed',
             'payrolls.advanceSalaryRequest',
@@ -47,6 +47,19 @@ class AddPermissions extends Command
             'payrolls.contract',
             'payrolls.residencyAdd',
             'payrolls.residencyDelivery',
+
+            // followup -> import_new_arrival_workers
+            'followup.new_arrival_for_workers',
+            'followup.housed',
+            'followup.advanceSalaryRequest',
+            'followup.medicalExamination',
+            'followup.medicalInsurance',
+            'followup.workCardIssuing',
+            'followup.bankAccount',
+            'followup.SIMCard',
+            'followup.contract',
+            'followup.residencyAdd&Print',
+            'followup.residencyDelivery',
 
         ];
 

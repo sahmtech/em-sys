@@ -300,6 +300,9 @@ return [
     'acceptance_offer' => 'مرفق قبول العرض',
     'visa' => 'التذكرة',
     'general_visa' => 'التأشيرة',
+   // New Arraival worker
+    'new_arrival_for_workers' => 'الوصول الجديد للعمال',
+    'import_new_arrival_workers' => 'إضافة وصول جديد للعمال',
     'advanceSalaryRequest' => 'طلب سلفة',
     'medicalExamination' => 'الفحص الطبي',
     'medicalInsurance' => 'التأمين الطبي',
@@ -333,7 +336,6 @@ return [
     'add_eqama' => 'إصدار إقامة',
     'eqama_number' => 'رقم الإقامة',
     'please add the eqama number' => 'الرجاء إدخال رقم الإقامة',
-    'new_arrival_for_workers' => 'الوصول الجديد للعمال',
     'added_successfully' => 'أضيف بنجاح',
     'crud_timesheet' => 'إدارة التايم شيت',
     'create_timesheet' => 'إضافة تايم شيت',
@@ -342,7 +344,6 @@ return [
     'view_timesheet_users' => 'عرض المستخدمين في التايم شيت',
     'show_timesheet' => 'عرض معلومات التايم شيت',
     'deal_timesheet' => 'اعتماد التايم شيت',
-    'import_new_arrival_workers' => 'إضافة وصول جديد للعمال',
     'buys_beds' => 'عدد الأسرة المشغولة',
     'unified_number' => 'الرقم الموحد',
 

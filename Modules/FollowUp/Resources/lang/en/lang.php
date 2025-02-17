@@ -342,4 +342,18 @@ return [
     'residency_Igama'                                     => ' ID / Igama / Border no',
     'attachment_owner'                                    => 'To whom is the attachment ',
 
+    // New Arrival worker
+    'new_arrival_for_workers'                             => 'new arrival for workers',
+    'import_new_arrival_workers'                          => 'Add new arrival workers',
+    'advanceSalaryRequest'                                => 'Advance Request',
+    'medicalExamination'                                  => 'medical examination',
+    'medicalInsurance'                                    => 'medical insurance',
+    'workCardIssuing'                                     => 'Issuing a work card',
+    'SIMCard'                                             => 'mobile SIM card',
+    'bankAccount'                                         => 'bank account',
+    'QiwaContract'                                        => 'Qiwa Contract ',
+    'residencyPrint'                                      => 'Residency Print',
+    'residencyAdd&Print'                                  => 'Issue and print residency',
+    'residencyDelivery'                                   => 'residency delivery',
+
 ];

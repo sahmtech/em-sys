@@ -1,16 +1,10 @@
 <?php
-
 namespace Modules\FollowUp\Http\Controllers;
 
-use App\BusinessLocation;
-use App\Category;
 use App\User;
 use App\Utils\ModuleUtil;
-use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use Menu;
-
 
 class DataController extends Controller
 {
@@ -184,70 +178,70 @@ class DataController extends Controller
         return [
             [
 
-                'group_name' => __('followup::lang.followUp'),
+                'group_name'        => __('followup::lang.followUp'),
                 'group_permissions' => [
                     [
-                        'value' => 'followup.followup_dashboard',
-                        'label' => __('followup::lang.followup_dashboard'),
+                        'value'   => 'followup.followup_dashboard',
+                        'label'   => __('followup::lang.followup_dashboard'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.create_worker',
-                        'label' => __('followup::lang.create_worker'),
+                        'value'   => 'followup.create_worker',
+                        'label'   => __('followup::lang.create_worker'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.crud_contact_locations',
-                        'label' => __('followup::lang.crud_contact_locations'),
-                        'default' => false,
-
-                    ],
-                    [
-                        'value' => 'followup.editContactLocations',
-                        'label' => __('followup::lang.editContactLocations'),
+                        'value'   => 'followup.crud_contact_locations',
+                        'label'   => __('followup::lang.crud_contact_locations'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.deleteContactLocations',
-                        'label' => __('followup::lang.deleteContactLocations'),
+                        'value'   => 'followup.editContactLocations',
+                        'label'   => __('followup::lang.editContactLocations'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_projects',
-                        'label' => __('followup::lang.crud_projects'),
+                        'value'   => 'followup.deleteContactLocations',
+                        'label'   => __('followup::lang.deleteContactLocations'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.projectView',
-                        'label' => __('followup::lang.projectView'),
+                        'value'   => 'followup.crud_projects',
+                        'label'   => __('followup::lang.crud_projects'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.cancle_worker_project',
-                        'label' => __('followup::lang.cancle_worker_project'),
+                        'value'   => 'followup.projectView',
+                        'label'   => __('followup::lang.projectView'),
+                        'default' => false,
+
+                    ],
+                    [
+                        'value'   => 'followup.cancle_worker_project',
+                        'label'   => __('followup::lang.cancle_worker_project'),
                         'default' => false,
 
                     ],
 
                     [
-                        'value' => 'followup.view_worker_details',
-                        'label' => __('followup::lang.view_workerProject_details'),
+                        'value'   => 'followup.view_worker_details',
+                        'label'   => __('followup::lang.view_workerProject_details'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_workers',
-                        'label' => __('followup::lang.crud_workers'),
+                        'value'   => 'followup.crud_workers',
+                        'label'   => __('followup::lang.crud_workers'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_operation_orders',
-                        'label' => __('followup::lang.crud_operation_orders'),
+                        'value'   => 'followup.crud_operation_orders',
+                        'label'   => __('followup::lang.crud_operation_orders'),
                         'default' => false,
 
                     ],
@@ -354,11 +348,6 @@ class DataController extends Controller
 
                     // ],
 
-
-
-
-
-
                     // [
                     //     'value' => 'followup.view_request_escalate_requests',
                     //     'label' => __('followup::lang.view_request_escalate_requests'),
@@ -366,176 +355,232 @@ class DataController extends Controller
 
                     // ],
 
-
                     [
-                        'value' => 'followup.crud_recruitmentRequests',
-                        'label' => __('followup::lang.crud_recruitmentRequests'),
+                        'value'   => 'followup.crud_recruitmentRequests',
+                        'label'   => __('followup::lang.crud_recruitmentRequests'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_documents',
-                        'label' => __('followup::lang.crud_documents'),
+                        'value'   => 'followup.crud_documents',
+                        'label'   => __('followup::lang.crud_documents'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.edit_document',
-                        'label' => __('followup::lang.edit_document'),
+                        'value'   => 'followup.edit_document',
+                        'label'   => __('followup::lang.edit_document'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.documents.delete',
-                        'label' => __('followup::lang.documents_delete'),
+                        'value'   => 'followup.documents.delete',
+                        'label'   => __('followup::lang.documents_delete'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_document_delivery',
-                        'label' => __('followup::lang.crud_document_delivery'),
+                        'value'   => 'followup.crud_document_delivery',
+                        'label'   => __('followup::lang.crud_document_delivery'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.edit_document_delivery',
-                        'label' => __('followup::lang.edit_document_delivery'),
+                        'value'   => 'followup.edit_document_delivery',
+                        'label'   => __('followup::lang.edit_document_delivery'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.delete_document_deliver',
-                        'label' => __('followup::lang.delete_document_deliver'),
+                        'value'   => 'followup.delete_document_deliver',
+                        'label'   => __('followup::lang.delete_document_deliver'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.view_document_deliver',
-                        'label' => __('followup::lang.view_document_deliver'),
+                        'value'   => 'followup.view_document_deliver',
+                        'label'   => __('followup::lang.view_document_deliver'),
                         'default' => false,
 
                     ],
 
                     [
-                        'value' => 'followup.crud_projectsReports',
-                        'label' => __('followup::lang.crud_projectsReports'),
+                        'value'   => 'followup.crud_projectsReports',
+                        'label'   => __('followup::lang.crud_projectsReports'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_projectWorkersReports',
-                        'label' => __('followup::lang.crud_projectWorkersReports'),
+                        'value'   => 'followup.crud_projectWorkersReports',
+                        'label'   => __('followup::lang.crud_projectWorkersReports'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_contrascts_wishes',
-                        'label' => __('followup::lang.crud_contrascts_wishes'),
+                        'value'   => 'followup.crud_contrascts_wishes',
+                        'label'   => __('followup::lang.crud_contrascts_wishes'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.change_wish',
-                        'label' => __('followup::lang.change_wish'),
+                        'value'   => 'followup.change_wish',
+                        'label'   => __('followup::lang.change_wish'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.crud_shifts',
-                        'label' => __('followup::lang.crud_shifts'),
+                        'value'   => 'followup.crud_shifts',
+                        'label'   => __('followup::lang.crud_shifts'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.edit_shifts',
-                        'label' => __('followup::lang.edit_shifts'),
+                        'value'   => 'followup.edit_shifts',
+                        'label'   => __('followup::lang.edit_shifts'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.delete_shifts',
-                        'label' => __('followup::lang.delete_shifts'),
+                        'value'   => 'followup.delete_shifts',
+                        'label'   => __('followup::lang.delete_shifts'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.projects_access_permissions',
-                        'label' => __('followup::lang.projects_access_permissions'),
+                        'value'   => 'followup.projects_access_permissions',
+                        'label'   => __('followup::lang.projects_access_permissions'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.add_user_project_access_permissions',
-                        'label' => __('followup::lang.add_user_project_access_permissions'),
+                        'value'   => 'followup.add_user_project_access_permissions',
+                        'label'   => __('followup::lang.add_user_project_access_permissions'),
                         'default' => false,
 
                     ],
                     [
-                        'value' => 'followup.view_followup_requests',
-                        'label' => __('followup::lang.view_followup_requests'),
+                        'value'   => 'followup.view_followup_requests',
+                        'label'   => __('followup::lang.view_followup_requests'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.add_request',
-                        'label' => __('followup::lang.add_request'),
+                        'value'   => 'followup.add_request',
+                        'label'   => __('followup::lang.add_request'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.change_request_status',
-                        'label' => __('followup::lang.change_request_status'),
+                        'value'   => 'followup.change_request_status',
+                        'label'   => __('followup::lang.change_request_status'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.show_request',
-                        'label' => __('followup::lang.show_request'),
+                        'value'   => 'followup.show_request',
+                        'label'   => __('followup::lang.show_request'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.return_request',
-                        'label' => __('followup::lang.return_request'),
+                        'value'   => 'followup.return_request',
+                        'label'   => __('followup::lang.return_request'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.followup_view_department_employees',
-                        'label' => __('followup::lang.followup_view_department_employees'),
+                        'value'   => 'followup.followup_view_department_employees',
+                        'label'   => __('followup::lang.followup_view_department_employees'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.crud_timesheet',
-                        'label' => __('followup::lang.crud_timesheet'),
+                        'value'   => 'followup.crud_timesheet',
+                        'label'   => __('followup::lang.crud_timesheet'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.create_timesheet',
-                        'label' => __('followup::lang.create_timesheet'),
+                        'value'   => 'followup.create_timesheet',
+                        'label'   => __('followup::lang.create_timesheet'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.edit_timesheet',
-                        'label' => __('followup::lang.edit_timesheet'),
+                        'value'   => 'followup.edit_timesheet',
+                        'label'   => __('followup::lang.edit_timesheet'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.view_timesheet_groups',
-                        'label' => __('followup::lang.view_timesheet_groups'),
+                        'value'   => 'followup.view_timesheet_groups',
+                        'label'   => __('followup::lang.view_timesheet_groups'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.view_timesheet_users',
-                        'label' => __('followup::lang.view_timesheet_users'),
+                        'value'   => 'followup.view_timesheet_users',
+                        'label'   => __('followup::lang.view_timesheet_users'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.show_timesheet',
-                        'label' => __('followup::lang.show_timesheet'),
+                        'value'   => 'followup.show_timesheet',
+                        'label'   => __('followup::lang.show_timesheet'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'followup.deal_timesheet',
-                        'label' => __('followup::lang.deal_timesheet'),
+                        'value'   => 'followup.deal_timesheet',
+                        'label'   => __('followup::lang.deal_timesheet'),
                         'default' => false,
                     ],
-                ]
+
+                    // New Arrival Worker
+                    [
+                        'value'   => 'followup.new_arrival_for_workers',
+                        'label'   => __('followup::lang.import_new_arrival_workers'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.housed',
+                        'label'   => __('followup::lang.housed'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.advanceSalaryRequest',
+                        'label'   => __('followup::lang.advanceSalaryRequest'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.medicalExamination',
+                        'label'   => __('followup::lang.medicalExamination'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.medicalInsurance',
+                        'label'   => __('followup::lang.medicalInsurance'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.workCardIssuing',
+                        'label'   => __('followup::lang.workCardIssuing'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.SIMCard',
+                        'label'   => __('followup::lang.SIMCard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.bankAccount',
+                        'label'   => __('followup::lang.bankAccount'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.contract',
+                        'label'   => __('followup::lang.contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.residencyAdd&Print',
+                        'label'   => __('followup::lang.residencyAdd&Print'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'followup.residencyDelivery',
+                        'label'   => __('followup::lang.residencyDelivery'),
+                        'default' => false,
+                    ],
+                ],
 
             ],
         ];
@@ -550,8 +595,8 @@ class DataController extends Controller
     {
         return [
             [
-                'name' => 'followup_module',
-                'label' => __('followup::lang.followup_module'),
+                'name'    => 'followup_module',
+                'label'   => __('followup::lang.followup_module'),
                 'default' => false,
             ],
         ];
@@ -566,7 +611,7 @@ class DataController extends Controller
     {
         $module_util = new ModuleUtil();
 
-        $business_id = session()->get('user.business_id');
+        $business_id         = session()->get('user.business_id');
         $is_followup_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'followup_module');
         //dd($is_followup_enabled);
         if ($is_followup_enabled) {
