@@ -35,12 +35,8 @@ class AddPermissions extends Command
             'operationsmanagmentgovernment.view_outside_communication',
             'operationsmanagmentgovernment.delete_project_department',
 
-<<<<<<< HEAD
-            // payrolls -> import_new_arrival_workers Feat
-=======
             // payrolls  import_new_arrival_workers Feat
             'payrolls.new_arrival_for_workers',
->>>>>>> d48d10e0ab86bd1ac100729ab355871cb331979a
             'payrolls.import_new_arrival_workers',
             'payrolls.housed',
             'payrolls.advanceSalaryRequest',
