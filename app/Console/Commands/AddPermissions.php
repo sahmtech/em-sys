@@ -36,6 +36,7 @@ class AddPermissions extends Command
             'operationsmanagmentgovernment.delete_project_department',
 
             // payrolls  import_new_arrival_workers Feat
+            'payrolls.new_arrival_for_workers',
             'payrolls.import_new_arrival_workers',
             'payrolls.housed',
             'payrolls.advanceSalaryRequest',

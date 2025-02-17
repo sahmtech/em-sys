@@ -17,7 +17,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <!--1 -->
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.new_arrival_for_workers'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.new_arrival_for_workers') || auth()->user()->can('payrolls.new_arrival_for_workers'))
                         <li @if (request()->segment(2) == 'pay_travelers') class="active" @endif>
                             <a href="{{ route('pay_travelers') }}">
                                 <i class="fas fa-user-plus" aria-hidden="true" style="font-size: smaller;"></i>
@@ -26,14 +26,14 @@
                         </li>
                     @endif
                     <!--2 -->
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.housed'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.housed') || auth()->user()->can('payrolls.housed'))
                         <li @if (request()->segment(2) == 'pay_housed_workers') class="active" @endif>
                             <a href="{{ route('pay_housed_workers') }}">
                                 <i class="fas fa-check" aria-hidden="true"></i> @lang('housingmovements::lang.housed')
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.advanceSalaryRequest'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.advanceSalaryRequest') || auth()->user()->can('payrolls.advanceSalaryRequest'))
                         <!--3 -->
                         <li @if (request()->segment(2) == 'pay_advanceSalaryRequest') class="active" @endif>
 
@@ -42,7 +42,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.medicalExamination'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.medicalExamination') || auth()->user()->can('payrolls.medicalExamination'))
                         <!-- 4 -->
                         <li @if (request()->segment(2) == 'pay_medicalExamination') class="active" @endif>
                             <a href="{{ route('pay_medicalExamination') }}">
@@ -50,7 +50,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.medicalInsurance'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.medicalInsurance')|| auth()->user()->can('payrolls.medicalInsurance'))
                         <!-- 5 -->
                         <li @if (request()->segment(2) == 'pay_medicalInsurance') class="active" @endif>
                             <a href="{{ route('pay_medicalInsurance') }}">
@@ -58,7 +58,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.workCardIssuing'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.workCardIssuing')|| auth()->user()->can('payrolls.workCardIssuing'))
                         <!-- 6 -->
                         <li @if (request()->segment(2) == 'pay_workCardIssuing') class="active" @endif>
                             <a href="{{ route('pay_workCardIssuing') }}">
@@ -66,7 +66,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.SIMCard'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.SIMCard') || auth()->user()->can('payrolls.SIMCard'))
                         <!-- 7 -->
                         <li @if (request()->segment(2) == 'pay_SIMCard') class="active" @endif>
                             <a href="{{ route('pay_SIMCard') }}">
@@ -74,7 +74,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.bankAccount'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.bankAccount') || auth()->user()->can('payrolls.bankAccount') )
                         <!-- 8 -->
                         <li @if (request()->segment(2) == 'pay_bankAccountsForLabors') class="active" @endif>
                             <a href="{{ route('pay_bankAccountsForLabors') }}">
@@ -82,7 +82,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.contract'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.contract') || auth()->user()->can('payrolls.contract'))
                         <!-- 9 -->
                         <li @if (request()->segment(2) == 'pay_QiwaContract') class="active" @endif>
                             <a href="{{ route('pay_QiwaContract') }}">
@@ -90,7 +90,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.residencyAdd&Print'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.residencyAdd&Print') || auth()->user()->can('payrolls.residencyAdd&Print'))
                         <!-- 10 -->
                         <li @if (request()->segment(2) == 'pay_residencyPrint') class="active" @endif>
                             <a href="{{ route('pay_residencyPrint') }}">
@@ -98,7 +98,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.residencyDelivery'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.residencyDelivery') || auth()->user()->can('payrolls.residencyDelivery'))
                         <!-- 11 -->
                         <li @if (request()->segment(2) == 'pay_residencyDelivery') class="active" @endif>
                             <a href="{{ route('pay_residencyDelivery') }}">
