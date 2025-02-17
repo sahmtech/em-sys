@@ -187,11 +187,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     //////////////////////
-                    [
-                        'value' => 'housingmovements.new_arrival_for_workers',
-                        'label' => __('housingmovements::lang.new_arrival_for_workers'),
-                        'default' => false,
-                    ],
+                    
                     //TODO::import_new_arrival_workers
                     [
                         'value' => 'housingmovements.import_new_arrival_workers',
@@ -246,6 +242,11 @@ class DataController extends Controller
                     [
                         'value' => 'housingmovements.residencyDelivery',
                         'label' => __('housingmovements::lang.residencyDelivery'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.new_arrival_for_workers',
+                        'label' => __('housingmovements::lang.new_arrival_for_workers'),
                         'default' => false,
                     ],
                     // [

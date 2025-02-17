@@ -41,7 +41,16 @@ class NewArrivalUtil extends Util
 
         $business_id                    = request()->session()->get('user.business_id');
         $is_admin                       = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_housing_crud_htr_trevelers = auth()->user()->can('housingmovements.new_arrival_for_workers');
+
+        $can_housing_crud_htr_trevelers = auth()->user()->canAny([
+            'housingmovements.new_arrival_for_workers',
+            'payrolls.new_arrival_for_workers',
+            
+        ]);
+
+        
+
+        
         if (! ($is_admin || $can_housing_crud_htr_trevelers)) {
             return redirect()->back()->with('status', [
                 'success' => false,

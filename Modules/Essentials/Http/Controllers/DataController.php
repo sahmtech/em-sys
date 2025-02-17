@@ -1049,6 +1049,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.import_new_arrival_workers'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'payrolls.new_arrival_for_workers',
+                        'label' => __('housingmovements::lang.new_arrival_for_workers'),
+                        'default' => false,
+                    ],
 
                     [
                         'value'   => 'payrolls.housed',

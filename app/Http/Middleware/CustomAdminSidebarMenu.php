@@ -1595,9 +1595,12 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-coins', 'active' => request()->segment(1) == 'payrolls' && (request()->segment(2) == 'index-penalties')]
                 );
             }
+
+            // dd(auth()->user()->can('payrolls.advanceSalaryRequest'));
+
             
             if (
-                $is_admin || auth()->user()->can('payrolls.import_new_arrival_workers')
+                $is_admin || auth()->user()->can('payrolls.new_arrival_for_workers')
                 || auth()->user()->can('payrolls.housed')
                 || auth()->user()->can('payrolls.advanceSalaryRequest')
                 || auth()->user()->can('payrolls.medicalExamination')
@@ -1612,7 +1615,7 @@ class CustomAdminSidebarMenu
             ) {
 
                 $menu->url(
-                    ($is_admin || auth()->user()->can('payrolls.import_new_arrival_workers')) ? action([
+                    ($is_admin || auth()->user()->can('payrolls.new_arrival_for_workers')) ? action([
                         \Modules\Essentials\Http\Controllers\PayrollController::class,
                         'new_arrival_for_workers',
                     ]) : ((auth()->user()->can('payrolls.housed')) ? action([
