@@ -524,10 +524,18 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    
+
                     // New Arrival Worker
                     [
+                        'value' => 'followup.import_new_arrival_workers',
+                        'label' => __('essentials::lang.import_new_arrival_workers'),
+
+                        'default' => false,
+                    ],
+                    [
                         'value'   => 'followup.new_arrival_for_workers',
-                        'label'   => __('followup::lang.import_new_arrival_workers'),
+                        'label' => __('housingmovements::lang.new_arrival_for_workers'),
                         'default' => false,
                     ],
                     [
@@ -579,6 +587,13 @@ class DataController extends Controller
                         'value'   => 'followup.residencyDelivery',
                         'label'   => __('followup::lang.residencyDelivery'),
                         'default' => false,
+                    ],
+                    [
+                        
+                        'value'   => 'followup.new_arrival_worker_progress',
+                        'label'   => __('housingmovements::lang.new_arrival_worker_progress'),
+                        'default' => false,
+                        
                     ],
                 ],
 

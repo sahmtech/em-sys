@@ -62,6 +62,9 @@ class AddPermissions extends Command
             'followup.contract',
             'followup.residencyAdd&Print',
             'followup.residencyDelivery',
+            'followup.new_arrival_worker_progress',
+            'followup.import_new_arrival_workers',
+
 
         ];
 

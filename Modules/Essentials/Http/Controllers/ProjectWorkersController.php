@@ -1235,6 +1235,7 @@ class ProjectWorkersController extends Controller
     }
     public function advanceSalaryRequest()
     {
+        
        
         $view = 'housingmovements::travelers.advanceSalaryRequest';
         return $this->newArrivalUtil->advanceSalaryRequest($view);

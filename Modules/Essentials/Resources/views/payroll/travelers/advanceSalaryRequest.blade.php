@@ -66,6 +66,7 @@
 
 
 
+
                         <div class="form-group col-md-6">
                             {!! Form::label('user_id', __('essentials::lang.name') . ':*') !!}
                             {!! Form::select('user_id', $users, null, [

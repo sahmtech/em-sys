@@ -1247,4 +1247,12 @@ class ProjectWorkersController extends Controller
         $view = 'housingmovements::travelers.advanceSalaryRequest';
         return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
+
+     // new Arrival Progress Status
+    public function progress()
+    {
+        // dd("*");
+        $view = 'housingmovements::travelers.progress';
+        return $this->newArrivalUtil->payProgress($view);
+    }
 }

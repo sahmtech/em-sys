@@ -98,7 +98,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('housingmovements.residencyDelivery'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.residencyDelivery'))
                         <!-- 11 -->
                         <li @if (request()->segment(2) == 'residencyDelivery') class="active" @endif>
                             <a href="{{ route('residencyDelivery') }}">
@@ -106,6 +106,17 @@
                             </a>
                         </li>
                     @endif
+                      <!--12 -->
+                      @if (auth()->user()->hasRole('Admin#1') ||
+                      auth()->user()->can('followup.new_arrival_for_workers') ||
+                      auth()->user()->can('payrolls.new_arrival_worker_progress'))
+                      <li @if (request()->segment(2) == 'progress') class="active" @endif>
+                          <a href="{{ route('progressRequest') }}">
+                              <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+                              @lang('housingmovements::lang.new_arrival_worker_progress')
+                          </a>
+                      </li>
+                      @endif
 
 
                 </ul>

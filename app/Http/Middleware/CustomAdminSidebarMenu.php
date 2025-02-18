@@ -1335,6 +1335,7 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && (request()->segment(2) == 'pendingEmployeeAffairsRequests')]
                     );
                 }
+                
                 if (
                     $is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')
                     || auth()->user()->can('housingmovements.housed')
@@ -2059,57 +2060,65 @@ class CustomAdminSidebarMenu
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'allRequests']);
             }
+            // dd( auth()->user()->can('followup.contract'));
 
             if (
-                $is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')
-                || auth()->user()->can('housingmovements.housed')
-                || auth()->user()->can('housingmovements.advanceSalaryRequest')
-                || auth()->user()->can('housingmovements.medicalExamination')
-                || auth()->user()->can('housingmovements.medicalInsurance')
-                || auth()->user()->can('housingmovements.workCardIssuing')
-                || auth()->user()->can('housingmovements.SIMCard')
-                || auth()->user()->can('housingmovements.bankAccount')
-                || auth()->user()->can('housingmovements.contract')
-                || auth()->user()->can('housingmovements.residencyAdd&Print')
-                || auth()->user()->can('housingmovements.residencyDelivery')
+                $is_admin || auth()->user()->can('followup.new_arrival_for_workers')
+                || auth()->user()->can('followup.housed')
+                || auth()->user()->can('followup.advanceSalaryRequest')
+                || auth()->user()->can('followup.medicalExamination')
+                || auth()->user()->can('followup.medicalInsurance')
+                || auth()->user()->can('followup.workCardIssuing')
+                || auth()->user()->can('followup.SIMCard')
+                || auth()->user()->can('followup.bankAccount')
+                || auth()->user()->can('followup.contract')
+                || auth()->user()->can('followup.residencyAdd&Print')
+                || auth()->user()->can('followup.residencyDelivery')
+                || auth()->user()->can('followup.new_arrival_worker_progress') // TODO:: for progress status
 
             ) {
 
                 $menu->url(
-                    ($is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')) ? action([
+                    ($is_admin || auth()->user()->can('followup.new_arrival_for_workers')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'new_arrival_for_workers',
-                    ]) : ((auth()->user()->can('housingmovements.housed')) ? action([
+                    ]) : ((auth()->user()->can('followup.housed')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'housed_workers_index',
-                    ]) : ((auth()->user()->can('housingmovements.advanceSalaryRequest')) ? action([
+                    ]) : ((auth()->user()->can('followup.advanceSalaryRequest')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'advanceSalaryRequest',
-                    ]) : ((auth()->user()->can('housingmovements.medicalExamination')) ? action([
+                    ]) : ((auth()->user()->can('followup.medicalExamination')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'medicalExamination',
-                    ]) : ((auth()->user()->can('housingmovements.medicalInsurance')) ? action([
+                    ]) : ((auth()->user()->can('followup.medicalInsurance')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'medicalInsurance',
-                    ]) : ((auth()->user()->can('housingmovements.workCardIssuing')) ? action([
+                    ]) : ((auth()->user()->can('followup.workCardIssuing')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'workCardIssuing',
-                    ]) : ((auth()->user()->can('housingmovements.SIMCard')) ? action([
+                    ]) : ((auth()->user()->can('followup.SIMCard')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'SIMCard',
-                    ]) : ((auth()->user()->can('housingmovements.bankAccount')) ? action([
+                    ]) : ((auth()->user()->can('followup.bankAccount')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'bankAccounts',
-                    ]) : ((auth()->user()->can('housingmovements.contract')) ? action([
+                    ]) : ((auth()->user()->can('followup.contract')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'QiwaContracts',
-                    ]) : ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
+                    ]) : ((auth()->user()->can('followup.residencyAdd&Print')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'residencyPrint',
-                    ]) : action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'residencyDelivery'])))))))))),
+                    ]): ((auth()->user()->can('followup.contract')) ? action([
+                        \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
+                        'progress',
+                    ])
+                     : action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
+                      'residencyDelivery']))))))))))),
 
                     __('housingmovements::lang.travelers'),
-                    ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'followup' && (request()->segment(2) == 'followup_travelers'
+                    ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'followup' && (
+                        request()->segment(2) == 'followup_travelers'
                         || request()->segment(2) == 'followup_housed_workers'
                         || request()->segment(2) == 'followup_advanceSalaryRequest'
                         || request()->segment(2) == 'followup_medicalExamination'
@@ -2120,6 +2129,7 @@ class CustomAdminSidebarMenu
                         || request()->segment(2) == 'followup_QiwaContract'
                         || request()->segment(2) == 'followup_residencyPrint'
                         || request()->segment(2) == 'followup_residencyDelivery'
+                        || request()->segment(2) == 'followup_progress'
 
                     )],
                 );
@@ -2538,7 +2548,14 @@ class CustomAdminSidebarMenu
                     ]) : ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                         'residencyPrint',
-                    ]) : action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])))))))))),
+                        
+                    ]) : 
+                    ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
+                        \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
+                        'progress',
+                        
+                    ]):
+                     action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery']))))))))))),
 
                     __('housingmovements::lang.travelers'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && (request()->segment(2) == 'travelers'
@@ -2552,6 +2569,7 @@ class CustomAdminSidebarMenu
                         || request()->segment(2) == 'QiwaContract'
                         || request()->segment(2) == 'residencyPrint'
                         || request()->segment(2) == 'residencyDelivery'
+                        || request()->segment(2) == 'progress'
 
                     )],
                 );

@@ -44,6 +44,7 @@ class NewArrivalUtil extends Util
         $can_housing_crud_htr_trevelers = auth()->user()->canAny([
             'housingmovements.new_arrival_for_workers',
             'payrolls.new_arrival_for_workers',
+            'followup.new_arrival_for_workers',
             
         ]);
 
@@ -591,10 +592,10 @@ class NewArrivalUtil extends Util
     
             $userIds = User::whereNot('user_type', 'admin')
                 ->pluck('id')->toArray();
-            if (! $is_admin) {
-                $userIds = [];
-                $userIds = $this->moduleUtil->applyAccessRole();
-            }
+            // if (! $is_admin) {
+            //     $userIds = [];
+            //     $userIds = $this->moduleUtil->applyAccessRole();
+            // }
             $workers = User::with(['proposal_worker'])
                 ->whereNotNull('proposal_worker_id')
                 ->whereIn('id', $userIds)
@@ -654,8 +655,7 @@ class NewArrivalUtil extends Util
                         }
                     })
                     ->addColumn('advance_salary_request', function ($worker) {
-                        $advance_salary_request = UserRequest::where('related_to', $worker->id)
-                        ->where('request_no', 'LIKE', '%AdvSal%')
+                        $advance_salary_request = NewWorkersAdSalaryRequest::where('related_to', $worker->id)
                         ->count();
                                     
                     
@@ -1252,7 +1252,6 @@ class NewArrivalUtil extends Util
                 'company_id',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ]) ->latest('created_at');
-        //  return $workers->get();
         if (request()->ajax()) {
             return Datatables::of($workers)
 
@@ -1345,16 +1344,16 @@ class NewArrivalUtil extends Util
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $userIds  = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
-        if (! $is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
+        // if (! $is_admin) {
+        //     $userIds = [];
+        //     $userIds = $this->moduleUtil->applyAccessRole();
+        // }
         $users = User::whereIn('id', $userIds)->whereNotNull('proposal_worker_id')
             ->where('status', '!=', 'inactive')->whereNotIn('users.id', function ($query) {
             $query->select('related_to')->from('requests');
         })->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
 
-
+        // return $users;
   
 
         $requests = UserRequest::leftJoin('users', 'users.id', '=', 'requests.related_to')
@@ -1368,7 +1367,6 @@ class NewArrivalUtil extends Util
                 'users.company_id',
             ]) ->latest('created_at');
 
-    // dd($requests->   get());
 
     if (request()->ajax()) {
         $requests = $requests ?? [];

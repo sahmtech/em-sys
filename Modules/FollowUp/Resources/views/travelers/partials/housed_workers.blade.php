@@ -14,6 +14,7 @@
     <!-- Main content -->
     <section class="content">
         @include('followup::layouts.nav_trevelers')
+
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])

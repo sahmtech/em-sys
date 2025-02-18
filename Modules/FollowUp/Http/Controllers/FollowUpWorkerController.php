@@ -563,6 +563,7 @@ class FollowUpWorkerController extends Controller
 
     public function housed_workers_index(Request $request)
     {
+        
         $view = 'followup::travelers.partials.housed_workers';
         return $this->newArrivalUtil->housed_workers_index($request, $view);
     }
@@ -612,4 +613,13 @@ class FollowUpWorkerController extends Controller
         $view = 'followup::travelers.advanceSalaryRequest';
         return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
+
+     // new Arrival Progress Status
+     public function progress()
+     {
+       
+        
+         $view = 'followup::travelers.progress';
+         return $this->newArrivalUtil->payProgress($view);
+     }
 }

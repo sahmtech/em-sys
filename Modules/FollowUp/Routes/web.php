@@ -150,5 +150,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/followup_residencyPrint', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'residencyPrint'])->name('followup_residencyPrint');
         Route::get('/followup_residencyDelivery', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'residencyDelivery'])->name('followup_residencyDelivery');
         Route::get('/followup_advanceSalaryRequest', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'advanceSalaryRequest'])->name('followup_advanceSalaryRequest');
+        Route::get('/progressRequest', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'progress'])->name('followup_progressRequest');
     });
 });
