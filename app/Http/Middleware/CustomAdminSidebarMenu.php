@@ -579,6 +579,17 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests')]
                 );
             }
+
+            if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.reports')) {
+
+                $menu->url(
+                    route('operationsmanagmentgovernment.reports.index'),
+                    __('operationsmanagmentgovernment::lang.reports'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests')]
+                );
+            }
+
+
             if ($is_admin || auth()->user()->can('operationsmanagmentgovernment.permissions')) {
 
                 $menu->url(
@@ -705,6 +716,13 @@ class CustomAdminSidebarMenu
                     route('agent_asset_assessment'),
                     __('operationsmanagmentgovernment::lang.asset_assessment'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent' && request()->segment(2) == 'asset_assessment']
+                );
+
+
+                $menu->url(
+                    route('agent_reports'),
+                    __('operationsmanagmentgovernment::lang.reports'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(1) == 'agent' && request()->segment(2) == 'reports')]
                 );
             }
             // }
