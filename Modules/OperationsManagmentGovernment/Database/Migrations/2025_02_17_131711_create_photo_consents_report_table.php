@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('lost_items', function (Blueprint $table) {
+        Schema::create('photo_consents_report', function (Blueprint $table) {
             $table->id();
-            $table->string('item_name')->nullable();
-            $table->string('item_contents')->nullable();
-            $table->unsignedBigInteger('lost_items_reports_id')->unsigned();
-            $table->foreign('lost_items_reports_id')->references('id')->on('lost_items_reports')->onDelete('cascade');
+            $table->string('name')->nullable();
+            $table->string('national_id')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->unsignedBigInteger('report_id');
+            $table->foreign('report_id')->references('id')->on('operations_reports')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lost_items_');
+        Schema::dropIfExists('photo_consents_report');
     }
 };

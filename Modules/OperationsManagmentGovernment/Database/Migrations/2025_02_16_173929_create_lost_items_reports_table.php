@@ -20,8 +20,8 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->string('supervisor')->nullable();
             $table->string('ref_number');
-            $table->Integer('report_id')->unsigned();
-            $table->foreign('report_id')->references('id')->on('reports')->onDelete('cascade');
+            $table->unsignedBigInteger('report_id');
+            $table->foreign('report_id')->references('id')->on('operations_reports')->onDelete('cascade');
             $table->timestamps();
         });
     }

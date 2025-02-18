@@ -13,19 +13,25 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('subscriber_status_report', function (Blueprint $table) {
+        Schema::create('incident_report', function (Blueprint $table) {
             $table->id();
-            $table->string('type')->nullable();
+            $table->string('supervisor_name')->nullable();
+            $table->json('rotion_damage_types')->nullable();
             $table->string('location')->nullable();
-            $table->string('name')->nullable();
-            $table->string('company')->nullable();
+            $table->string('squar')->nullable();
+            $table->string('full_name')->nullable();
             $table->string('national_id')->nullable();
             $table->string('phone_number')->nullable();
+            $table->string('insurance_company')->nullable();
+            $table->string('insurance_policy_number')->nullable();
             $table->string('plate_number')->nullable();
-            $table->text('status_details')->nullable();
-            $table->string('commercial_register_number')->nullable();
+            $table->string('car_model')->nullable();
+            $table->string('car_year')->nullable();
+            $table->text('notes')->nullable();
+            $table->string('damage_quantity')->nullable();
+            $table->boolean('full_damage')->nullable();
+            $table->boolean('partial_damage')->nullable();
             $table->string('security_supervisor')->nullable();
-            $table->string('government_sector')->nullable();
             $table->string('contact_supervisor')->nullable();
             $table->unsignedBigInteger('report_id');
             $table->foreign('report_id')->references('id')->on('operations_reports')->onDelete('cascade');
@@ -40,6 +46,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('subscriber_status_report');
+        Schema::dropIfExists('incident_report');
     }
 };

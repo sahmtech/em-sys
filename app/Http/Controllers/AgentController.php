@@ -49,6 +49,7 @@ use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\UserLeaveBalance;
 use Modules\OperationsManagmentGovernment\Entities\AssetAssessment;
 use Modules\OperationsManagmentGovernment\Entities\ProjectZone;
+use Modules\OperationsManagmentGovernment\Entities\Report;
 use Modules\OperationsManagmentGovernment\Entities\WaterWeight;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesProject;
@@ -134,6 +135,76 @@ class AgentController extends Controller
         }
 
         return ' ';
+    }
+
+
+    public function reports(Request $request)
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1');
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id = $user->crm_contact_id;
+        $reportTypes = [
+            'penalty' => __('operationsmanagmentgovernment::lang.penalty'),
+            'lost_items' => __('operationsmanagmentgovernment::lang.lost_items'),
+            'subscriber_status' => __('operationsmanagmentgovernment::lang.subscriber_status'),
+            'photo_consents' => __('operationsmanagmentgovernment::lang.photo_consents'),
+            'incident' => __('operationsmanagmentgovernment::lang.incident'),
+        ];
+        if ($request->ajax()) {
+            $reports = Report::query();
+
+            if (!empty($request->type)) {
+                $reports->where('type', $request->type);
+            }
+
+            return DataTables::of($reports)
+                ->editColumn('created_by', function ($row) {
+                    return $row->createdBy ? $row->createdBy->first_name . ' ' . $row->createdBy->last_name : '-';
+                })
+                ->editColumn('type', function ($row) use ($reportTypes) {
+                    return $reportTypes[$row->type];
+                })
+                ->editColumn('contact', function ($row) {
+                    return $row->contact ? $row->contact->supplier_business_name : '-';
+                })
+                ->addColumn('action', function ($row) {
+                    return '<button data-id="' . $row->id . '" class="btn btn-xs btn-info open-view-modal">
+                             <i class="fas fa-eye"></i> ' . __("messages.view") . '
+                                </button>
+                            ';
+                })
+                ->addColumn('file', function ($row) {
+                    if ($row->file_path) {
+                        $fileUrl = asset('uploads/' . $row->file_path);
+                        return '<a href="' . $fileUrl . '" target="_blank" class="btn btn-xs btn-info">
+                                    <i class="fa fa-file"></i> ' . __('home.view_attach') . '
+                                </a>';
+                    }
+                    return '';
+                })
+                ->rawColumns(['action', 'file'])
+                ->make(true);
+        }
+
+
+
+
+
+        $damage_types = [
+            'مصدات ماكرو أو مكعبة' => __('operationsmanagmentgovernment::lang.macro_cubic_bumpers'),
+            'رصيف' => __('operationsmanagmentgovernment::lang.sidewalk'),
+            'نخلة' => __('operationsmanagmentgovernment::lang.palm_tree'),
+            'شجرة' => __('operationsmanagmentgovernment::lang.tree'),
+            'عامود إنارة' => __('operationsmanagmentgovernment::lang.light_pole'),
+            'إشارة مرور' => __('operationsmanagmentgovernment::lang.traffic_signal'),
+            'أخرى' => __('operationsmanagmentgovernment::lang.other'),
+        ];
+        return view('custom_views.agents.reports.index', compact('reportTypes', 'damage_types'));
+    }
+    public function reports_view($id)
+    {
+        $report = Report::with(['penalty', 'lostItems.items', 'photoConsents', 'subscriberStatus', 'contact'])->findOrFail($id);
+        return response()->json($report);
     }
 
     public function project_zones()

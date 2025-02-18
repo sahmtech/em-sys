@@ -96,6 +96,28 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    //reports
+                    [
+                        'value'   => 'operationsmanagmentgovernment.reports',
+                        'label'   => __('operationsmanagmentgovernment::lang.reports'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.add_reports',
+                        'label'   => __('operationsmanagmentgovernment::lang.add_reports'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.edit_reports',
+                        'label'   => __('operationsmanagmentgovernment::lang.edit_reports'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'operationsmanagmentgovernment.delete_reports',
+                        'label'   => __('operationsmanagmentgovernment::lang.delete_reports'),
+                        'default' => false,
+                    ],
+
                     //permissions
                     [
                         'value'   => 'operationsmanagmentgovernment.permissions',

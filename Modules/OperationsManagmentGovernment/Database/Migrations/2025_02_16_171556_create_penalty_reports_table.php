@@ -22,9 +22,8 @@ return new class extends Migration
             $table->text('violation_note')->nullable();
             $table->string('security_supervisor')->nullable();
             $table->string('contact_supervisor')->nullable();
-            $table->string('ref_number');
-            $table->Integer('report_id')->unsigned();
-            $table->foreign('report_id')->references('id')->on('reports')->onDelete('cascade');
+            $table->unsignedBigInteger('report_id');
+            $table->foreign('report_id')->references('id')->on('operations_reports')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -154,4 +154,107 @@ return [
     'permissions'                             => 'صلاحيات العملاء',
     'update_permissions'                      => 'تعديل صلاحيات العملاء',
 
+    'reports' => 'التقارير',
+    'report' => 'التقرير',
+    'date' => 'التاريخ',
+    'time' => 'الوقت',
+    'type' => 'النوع',
+    'contact' => 'الجهة المعنية',
+    'created_by' => 'أنشئ بواسطة',
+    'action' => 'الإجراء',
+
+    // Report Types
+    'penalty' => 'محضر إقرار تعهد',
+    'lost_items' => 'محضر استلام مفقودات',
+    'subscriber_status' => 'محضر إثبات حالة مشترك',
+    'photo_consents' => 'تعهد بالتصوير الشخصي',
+    'incident' => 'محضر مباشرة حادث',
+
+    // Penalty Report
+    'national_id' => 'رقم الهوية',
+    'full_name' => 'الاسم الكامل',
+    'phone_number' => 'رقم الهاتف',
+    'penalty_type' => 'نوع المخالفة',
+    'violation_note' => 'ملاحظات المخالفة',
+    'supervisor_name' => 'اسم المشرف',
+    'ref_number' => 'رقم المحضر',
+    'security_supervisor' => 'مشرف الأمن',
+    'contact_supervisor_for_marien_front' => 'مشرف روتانا للواجهات البحرية',
+    'rotana_supervisor' => 'مشرف روتانا',
+    'contact_supervisor' => 'مشرف الجهة المعنية',
+
+
+    // Lost Items Report
+    'receiving_entity_name' => 'أسم الجهة المستلمة',
+    'recipient_name' => 'أسم المستلم',
+    'notes' => 'ملاحظات',
+    'supervisor' => 'المشرف',
+
+    // Lost Items
+    'item_name' => 'اسم العنصر',
+    'item_contents' => 'محتويات العنصر',
+
+    // Subscriber Status Report
+    'location' => 'الموقع',
+    'company' => 'الشركة',
+    'status_type' => 'نوع الحالة',
+    'status_location' => 'موقع الحالة',
+    'plate_number' => 'رقم اللوحة',
+    'status_details' => 'تفاصيل الحالة',
+    'commercial_register_number' => 'رقم السجل التجاري',
+    'government_sector' => 'القطاع الحكومي',
+
+    // Photo Consents Report
+    'photo_consent' => 'الموافقة على التصوير',
+    'national_eqama_id' => 'رقم الهوية الوطنية / الإقامة',
+
+    // Incident Report
+    'supervisor_name' => 'اسم المشرف',
+    'gathering_supervisor' => 'مشرف التحصيل',
+    'incident_location' => 'موقع الحادث',
+    'car_plate_number' => 'لوحة السيارة',
+
+
+    'squar' => 'الساحة',
+    'insurance_company' => 'شركة التأمين',
+    'insurance_policy_number' => 'رقم بوليصة التأمين',
+    'car_model' => 'نوع السيارة',
+    'car_year' => 'سنة الصنع',
+    'damage_quantity' => 'عدد الضرر أو التلف',
+    'full_damage' => 'ضرر كلي',
+    'partial_damage' => 'ضرر جزئي',
+    'star_supervisor' => 'مشرف نجمة الشاطئ',
+
+    // General
+    'add' => 'إضافة',
+    'edit' => 'تعديل',
+    'delete' => 'حذف',
+    'save' => 'حفظ',
+    'close' => 'إغلاق',
+    'all' => 'الكل',
+    'attachments' => 'المرفقات',
+    'select' => 'اختر',
+    'confirm_delete' => 'هل أنت متأكد من الحذف؟',
+    'success' => 'تمت العملية بنجاح',
+    'updated_successfully' => 'تم التحديث بنجاح',
+    'deleted_successfully' => 'تم الحذف بنجاح',
+    'add_item' => 'إضافة عنصر جديد',
+    'remove_item' => 'حذف العنصر',
+    'penalty_declaration' => 'أتعهد انا الموضح بياناته أعلاه بعدم تكرار مخالفتي لأنظمة ولوائح واجهة روشن البحرية، وفي حال تكرار مخالفتي لذلك أتحمل العقوبة التي تقررها إدارة واجهة روشن البحرية.',
+    'photo_consent_declaration_1' => 'أقر وأتعهد بأن جميع الصور أو المحتوى الذي يتم تصويره هو لأغراض شخصية فقط، وليس للاستخدام أو النشر التجاري بأي شكل من الأشكال.',
+    'photo_consent_declaration_2' => 'وفي حال ثبوت استخدام المحتوى لأي غرض تجاري دون الحصول على موافقة مسبقة تصريح من شركة و روتانا للواجهات البحرية ، أقر بتحملي كافة المسؤوليات القانونية، بما في ذلك الإجراءات القانونية اللازمة ضدي.',
+    'photo_consent_declaration_3' => 'كما أؤكد التزامي التام بهذا التعهد وأقر بصحته بموجب هذا التوقيع.',
+
+
+    'macro_cubic_bumpers' => 'مصدات ماكرو أو مكعبة',
+
+    'sidewalk' => 'رصيف',
+    'palm_tree' =>  'نخلة',
+    'tree' =>  'شجرة',
+    'light_pole' => 'عامود إنارة',
+    'traffic_signal' => 'إشارة مرور',
+    'other' => 'أخرى',
+    'report_contact' => 'العميل',
+
+
 ];

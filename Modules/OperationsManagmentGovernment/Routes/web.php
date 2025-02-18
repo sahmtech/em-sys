@@ -47,6 +47,16 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/assets/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'update_asset_assessment'])->name('operationsmanagmentgovernment.asset_assessment.update');
         Route::delete('/assets/delete/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'destroy_asset_assessment'])->name('operationsmanagmentgovernment.asset_assessment.delete');
 
+        //reports
+        Route::get('reports', [Modules\OperationsManagmentGovernment\Http\Controllers\ReportsController::class, 'index'])->name('operationsmanagmentgovernment.reports.index');
+        Route::post('reports/store', [Modules\OperationsManagmentGovernment\Http\Controllers\ReportsController::class, 'store'])->name('operationsmanagmentgovernment.reports.store');
+        Route::get('reports/edit/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\ReportsController::class, 'edit'])->name('operationsmanagmentgovernment.reports.edit');
+        Route::get('reports/view/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\ReportsController::class, 'view'])->name('operationsmanagmentgovernment.reports.view');
+
+        Route::post('reports/update/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\ReportsController::class, 'update'])->name('operationsmanagmentgovernment.reports.update');
+        Route::delete('reports/destroy/{id}', [Modules\OperationsManagmentGovernment\Http\Controllers\ReportsController::class, 'destroy'])->name('operationsmanagmentgovernment.reports.destroy');
+
+
 
         //helpers
         Route::get('/getProjectsFromContact/{contact_id}', [Modules\OperationsManagmentGovernment\Http\Controllers\OperationsManagmentGovernmentController::class, 'getProjectsFromContact'])
