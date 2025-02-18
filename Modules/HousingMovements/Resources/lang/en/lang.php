@@ -173,4 +173,8 @@ return [
     'buys_beds'                    => 'number of beds occupied',
     'unified_number'               => 'Unified Number',
 
+    'new_arrival_worker_progress'  => 'New Arrival Status of Workers',
+
+    'housed_status'                => 'Housing Status',
+
 ];

@@ -2997,6 +2997,15 @@ class PayrollController extends Controller
         $view = 'essentials::payroll.travelers.workCardIssuing';
         return $this->newArrivalUtil->workCardIssuing($view);
     }
+
+    // This fun New Arrival workere progress
+    public function payProgress()
+    {
+        $view = 'essentials::payroll.travelers.progress';
+        return $this->newArrivalUtil->payProgress($view);
+    }
+
+    
     public function medicalInsurance()
     {
         $view = 'essentials::payroll.travelers.medicalInsurance';

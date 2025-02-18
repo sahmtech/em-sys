@@ -9,11 +9,14 @@ use App\Utils\ModuleUtil;
 use App\Utils\NewArrivalUtil;
 use App\WorkerProjectsHistory;
 use Carbon\Carbon;
+use App\Request as UserRequest;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Modules\CEOManagment\Entities\RequestsType;
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
@@ -1140,12 +1143,39 @@ class ProjectWorkersController extends Controller
 
         if ($latestRecord) {
             $latestRefNo = $latestRecord->request_no;
-            $numericPart = (int) substr($latestRefNo, 'adv_');
+            // $numericPart = (int) substr($latestRefNo, 'adv_');
+            $numericPart = (int) substr($latestRefNo, strlen('adv_'));
+
             $numericPart++;
             $request_no = 'adv_' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
         } else {
             $request_no = 'adv_0001';
         }
+
+
+       $user_type =  User::find($request->user_id)->user_type;
+
+    //    dd($user_type);
+
+
+
+       $type = RequestsType::where('type','advanceSalary')->where('for',$user_type)->first();
+        // dd($type->id);
+      
+
+        $requests_Data = [
+            'advSalaryAmount'    => $request->amount,
+            'request_no'         => $request_no,
+            'monthlyInstallment' => $request->monthlyInstallment,
+            'related_to'         => $request->user_id,
+            'installmentsNumber' => $request->installmentsNumber,
+            'status'             => 'pending',
+            'related_to'        => $request->user_id,
+            'note'               => $request->note,
+            'created_by'         => Auth::user()->id,
+            'attachment'         => $path,
+            'request_type_id' => $type->id,
+        ];
         $documentData = [
             'advSalaryAmount'    => $request->amount,
             'request_no'         => $request_no,
@@ -1158,6 +1188,11 @@ class ProjectWorkersController extends Controller
             'created_by'         => Auth::user()->id,
             'attachment'         => $path,
         ];
+
+        // dd($documentData);
+        // $requests = UserRequest::create([$requests_Data]);
+        $requests = DB::table('requests')->insert($requests_Data);
+
         NewWorkersAdSalaryRequest::create($documentData);
         $output = [
             'success' => true,

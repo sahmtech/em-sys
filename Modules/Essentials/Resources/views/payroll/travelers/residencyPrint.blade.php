@@ -107,6 +107,7 @@
                     },
                     {
                         data: 'full_name',
+                        searchable: false
                     },
                     {
                         data: 'id_proof_number',

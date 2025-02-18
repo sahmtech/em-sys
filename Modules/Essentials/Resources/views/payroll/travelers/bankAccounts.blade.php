@@ -157,7 +157,8 @@
                     },
                     {
                         data: 'full_name',
-                        name: 'full_name'
+                        name: 'full_name',
+                        searchable: false
                     },
                     {
                         data: 'account_holder_name',

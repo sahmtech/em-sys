@@ -218,13 +218,16 @@
                     },
                     {
                         data: 'company_name',
-                        name: 'company_name'
+                        name: 'company_name',
+                        searchable: false
+
                     },
 
 
                     {
                         data: 'user',
-                        name: 'user'
+                        name: 'user',
+                        searchable: false
                     },
                     {
                         data: 'nationality',

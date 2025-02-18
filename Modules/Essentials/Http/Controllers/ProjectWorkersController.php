@@ -1127,45 +1127,71 @@ class ProjectWorkersController extends Controller
 
     public function newWorkersAdvSalaryStore(Request $request)
     {
-
-        $path = '';
-        if ($request->hasFile('attachment')) {
-
-            $file = $request->file('attachment');
-
-            $path = $file->store('/requests_attachments');
-        }
-
-        $latestRecord = NewWorkersAdSalaryRequest::orderBy('request_no', 'desc')->first();
-
-        if ($latestRecord) {
-            $latestRefNo = $latestRecord->request_no;
-            $numericPart = (int) substr($latestRefNo, 'adv_');
-            $numericPart++;
+        $validatedData = $request->validate([
+            'amount'             => 'required|numeric|min:1',
+            'monthlyInstallment' => 'required|numeric|min:1',
+            'installmentsNumber' => 'required|integer|min:1',
+            'user_id'            => 'required|exists:users,id',
+            'note'               => 'nullable|string',
+            'attachment'         => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
+        ]);
+    
+        DB::beginTransaction();
+    
+        try {
+            $path = $request->hasFile('attachment') 
+                ? $request->file('attachment')->store('requests_attachments') 
+                : null;
+    
+            $latestRefNo = NewWorkersAdSalaryRequest::orderByDesc('request_no')->value('request_no');
+            $numericPart = $latestRefNo 
+                ? (int) substr($latestRefNo, strlen('adv_')) + 1 
+                : 1;
             $request_no = 'adv_' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-        } else {
-            $request_no = 'adv_0001';
+    
+            // Get User Type
+            $user = User::findOrFail($request->user_id);
+            $type = RequestsType::where('type', 'advanceSalary')
+                                ->where('for', $user->user_type)
+                                ->firstOrFail();
+    
+            $commonData = [
+                'advSalaryAmount'    => $validatedData['amount'],
+                'request_no'         => $request_no,
+                'monthlyInstallment' => $validatedData['monthlyInstallment'],
+                'related_to'         => $validatedData['user_id'],
+                'installmentsNumber' => $validatedData['installmentsNumber'],
+                'status'             => 'pending',
+                'note'               => $validatedData['note'] ?? '',
+                'created_by'         => Auth::id(),
+                'attachment'         => $path,
+            ];
+    
+            $requestsData = array_merge($commonData, ['request_type_id' => $type->id]);
+            $documentData = array_merge($commonData, ['employee_id' => $validatedData['user_id']]);
+    
+            // Insert Data
+            DB::table('requests')->insert($requestsData);
+            NewWorkersAdSalaryRequest::create($documentData);
+    
+            DB::commit();
+    
+            return redirect()->back()->with('status', [
+                'success' => true,
+                'msg'     => __('housingmovements::lang.added_successfully'),
+            ]);
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('New Workers Advance Salary Error: ' . $e->getMessage());
+    
+            return redirect()->back()->with('status', [
+                'success' => false,
+                'msg'     => __('housingmovements::lang.something_went_wrong'),
+            ]);
         }
-        $documentData = [
-            'advSalaryAmount'    => $request->amount,
-            'request_no'         => $request_no,
-            'monthlyInstallment' => $request->monthlyInstallment,
-            'related_to'         => $request->user_id,
-            'installmentsNumber' => $request->installmentsNumber,
-            'status'             => 'pending',
-            'employee_id'        => $request->user_id,
-            'note'               => $request->note,
-            'created_by'         => Auth::user()->id,
-            'attachment'         => $path,
-        ];
-        NewWorkersAdSalaryRequest::create($documentData);
-        $output = [
-            'success' => true,
-            'msg'     => __('housingmovements::lang.added_successfully'),
-        ];
-        return redirect()->back()
-            ->with('status', $output);
     }
+    
 
     public function medicalExamination()
     {
@@ -1209,6 +1235,7 @@ class ProjectWorkersController extends Controller
     }
     public function advanceSalaryRequest()
     {
+       
         $view = 'housingmovements::travelers.advanceSalaryRequest';
         return $this->newArrivalUtil->advanceSalaryRequest($view);
     }

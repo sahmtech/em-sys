@@ -27,9 +27,21 @@
                             </th> --}}
                             <th>#</th>
                             <th>@lang('housingmovements::lang.worker_name')</th>
+                            <th>@lang('housingmovements::lang.border_no')</th>
+                            <th>@lang('housingmovements::lang.company')</th>
+                            <th>@lang('housingmovements::lang.advanceSalaryRequest')</th>
+                            <th>@lang('housingmovements::lang.housed_status')</th>
+                            <th>@lang('housingmovements::lang.medical_examination')</th>
                             <th>@lang('housingmovements::lang.medicalInsurance')</th>
+                            <th>@lang('housingmovements::lang.workCardIssuing')</th>
+                            <th>@lang('housingmovements::lang.contract')</th>
+                            <th>@lang('housingmovements::lang.residence_issuing')</th>
+                            <th>@lang('housingmovements::lang.residencyPrint')</th>
+                            <th>@lang('housingmovements::lang.residencyDelivery')</th>
+                            
+                            
+                            
 
-                            <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
 
@@ -142,7 +154,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('medicalInsurance') }}',
+                url: '{{ route('pay_progress') }}',
             },
             columns: [
                 // {
@@ -160,19 +172,54 @@
                     data: 'full_name',
                     searchable: false
                 },
+               
+                {
+                    data: 'border_no',
+                },
+                {
+                    data:'company',
+                },
+                {
+                    data: 'advance_salary_request',
+                },
+                {
+                    data: 'housed',
+                },
+                {
+                    data: 'medical_examination',
+                },
+                
                 {
                     data: 'has_insurance',
                     render: function(data, type, row) {
                         console.log(data);
-                        return data === 1 ? '@lang('housingmovements::lang.has_insurance')' : '@lang('housingmovements::lang.not_yet')';
+                        if (data === 1) {
+                            return '@lang('housingmovements::lang.has_insurance')';
+                        } else {
+                            return '<span style="color: red;">@lang('housingmovements::lang.not_yet')</span>';
+                        }
                     }
                 },
                 {
-                    data: 'action', 
-                    name: 'action', 
-                    orderable: false,
-                    searchable: false
-                }
+                    data: 'work_card_issuing',
+                },
+
+                {
+                    data: 'contract',
+                },
+                {
+                    data : 'residency_issuing',
+                },
+                {
+                    data : 'residency_print',
+                },
+
+                {
+                    data: 'residency_delivery',
+                },
+
+                
+                
             ]
         });
 

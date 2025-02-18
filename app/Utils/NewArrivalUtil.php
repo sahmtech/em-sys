@@ -7,7 +7,6 @@ use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use App\Request as UserRequest;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -422,6 +421,8 @@ class NewArrivalUtil extends Util
     public function workCardIssuing($view)
     {
 
+
+       
         $business_id        = request()->session()->get('user.business_id');
         $is_admin           = auth()->user()->hasRole('Admin#1') ? true : false;
         $responsible_client = null;
@@ -571,6 +572,209 @@ class NewArrivalUtil extends Util
             )
         );
     }
+    
+    
+    // New Arrival Worker Progress Status
+
+    public function payProgress($view)
+    {
+
+        
+    
+            $insurance_companies = Contact::where('type', 'insurance')
+                ->pluck('supplier_business_name', 'id');
+    
+            $insurance_classes = EssentialsInsuranceClass::all()
+                ->pluck('name', 'id');
+            $business_id = request()->session()->get('user.business_id');
+            $is_admin    = auth()->user()->hasRole('Admin#1') ? true : false;
+    
+            $userIds = User::whereNot('user_type', 'admin')
+                ->pluck('id')->toArray();
+            if (! $is_admin) {
+                $userIds = [];
+                $userIds = $this->moduleUtil->applyAccessRole();
+            }
+            $workers = User::with(['proposal_worker'])
+                ->whereNotNull('proposal_worker_id')
+                ->whereIn('id', $userIds)
+                ->select([
+                    'id',
+                    'border_no',
+                    'company_id as company',
+                    'has_insurance',
+                    'residency_print',
+                    'residency_delivery',
+                    'id_proof_number',
+                    'has_SIM',
+                    'proposal_worker_id',
+                    DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+                ])->latest('created_at');
+
+            // dd($workers->get ());
+    
+            if (request()->ajax()) {
+                return Datatables::of($workers)
+                   
+                    ->addColumn('border_no', function ($worker) {
+                        
+                        return $worker->border_no ?? '';
+                    })
+                    ->addColumn('company', function ($worker) {
+                        $company = Company::find($worker->company);
+                        return $company?->name ?? '';
+                    })
+                    ->addColumn('unified_number', function ($worker) {
+                        $company = Company::find($worker->company);
+                    
+                        // Check if company exists and has documents
+                        if ($company && $company->documents) {
+                            foreach ($company->documents as $document) {
+                                if ($document->licence_type == 'COMMERCIALREGISTER') {
+                                    return $document->unified_number ?? '';  // If unified_number is null, return an empty string
+                                }
+                            }
+                        }
+                        return '';  // Return an empty string if no matching document or company
+                    })
+                    ->addColumn('passport_number', function ($worker) {
+                        $ir_proposed_labor = IrProposedLabor::find($worker->proposal_worker_id);
+                        return $ir_proposed_labor->passport_number  ?? '';
+                    })
+                    ->addColumn('housed', function ($worker) {
+                        $ir_proposed_labor = IrProposedLabor::find($worker->proposal_worker_id);
+                        $housed_status = $ir_proposed_labor->housed_status ?? null;
+                    
+                        if ($housed_status === 1) {
+                            return 'تم التسكين';
+                        } elseif ($housed_status === 0) {
+                            return '<span style="color: red;">لم يتم التسكين</span>';
+                        } else {
+                            return '';
+                        }
+                    })
+                    ->addColumn('advance_salary_request', function ($worker) {
+                        $advance_salary_request = UserRequest::where('related_to', $worker->id)
+                        ->where('request_no', 'LIKE', '%AdvSal%')
+                        ->count();
+                                    
+                    
+                        if ($advance_salary_request >= 1) {
+                            return 'تم اخذ سلفة';
+                        } 
+                         else {
+                            return '<span style="color: red;">لم يتم اخذ سلفة</span>';
+
+                        }
+                    })
+
+                    
+
+                    ->addColumn('medical_examination', function ($worker) {
+                        $ir_proposed_labor = IrProposedLabor::find($worker->proposal_worker_id);
+                        $medical_examination = $ir_proposed_labor->medical_examination ?? null;
+                    
+                        if ($medical_examination === 1) {
+                            return 'تم الفحص';
+                        } elseif ($medical_examination === 0) {
+                            return '<span style="color: red;">لم يتم الفحص</span>';
+                        } else {
+                            return '';
+                        }
+                    })
+
+                    ->addColumn('work_card_issuing', function ($worker) {
+                        $work_card_issuing = EssentialsWorkCard::where('employee_id',$worker->id)->first();
+
+                    
+                        if ($work_card_issuing) {
+                            return 'تم إصدار كرت العمل';
+                        }
+                       else {
+                        return '<span style="color: red;">لم يتم إصدار كرت العمل</span>';
+
+                        }
+                    })
+
+                    ->addColumn('contract', function ($worker) {
+                        $contract = EssentialsEmployeesContract::where('employee_id',$worker->id)->first();
+
+
+
+                    
+                        if ($contract !==null) {
+                            return 'تم انشاء عقد   ';
+                        }
+                       else {
+                        return '<span style="color: red;">لم يتم انشاء عقد    </span>';
+
+                        }
+
+                    })
+
+                   
+                    ->addColumn('residency_issuing', function ($worker) {
+
+                        $residency_delivery =  $worker->id_proof_number ?? null;
+
+                    
+                        if ($residency_delivery !==null) {
+                            return 'تم  الإصدار   ';
+                        }
+                       else {
+                        return '<span style="color: red;">لم يتم  الإصدار    </span>';
+
+                        }
+
+                    })
+                    ->addColumn('residency_print', function ($worker) {
+
+                        $residencyPrint =  $worker->residency_print ?? '';
+
+                    
+                        if ($residencyPrint === 1) {
+                            return 'تمت الطباعة';
+                        }
+                       else {
+                        return '<span style="color: red;">لم يتم  الطباعة    </span>';
+
+                        }
+
+                    })
+                    ->addColumn('residency_delivery', function ($worker) {
+
+                        $residency_delivery =  $worker->residency_delivery ?? '';
+
+                    
+                        if ($residency_delivery === 1) {
+                            return 'تم التسليم ';
+                        }
+                       else {
+                        return '<span style="color: red;">لم يتم  التسليم    </span>';
+
+                        }
+
+                    })
+
+                    
+
+                    
+
+                 
+                    ->addColumn('arrival_date', function ($worker) {
+                        $ir_proposed_labor = IrProposedLabor::find($worker->proposal_worker_id);
+                        return $ir_proposed_labor->arrival_date  ?? '';
+                    })
+                    ->rawColumns(['housed','action','medical_examination','work_card_issuing','contract','residency_delivery','residency_print','residency_issuing','advance_salary_request']) 
+
+                    ->make(true);
+            }
+    
+            return view($view)->with(compact('insurance_companies', 'insurance_classes'));
+        }
+    
+
+    
     public function storeWorkCard(Request $request)
     {
 
@@ -1028,6 +1232,7 @@ class NewArrivalUtil extends Util
 
     public function residencyDelivery($view)
     {
+        
         $business_id = request()->session()->get('user.business_id');
         $is_admin    = auth()->user()->hasRole('Admin#1') ? true : false;
 
@@ -1163,33 +1368,26 @@ class NewArrivalUtil extends Util
                 'users.company_id',
             ]) ->latest('created_at');
 
-    // dd($requests->get());
+    // dd($requests->   get());
 
-        if (request()->ajax()) {
-
-            return DataTables::of($requests ?? [])
-                ->editColumn('created_at', function ($row) {
-                    return $row->created_at->format('Y-m-d');
-                })
-
-                ->editColumn('status', function ($row) use ($is_admin) {
-                    if ($row->status) {
-                        $status = trans('request.' . $row->status);
-
-                        return $status;
-                    }
-                })
-                
-
-                ->editColumn('company_id', function ($row) {
-                    return Company::find($row->company_id)?->name ?? '';
-                })
-                
-
-                ->rawColumns(['status'])
-
-                ->make(true);
-        }
+    if (request()->ajax()) {
+        $requests = $requests ?? [];
+    
+        return DataTables::of($requests)
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at?->format('Y-m-d') ?? '';
+            })
+            ->editColumn('status', function ($row) {
+                // Use the trans helper more concisely
+                return $row->status ? trans('request.' . $row->status) : '';
+            })
+            ->editColumn('company_id', function ($row) {
+                // Eager load the company relationship for better performance
+                return $row->company?->name ?? '';
+            })
+            ->rawColumns(['status']) // Only use rawColumns when needed
+            ->make(true);
+    }
 
         return view($view)->with(compact('users'));
     }

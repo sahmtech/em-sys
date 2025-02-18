@@ -308,7 +308,8 @@
                 },
 
                 columns: [{
-                        data: 'user'
+                        data: 'user',
+                        searchable: false
                     },
                     {
                         data: 'contract_number'

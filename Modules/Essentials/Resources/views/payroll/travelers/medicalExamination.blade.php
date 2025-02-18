@@ -76,6 +76,7 @@
                     },
                     {
                         data: 'full_name',
+                        searchable: false
                     },
                     {
                         data: 'medical_examination',

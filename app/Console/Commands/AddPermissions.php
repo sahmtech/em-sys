@@ -48,6 +48,7 @@ class AddPermissions extends Command
             'payrolls.contract',
             'payrolls.residencyAdd',
             'payrolls.residencyDelivery',
+            'payrolls.new_arrival_worker_progress',
 
             // followup -> import_new_arrival_workers
             'followup.new_arrival_for_workers',

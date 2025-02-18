@@ -129,6 +129,7 @@
                     },
                     {
                         data: 'full_name',
+                        searchable: false
                     },
                     {
                         data: 'contact_number',

@@ -436,6 +436,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/pay_residencyPrint', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyPrint'])->name('pay_residencyPrint');
         Route::get('/pay_residencyDelivery', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyDelivery'])->name('pay_residencyDelivery');
         Route::get('/pay_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'advanceSalaryRequest'])->name('pay_advanceSalaryRequest');
+        Route::get('/pay_progress', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'payProgress'])->name('pay_progress');
+
 
         Route::get('/pay_agent_time_sheet', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'PayrollIndex'])
             ->name('payroll.agentTimeSheetIndex');

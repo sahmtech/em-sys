@@ -114,6 +114,7 @@
                     },
                     {
                         data: 'full_name',
+                        searchable: false
                     },
 
                     {

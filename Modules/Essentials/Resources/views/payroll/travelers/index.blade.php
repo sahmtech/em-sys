@@ -117,7 +117,8 @@
                         searchable: false
                     },
                     {
-                        "data": "full_name"
+                        "data": "full_name",
+                        searchable: false
                     },
                     {
                         "data": "profile_image",
