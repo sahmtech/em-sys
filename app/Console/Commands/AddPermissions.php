@@ -36,7 +36,6 @@ class AddPermissions extends Command
             'operationsmanagmentgovernment.delete_project_department',
 
             // payrolls  import_new_arrival_workers Feat
-            'payrolls.new_arrival_for_workers',
             'payrolls.import_new_arrival_workers',
             'payrolls.housed',
             'payrolls.advanceSalaryRequest',
@@ -49,6 +48,7 @@ class AddPermissions extends Command
             'payrolls.residencyAdd',
             'payrolls.residencyDelivery',
             'payrolls.new_arrival_worker_progress',
+            'payrolls.new_arrival_for_workers',
 
             // followup -> import_new_arrival_workers
             'followup.new_arrival_for_workers',
@@ -65,6 +65,22 @@ class AddPermissions extends Command
             'followup.new_arrival_worker_progress',
             'followup.import_new_arrival_workers',
 
+            // essentials -> import_new_arrival_workers
+
+            'essentials.new_arrival_for_workers',
+            'essentials.housed',
+            'essentials.advanceSalaryRequest',
+            'essentials.medicalExamination',
+            'essentials.medicalInsurance',
+            'essentials.workCardIssuing',
+            'essentials.bankAccount',
+            'essentials.SIMCard',
+            'essentials.contract',
+            'essentials.residencyAdd&Print',
+            'essentials.residencyDelivery',
+            'essentials.new_arrival_worker_progress',
+            'essentials.import_new_arrival_workers',
+            
 
         ];
 

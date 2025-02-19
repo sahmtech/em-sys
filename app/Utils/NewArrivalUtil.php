@@ -45,6 +45,7 @@ class NewArrivalUtil extends Util
             'housingmovements.new_arrival_for_workers',
             'payrolls.new_arrival_for_workers',
             'followup.new_arrival_for_workers',
+            'essentials.new_arrival_for_workers',
             
         ]);
 

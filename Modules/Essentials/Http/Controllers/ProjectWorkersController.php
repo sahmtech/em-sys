@@ -1195,49 +1195,57 @@ class ProjectWorkersController extends Controller
 
     public function medicalExamination()
     {
-        $view = 'housingmovements::travelers.medicalExamination';
+        $view = 'essentials::travelers.medicalExamination';
         return $this->newArrivalUtil->medicalExamination($view);
     }
     public function SIMCard()
     {
-        $view = 'housingmovements::travelers.SIMCard';
+        $view = 'essentials::travelers.SIMCard';
         return $this->newArrivalUtil->SIMCard($view);
     }
     public function workCardIssuing()
     {
-        $view = 'housingmovements::travelers.workCardIssuing';
+        $view = 'essentials::travelers.workCardIssuing';
         return $this->newArrivalUtil->workCardIssuing($view);
     }
     public function medicalInsurance()
     {
-        $view = 'housingmovements::travelers.medicalInsurance';
+        
+        $view = 'essentials::travelers.medicalInsurance';
         return $this->newArrivalUtil->medicalInsurance($view);
     }
     public function bankAccounts()
     {
-        $view = 'housingmovements::travelers.bankAccounts';
+        $view = 'essentials::travelers.bankAccounts';
         return $this->newArrivalUtil->bankAccounts($view);
     }
     public function QiwaContracts()
     {
-        $view = 'housingmovements::travelers.QiwaContracts';
+        $view = 'essentials::travelers.QiwaContracts';
         return $this->newArrivalUtil->QiwaContracts($view);
     }
     public function residencyPrint()
     {
-        $view = 'housingmovements::travelers.residencyPrint';
+        $view = 'essentials::travelers.residencyPrint';
         return $this->newArrivalUtil->residencyPrint($view);
     }
     public function residencyDelivery()
     {
-        $view = 'housingmovements::travelers.residencyDelivery';
+        $view = 'essentials::travelers.residencyDelivery';
         return $this->newArrivalUtil->residencyDelivery($view);
     }
     public function advanceSalaryRequest()
     {
         
        
-        $view = 'housingmovements::travelers.advanceSalaryRequest';
+        $view = 'essentials::travelers.advanceSalaryRequest';
         return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
+    public function progress()
+    {
+        $view = 'essentials::travelers.progress';
+        return $this->newArrivalUtil->payProgress($view);
+    }
+
+    
 }

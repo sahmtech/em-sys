@@ -54,7 +54,8 @@ class TravelersController extends Controller
      */
     public function index(Request $request)
     {
-        $view = 'housingmovements::travelers.index';
+       
+        $view = 'essentials::travelers.index';
         return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
     }
 
@@ -76,7 +77,7 @@ class TravelersController extends Controller
 
     public function housed_workers_index(Request $request)
     {
-        $view = 'housingmovements::travelers.partials.housed_workers';
+        $view = 'essentials::travelers.partials.housed_workers';
         return $this->newArrivalUtil->housed_workers_index($request, $view);
     }
 
@@ -188,6 +189,12 @@ class TravelersController extends Controller
         }
 
         return $output;
+    }
+
+    public function progress()
+    {
+        $view = 'essentials::travelers.progress';
+        return $this->newArrivalUtil->payProgress($view);
     }
     //public function housed_data(Request $request)
     // {

@@ -43,9 +43,9 @@
             </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
-            @include('housingmovements::travelers.partials.travelers_list')
+            @include('essentials::travelers.partials.travelers_list')
 
-            @include('housingmovements::travelers.partials.housing_modal')
+            @include('essentials::travelers.partials.housing_modal')
         @endcomponent
 
 
@@ -81,7 +81,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('pay_travelers') }}',
+                    url: '{{ route('hrm_travelers') }}',
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name_filter = $('#project_name_filter').val();
@@ -119,6 +119,7 @@
                     {
                         "data": "full_name"
                     },
+                    
                     {
                         "data": "profile_image",
                         "render": function(data, type, row) {
@@ -138,11 +139,23 @@
                     {
                         "data": "project"
                     },
+                    
 
 
                     {
                         "data": "location"
                     },
+                    
+                    {
+                        "data": "passport_number"
+                    },
+                    {
+                        "data": "profession"
+                    },
+                    {
+                        "data": "nationality"
+                    },
+
                     {
                         "data": "medical_examination",
                         "render": function(data, type, row) {
@@ -156,27 +169,17 @@
 
                     },
                     {
-                        "data": "passport_number"
-                    },
-                    {
-                        "data": "profession"
-                    },
-                    {
-                        "data": "nationality"
-                    },
-                    {
                         "data": "worker_documents",
                         "render": function(data, type, row) {
                             let links = '';
 
-                            // Check if worker_documents exists, is an array, and has items, or if visa.file exists
-                            if ((!row.worker_documents || !Array.isArray(row.worker_documents) ||
-                                    row.worker_documents.length === 0) &&
-                                (!row.visa || !row.visa.file)) {
+                            // Check if worker_documents or visa is null/undefined
+                            if ((!row.worker_documents || row.worker_documents.length === 0) && (!
+                                    row.visa || !row.visa.file)) {
                                 return '@lang('housingmovements::lang.no_files')';
                             }
 
-                            // Safely iterate over worker_documents if it exists and is an array
+                            // Process worker_documents if it exists and is an array
                             if (row.worker_documents && Array.isArray(row.worker_documents)) {
                                 row.worker_documents.forEach(function(document) {
                                     links +=
@@ -184,7 +187,7 @@
                                 });
                             }
 
-                            // Check if visa file exists and append its link
+                            // Check visa and visa.file
                             if (row.visa && row.visa.file) {
                                 let visaLinkText =
                                     "{{ __('housingmovements::lang.general_visa') }}";
@@ -195,7 +198,6 @@
                             return links;
                         }
                     }
-
                 ]
             });
 

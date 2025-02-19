@@ -131,40 +131,39 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/operations_show_employee/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'operations_show_employee'])->name('operations_show_employee');
 
         //traveleres
-        Route::get('/travelers', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'index'])->name('travelers');
+        // Route::get('/travelers', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'index'])->name('travelers');
 
-        Route::get('/housed-workers', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('housed_workers');
+        // Route::get('/housed-workers', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('housed_workers');
 
+        // Route::get('/workers/index/', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
 
-        Route::get('/workers/index/', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
+        // Route::get('/medicalExamination', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'])->name('medicalExamination');
+        // Route::post('/upload-medical-document', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'uploadMedicalDocument'])->name('uploadMedicalDocument');
 
-        Route::get('/medicalExamination', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'])->name('medicalExamination');
-        Route::post('/upload-medical-document', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'uploadMedicalDocument'])->name('uploadMedicalDocument');
+        // Route::get('/medicalInsurance', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'medicalInsurance'])->name('medicalInsurance');
 
-        Route::get('/medicalInsurance', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'medicalInsurance'])->name('medicalInsurance');
+        // Route::get('/workCardIssuing', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'workCardIssuing'])->name('workCardIssuing');
+        // Route::post('/storeWorkCard', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'storeWorkCard'])->name('storeWorkCard');
 
-        Route::get('/workCardIssuing', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'workCardIssuing'])->name('workCardIssuing');
-        Route::post('/storeWorkCard', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'storeWorkCard'])->name('storeWorkCard');
+        // Route::get('/SIMCard', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'SIMCard'])->name('SIMCard');
+        // Route::post('/addSIM', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addSIM'])->name('addSIM');
 
-        Route::get('/SIMCard', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'SIMCard'])->name('SIMCard');
-        Route::post('/addSIM', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addSIM'])->name('addSIM');
+        // Route::get('/bankAccountsForLabors', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'bankAccounts'])->name('bankAccountsForLabors');
+        // Route::post('/addBank', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addBank'])->name('addBank');
 
-        Route::get('/bankAccountsForLabors', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'bankAccounts'])->name('bankAccountsForLabors');
-        Route::post('/addBank', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addBank'])->name('addBank');
+        // Route::get('/QiwaContract', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'QiwaContracts'])->name('QiwaContract');
 
-        Route::get('/QiwaContract', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'QiwaContracts'])->name('QiwaContract');
+        // Route::get('/residencyPrint', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyPrint'])->name('residencyPrint');
+        // Route::post('/printResidency', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'updateResidencyPrint'])->name('printResidency');
+        // Route::post('/addEqama', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addEqama'])->name('addEqama');
 
-        Route::get('/residencyPrint', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyPrint'])->name('residencyPrint');
-        Route::post('/printResidency', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'updateResidencyPrint'])->name('printResidency');
-        Route::post('/addEqama', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addEqama'])->name('addEqama');
+        // Route::get('/residencyDelivery', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])->name('residencyDelivery');
+        // Route::post('/delivery_residency', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'deliveryResidency'])->name('delivery_residency');
 
-        Route::get('/residencyDelivery', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])->name('residencyDelivery');
-        Route::post('/delivery_residency', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'deliveryResidency'])->name('delivery_residency');
-
-        Route::get('/advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'advanceSalaryRequest'])->name('advanceSalaryRequest');
-        Route::post('/newWorkersAdvSalaryStore', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'newWorkersAdvSalaryStore'])->name('newWorkersAdvSalaryStore');
-        Route::post('/housed', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'housed_data'])->name('housed');
-        Route::post('/postarrival_data', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'postarrivaldata'])->name('postarrivaldata');
+        // Route::get('/advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'advanceSalaryRequest'])->name('advanceSalaryRequest');
+        // Route::post('/newWorkersAdvSalaryStore', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'newWorkersAdvSalaryStore'])->name('newWorkersAdvSalaryStore');
+        // Route::post('/housed', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'housed_data'])->name('housed');
+        // Route::post('/postarrival_data', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'postarrivaldata'])->name('postarrivaldata');
 
     });
 
@@ -236,6 +235,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/emp_residencyPrint', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'residencyPrint'])->name('emp_residencyPrint');
         Route::get('/emp_residencyDelivery', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'residencyDelivery'])->name('emp_residencyDelivery');
         Route::get('/emp_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'advanceSalaryRequest'])->name('emp_advanceSalaryRequest');
+
+        Route::get('/progressRequest', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'progress'])->name('progressRequest');
 
         Route::get('/appointments', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'index'])->name('appointments');
         Route::post('/changeStatusApp', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'changeStatus'])->name('changeStatusApp');
@@ -437,7 +438,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/pay_residencyDelivery', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'residencyDelivery'])->name('pay_residencyDelivery');
         Route::get('/pay_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'advanceSalaryRequest'])->name('pay_advanceSalaryRequest');
         Route::get('/pay_progress', [\Modules\Essentials\Http\Controllers\PayrollController::class, 'payProgress'])->name('pay_progress');
-
 
         Route::get('/pay_agent_time_sheet', [\Modules\Essentials\Http\Controllers\TimeSheetController::class, 'PayrollIndex'])
             ->name('payroll.agentTimeSheetIndex');
@@ -665,6 +665,43 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/essential_all_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'essential_all_requests'])->name('essential_all_requests');
         Route::get('/essential_pending_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'essential_pending_requests'])->name('essential_pending_requests');
 
+        // New ArrivL worker
+        //traveleres
+        Route::get('/hrm_travelers', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'index'])->name('hrm_travelers');
+
+        Route::get('/hrm_housed_workers', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('hrm_housed_workers');
+
+        Route::get('/workers/index/', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
+
+        Route::get('/hrm_medicalExamination', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'medicalExamination'])->name('hrm_medicalExamination');
+        Route::post('/upload-medical-document', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'uploadMedicalDocument'])->name('uploadMedicalDocument');
+
+        Route::get('/hrm_medicalInsurance', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'medicalInsurance'])->name('hrm_medicalInsurance');
+
+        Route::get('/hrm_workCardIssuing', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'workCardIssuing'])->name('hrm_workCardIssuing');
+        Route::post('/storeWorkCard', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'storeWorkCard'])->name('storeWorkCard');
+
+        Route::get('/hrm_SIMCard', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'SIMCard'])->name('hrm_SIMCard');
+        Route::post('/addSIM', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addSIM'])->name('addSIM');
+
+        Route::get('/hrm_bankAccountsForLabors', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'bankAccounts'])->name('hrm_bankAccountsForLabors');
+        Route::post('/addBank', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addBank'])->name('addBank');
+
+        Route::get('/hrm_QiwaContract', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'QiwaContracts'])->name('hrm_QiwaContract');
+
+        Route::get('/hrm_residencyPrint', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyPrint'])->name('hrm_residencyPrint');
+        Route::post('/printResidency', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'updateResidencyPrint'])->name('printResidency');
+        Route::post('/addEqama', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'addEqama'])->name('addEqama');
+
+        Route::get('/hrm_residencyDelivery', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])->name('hrm_residencyDelivery');
+        Route::post('/hrm_delivery_residency', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'deliveryResidency'])->name('hrm_delivery_residency');
+
+        Route::get('/hrm_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'advanceSalaryRequest'])->name('hrm_advanceSalaryRequest');
+        Route::post('/newWorkersAdvSalaryStore', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'newWorkersAdvSalaryStore'])->name('newWorkersAdvSalaryStore');
+        Route::post('/housed', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'housed_data'])->name('hrm_housed');
+        Route::post('/postarrival_data', [\Modules\Essentials\Http\Controllers\TravelersController::class, 'postarrivaldata'])->name('postarrivaldata');
+        Route::get('/hrm_progressRequest', [\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'progress'])->name('hrm_progressRequest');
+
     });
 
     Route::prefix('movment')->group(function () {
@@ -737,5 +774,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/cars-change-oil-report', [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'CarsChangeOil'])->name('essentials.cars-change-oil-report');
         Route::get('/cars-maintenances-report', [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances'])->name('essentials.cars-maintenances-report');
+
     });
 });

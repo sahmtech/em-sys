@@ -1772,72 +1772,81 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            //
+            // New Arrival worker
             if (
-                $is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')
-                || auth()->user()->can('housingmovements.housed')
-                || auth()->user()->can('housingmovements.advanceSalaryRequest')
-                || auth()->user()->can('housingmovements.medicalExamination')
-                || auth()->user()->can('housingmovements.medicalInsurance')
-                || auth()->user()->can('housingmovements.workCardIssuing')
-                || auth()->user()->can('housingmovements.SIMCard')
-                || auth()->user()->can('housingmovements.bankAccount')
-                || auth()->user()->can('housingmovements.contract')
-                || auth()->user()->can('housingmovements.residencyAdd&Print')
-                || auth()->user()->can('housingmovements.residencyDelivery')
+                $is_admin || auth()->user()->can('essentials.new_arrival_for_workers')
+                || auth()->user()->can('essentials.housed')
+                || auth()->user()->can('essentials.advanceSalaryRequest')
+                || auth()->user()->can('essentials.medicalExamination')
+                || auth()->user()->can('essentials.medicalInsurance')
+                || auth()->user()->can('essentials.workCardIssuing')
+                || auth()->user()->can('essentials.SIMCard')
+                || auth()->user()->can('essentials.bankAccount')
+                || auth()->user()->can('essentials.contract')
+                || auth()->user()->can('essentials.residencyAdd&Print')
+                || auth()->user()->can('essentials.residencyDelivery')
+                || auth()->user()->can('essentials.new_arrival_worker_progress')
 
             ) {
 
                 $menu->url(
-                    ($is_admin || auth()->user()->can('housingmovements.new_arrival_for_workers')) ? action([
+                    ($is_admin || auth()->user()->can('essentials.new_arrival_for_workers')) ? action([
                         \Modules\Essentials\Http\Controllers\TravelersController::class,
                         'index',
-                    ]) : ((auth()->user()->can('housingmovements.housed')) ? action([
+                    ]) : ((auth()->user()->can('essentials.housed')) ? action([
                         \Modules\Essentials\Http\Controllers\TravelersController::class,
                         'housed_workers_index',
-                    ]) : ((auth()->user()->can('housingmovements.advanceSalaryRequest')) ? action([
+                    ]) : ((auth()->user()->can('essentials.advanceSalaryRequest')) ? action([
                         \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
                         'advanceSalaryRequest',
-                    ]) : ((auth()->user()->can('housingmovements.medicalExamination')) ? action([
+                    ]) : ((auth()->user()->can('essentials.medicalExamination')) ? action([
                         \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
                         'medicalExamination',
-                    ]) : ((auth()->user()->can('housingmovements.medicalInsurance')) ? action([
+                    ]) : ((auth()->user()->can('essentials.medicalInsurance')) ? action([
                         \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
                         'medicalInsurance',
-                    ]) : ((auth()->user()->can('housingmovements.workCardIssuing')) ? action([
+                    ]) : ((auth()->user()->can('essentials.workCardIssuing')) ? action([
                         \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
                         'workCardIssuing',
-                    ]) : ((auth()->user()->can('housingmovements.SIMCard')) ? action([
+                    ]) : ((auth()->user()->can('essentials.SIMCard')) ? action([
                         \Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class,
                         'SIMCard',
-                    ]) : ((auth()->user()->can('housingmovements.bankAccount')) ? action([
+                    ]) : ((auth()->user()->can('essentials.bankAccount')) ? action([
                         \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
                         'bankAccounts',
-                    ]) : ((auth()->user()->can('housingmovements.contract')) ? action([
+                    ]) : ((auth()->user()->can('essentials.contract')) ? action([
                         \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
                         'QiwaContracts',
-                    ]) : ((auth()->user()->can('housingmovements.residencyAdd&Print')) ? action([
+                    ]) : ((auth()->user()->can('essentials.residencyAdd&Print')) ? action([
                         \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
                         'residencyPrint',
-                    ]) : action([\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery'])))))))))),
+                    ])  : ((auth()->user()->can('essentials.residencyAdd&Print')) ? action([
+                        \Modules\Essentials\Http\Controllers\ProjectWorkersController::class,
+                        'progress',
+                    ]) :
+                     action([\Modules\Essentials\Http\Controllers\ProjectWorkersController::class, 'residencyDelivery']))))))))))),
 
                     __('housingmovements::lang.travelers'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && (request()->segment(2) == 'travelers'
-                        || request()->segment(2) == 'housed-workers'
-                        || request()->segment(2) == 'advanceSalaryRequest'
-                        || request()->segment(2) == 'medicalExamination'
-                        || request()->segment(2) == 'medicalInsurance'
-                        || request()->segment(2) == 'workCardIssuing'
-                        || request()->segment(2) == 'SIMCard'
-                        || request()->segment(2) == 'bankAccountsForLabors'
-                        || request()->segment(2) == 'QiwaContract'
-                        || request()->segment(2) == 'residencyPrint'
-                        || request()->segment(2) == 'residencyDelivery'
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm'
+                         &&
+                     (
+                           request()->segment(2) == 'hrm_travelers'
+                        || request()->segment(2) == 'hrm_housed_workers'
+                        || request()->segment(2) == 'hrm_advanceSalaryRequest'
+                        || request()->segment(2) == 'hrm_medicalExamination'
+                        || request()->segment(2) == 'hrm_medicalInsurance'
+                        || request()->segment(2) == 'hrm_workCardIssuing'
+                        || request()->segment(2) == 'hrm_SIMCard'
+                        || request()->segment(2) == 'hrm_bankAccountsForLabors'
+                        || request()->segment(2) == 'hrm_QiwaContract'
+                        || request()->segment(2) == 'hrm_residencyPrint'
+                        || request()->segment(2) == 'hrm_residencyDelivery'
+                        || request()->segment(2) == 'hrm_progressRequest'
 
                     )],
                 );
             }
-            //
+            
 
 
 
@@ -2127,7 +2136,7 @@ class CustomAdminSidebarMenu
                     ]) : ((auth()->user()->can('followup.residencyAdd&Print')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'residencyPrint',
-                    ]): ((auth()->user()->can('followup.contract')) ? action([
+                    ]): ((auth()->user()->can('followup.new_arrival_worker_progress')) ? action([
                         \Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class,
                         'progress',
                     ])

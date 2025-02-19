@@ -2090,4 +2090,10 @@ class EssentialsManageEmployeeController extends Controller
         $view = 'essentials::employee_affairs.travelers.advanceSalaryRequest';
         return $this->newArrivalUtil->advanceSalaryRequest($view);
     }
+
+    public function progress()
+     {
+         $view = 'essentials::travelers.progress';
+         return $this->newArrivalUtil->payProgress($view);
+     }
 }

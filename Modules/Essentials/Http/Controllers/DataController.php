@@ -868,62 +868,71 @@ class DataController extends Controller
 
                     //TODO::import_new_arrival_workers
                     [
-                        'value' => 'housingmovements.import_new_arrival_workers',
-                        'label' => __('housingmovements::lang.import_new_arrival_workers'),
+                        'value'   => 'essentials.import_new_arrival_workers',
+                        'label'   => __('housingmovements::lang.import_new_arrival_workers'),
                         'default' => false,
                     ],
 
                     [
-                        'value'   => 'housingmovements.housed',
+                        'value'   => 'essentials.housed',
                         'label'   => __('housingmovements::lang.housed'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.advanceSalaryRequest',
+                        'value'   => 'essentials.advanceSalaryRequest',
                         'label'   => __('housingmovements::lang.advanceSalaryRequest'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.medicalExamination',
+                        'value'   => 'essentials.medicalExamination',
                         'label'   => __('housingmovements::lang.medicalExamination'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.medicalInsurance',
+                        'value'   => 'essentials.medicalInsurance',
                         'label'   => __('housingmovements::lang.medicalInsurance'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.workCardIssuing',
+                        'value'   => 'essentials.workCardIssuing',
                         'label'   => __('housingmovements::lang.workCardIssuing'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.SIMCard',
+                        'value'   => 'essentials.SIMCard',
                         'label'   => __('housingmovements::lang.SIMCard'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.bankAccount',
+                        'value'   => 'essentials.bankAccount',
                         'label'   => __('housingmovements::lang.bankAccount'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.contract',
+                        'value'   => 'essentials.contract',
                         'label'   => __('housingmovements::lang.contract'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.residencyAdd&Print',
+                        'value'   => 'essentials.residencyAdd&Print',
                         'label'   => __('housingmovements::lang.residencyAdd&Print'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.residencyDelivery',
+                        'value'   => 'essentials.residencyDelivery',
                         'label'   => __('housingmovements::lang.residencyDelivery'),
                         'default' => false,
                     ],
-                    
+                    [
+                        'value'   => 'essentials.new_arrival_worker_progress',
+                        'label'   => __('housingmovements::lang.new_arrival_worker_progress'),
+                        'default' => false,
+                    ],
+                    [
+                        'value'   => 'essentials.import_new_arrival_workers',
+                        'label'   => __('housingmovements::lang.import_new_arrival_workers'),
+                        'default' => false,
+                    ],
 
                 ],
 
@@ -1045,13 +1054,13 @@ class DataController extends Controller
 
                     //TODO::import_new_arrival_workers
                     [
-                        'value' => 'payrolls.import_new_arrival_workers',
-                        'label' => __('essentials::lang.import_new_arrival_workers'),
+                        'value'   => 'payrolls.import_new_arrival_workers',
+                        'label'   => __('essentials::lang.import_new_arrival_workers'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'payrolls.new_arrival_for_workers',
-                        'label' => __('housingmovements::lang.new_arrival_for_workers'),
+                        'value'   => 'payrolls.new_arrival_for_workers',
+                        'label'   => __('housingmovements::lang.new_arrival_for_workers'),
                         'default' => false,
                     ],
 
@@ -1105,15 +1114,12 @@ class DataController extends Controller
                         'label'   => __('essentials::lang.residencyDelivery'),
                         'default' => false,
                     ],
-                     
+
                     [
                         'value'   => 'payrolls.new_arrival_worker_progress',
                         'label'   => __('housingmovements::lang.new_arrival_worker_progress'),
                         'default' => false,
-                    ],       
-
-
-
+                    ],
 
                 ],
 
@@ -2172,56 +2178,69 @@ class DataController extends Controller
                     ],
 
                     //TODO::import_new_arrival_workers
+                    [
+                        'value'   => 'essentials.import_new_arrival_workers',
+                        'label'   => __('essentials::lang.import_new_arrival_workers'),
+
+                        'default' => false,
+                    ],
 
                     [
-                        'value'   => 'housingmovements.housed',
+                        'value'   => 'essentials.housed',
                         'label'   => __('housingmovements::lang.housed'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.advanceSalaryRequest',
+                        'value'   => 'essentials.advanceSalaryRequest',
                         'label'   => __('housingmovements::lang.advanceSalaryRequest'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.medicalExamination',
+                        'value'   => 'essentials.medicalExamination',
                         'label'   => __('housingmovements::lang.medicalExamination'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.medicalInsurance',
+                        'value'   => 'essentials.medicalInsurance',
                         'label'   => __('housingmovements::lang.medicalInsurance'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.workCardIssuing',
+                        'value'   => 'essentials.workCardIssuing',
                         'label'   => __('housingmovements::lang.workCardIssuing'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.SIMCard',
+                        'value'   => 'essentials.SIMCard',
                         'label'   => __('housingmovements::lang.SIMCard'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.bankAccount',
+                        'value'   => 'essentials.bankAccount',
                         'label'   => __('housingmovements::lang.bankAccount'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.contract',
+                        'value'   => 'essentials.contract',
                         'label'   => __('housingmovements::lang.contract'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.residencyAdd&Print',
+                        'value'   => 'essentials.residencyAdd&Print',
                         'label'   => __('housingmovements::lang.residencyAdd&Print'),
                         'default' => false,
                     ],
                     [
-                        'value'   => 'housingmovements.residencyDelivery',
+                        'value'   => 'essentials.residencyDelivery',
                         'label'   => __('housingmovements::lang.residencyDelivery'),
                         'default' => false,
+                    ],
+                    [
+
+                        'value'   => 'essentials.new_arrival_worker_progress',
+                        'label'   => __('housingmovements::lang.new_arrival_worker_progress'),
+                        'default' => false,
+
                     ],
 
                 ],
