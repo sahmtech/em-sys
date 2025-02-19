@@ -80,7 +80,21 @@ class AddPermissions extends Command
             'essentials.residencyDelivery',
             'essentials.new_arrival_worker_progress',
             'essentials.import_new_arrival_workers',
-            
+
+            //employee_affairs-> import_new_arrival_workers
+            'employee_affairs.import_new_arrival_workers',
+            'employee_affairs.housed',
+            'employee_affairs.advanceSalaryRequest',
+            'employee_affairs.medicalExamination',
+            'employee_affairs.medicalInsurance',
+            'employee_affairs.workCardIssuing',
+            'employee_affairs.bankAccount',
+            'employee_affairs.SIMCard',
+            'employee_affairs.contract',
+            'employee_affairs.residencyAdd',
+            'employee_affairs.residencyDelivery',
+            'employee_affairs.new_arrival_worker_progress',
+            'employee_affairs.new_arrival_for_workers',
 
         ];
 

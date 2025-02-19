@@ -13,7 +13,9 @@
 
     <!-- Main content -->
     <section class="content">
-        @include('essentials::layouts.nav_trevelers')
+        @include('essentials::employee_affairs.layouts.nav_trevelers')
+
+
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
@@ -97,7 +99,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         {!! Form::open([
-                            'url' => action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data']),
+                            'url' => action([\Modules\Essentials\Http\Controllers\TravelersController::class, 'housed_data']),
                             'method' => 'post',
                             'id' => 'housed_form',
                         ]) !!}
@@ -179,7 +181,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('housed_workers') }}',
+                    url: '{{ route('emp_housed_workers') }}',
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name_filter = $('#project_name_filter').val();

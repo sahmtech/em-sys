@@ -11,7 +11,7 @@
 
     <!-- Main content -->
     <section class="content">
-        @include('essentials::layouts.nav_trevelers')
+        @include('essentials::employee_affairs.layouts.nav_trevelers')
        
 
         <div class="row">
@@ -139,7 +139,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('medicalInsurance') }}',
+                url: '{{ route('emp_medicalInsurance') }}',
             },
             columns: [
                 // {

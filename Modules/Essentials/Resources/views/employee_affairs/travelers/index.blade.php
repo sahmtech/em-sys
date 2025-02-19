@@ -13,7 +13,7 @@
 
     <!-- Main content -->
     <section class="content">
-        @include('essentials::layouts.nav_trevelers')
+        @include('essentials::employee_affairs.layouts.nav_trevelers')
 
         <div class="row">
             <div class="col-md-12">
@@ -82,7 +82,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('travelers') }}',
+                    url: '{{ route('emp_travelers') }}',
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name_filter = $('#project_name_filter').val();

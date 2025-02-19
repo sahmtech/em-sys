@@ -236,7 +236,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/emp_residencyDelivery', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'residencyDelivery'])->name('emp_residencyDelivery');
         Route::get('/emp_advanceSalaryRequest', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'advanceSalaryRequest'])->name('emp_advanceSalaryRequest');
 
-        Route::get('/progressRequest', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'progress'])->name('progressRequest');
+        Route::get('/emp_progressRequest', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'progress'])->name('emp_progressRequest');
 
         Route::get('/appointments', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'index'])->name('appointments');
         Route::post('/changeStatusApp', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'changeStatus'])->name('changeStatusApp');

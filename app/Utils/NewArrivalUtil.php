@@ -46,6 +46,9 @@ class NewArrivalUtil extends Util
             'payrolls.new_arrival_for_workers',
             'followup.new_arrival_for_workers',
             'essentials.new_arrival_for_workers',
+            'employee_affairs.new_arrival_for_workers',
+
+            
             
         ]);
 

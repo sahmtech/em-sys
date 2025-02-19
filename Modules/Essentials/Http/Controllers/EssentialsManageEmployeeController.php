@@ -2035,12 +2035,14 @@ class EssentialsManageEmployeeController extends Controller
 
     public function new_arrival_for_workers(Request $request)
     {
+       
         $view = 'essentials::employee_affairs.travelers.index';
         return $this->newArrivalUtil->new_arrival_for_workers($request, $view);
     }
 
     public function housed_workers_index(Request $request)
     {
+        
         $view = 'essentials::employee_affairs.travelers.partials.housed_workers';
         return $this->newArrivalUtil->housed_workers_index($request, $view);
     }
@@ -2093,7 +2095,7 @@ class EssentialsManageEmployeeController extends Controller
 
     public function progress()
      {
-         $view = 'essentials::travelers.progress';
+         $view = 'essentials::employee_affairs.travelers.progress';
          return $this->newArrivalUtil->payProgress($view);
      }
 }

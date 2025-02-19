@@ -13,7 +13,7 @@
 
     <section class="content">
 
-        @include('essentials::layouts.nav_trevelers')
+        @include('essentials::employee_affairs.layouts.nav_trevelers')
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
@@ -151,7 +151,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('advanceSalaryRequest') }}"
+                    url: "{{ route('emp_advanceSalaryRequest') }}"
                 },
 
                 columns: [{

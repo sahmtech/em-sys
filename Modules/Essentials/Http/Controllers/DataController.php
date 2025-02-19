@@ -1953,6 +1953,75 @@ class DataController extends Controller
 
                     ],
 
+                        //TODO::import_new_arrival_workers
+                        [
+                            'value'   => 'employee_affairs.import_new_arrival_workers',
+                            'label'   => __('essentials::lang.import_new_arrival_workers'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.new_arrival_for_workers',
+                            'label'   => __('housingmovements::lang.new_arrival_for_workers'),
+                            'default' => false,
+                        ],
+    
+                        [
+                            'value'   => 'employee_affairs.housed',
+                            'label'   => __('essentials::lang.housed'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.advanceSalaryRequest',
+                            'label'   => __('essentials::lang.advanceSalaryRequest'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.medicalExamination',
+                            'label'   => __('essentials::lang.medicalExamination'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.medicalInsurance',
+                            'label'   => __('essentials::lang.medicalInsurance'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.workCardIssuing',
+                            'label'   => __('essentials::lang.workCardIssuing'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.SIMCard',
+                            'label'   => __('essentials::lang.SIMCard'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.bankAccount',
+                            'label'   => __('essentials::lang.bankAccount'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.contract',
+                            'label'   => __('essentials::lang.contract'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.residencyAdd&Print',
+                            'label'   => __('essentials::lang.residencyAdd&Print'),
+                            'default' => false,
+                        ],
+                        [
+                            'value'   => 'employee_affairs.residencyDelivery',
+                            'label'   => __('essentials::lang.residencyDelivery'),
+                            'default' => false,
+                        ],
+    
+                        [
+                            'value'   => 'employee_affairs.new_arrival_worker_progress',
+                            'label'   => __('housingmovements::lang.new_arrival_worker_progress'),
+                            'default' => false,
+                        ],
+
                     ///Docs
 
                 ],

@@ -6,7 +6,7 @@
         <h1>@lang('essentials::lang.employee_contracts')</h1>
     </section>
     <section class="content">
-        @include('essentials::layouts.nav_trevelers')
+        @include('essentials::employee_affairs.layouts.nav_trevelers')
 
 
         <div class="row">
