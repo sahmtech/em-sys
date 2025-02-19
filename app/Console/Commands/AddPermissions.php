@@ -96,6 +96,10 @@ class AddPermissions extends Command
             'employee_affairs.new_arrival_worker_progress',
             'employee_affairs.new_arrival_for_workers',
 
+
+            //
+            'essentials.view_insurance_requests',
+
         ];
 
         foreach ($permissions as $permission) {

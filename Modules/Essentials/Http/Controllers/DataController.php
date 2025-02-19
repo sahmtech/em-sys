@@ -1354,6 +1354,13 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value'   => 'essentials.view_insurance_requests',
+                        'label'   => __('essentials::lang.view_insurance_requests'),
+                        'default' => false,
+                    ],
+
+                    
+                    [
                         'value'   => 'essentials.add_insurance_contracts',
                         'label'   => __('essentials::lang.add_insurance_contracts'),
                         'default' => false,
