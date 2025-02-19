@@ -49,6 +49,10 @@ class AddPermissions extends Command
             'payrolls.residencyAdd',
             'payrolls.residencyDelivery',
 
+            // view_insurance_requests
+
+            'essentials.view_insurance_requests',
+
         ];
 
         foreach ($permissions as $permission) {
